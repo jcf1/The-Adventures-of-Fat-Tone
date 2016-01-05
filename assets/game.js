@@ -46,9 +46,13 @@ var Game = {
       o: null
     }
   },
+  _game:null,
   _currUIMode: null,
+  _randomSeed: 0,
   init: function() {
     console.log("WSRL Live initialization");
+
+    this._game = this;
     //this.DISPLAYS.main.o = new ROT.Display({width:this.DISPLAYS.main.w, height:this.DISPLAYS.main.h});
     for (var displayName in this.DISPLAYS) {
       if(this.DISPLAYS.hasOwnProperty(displayName)) {
@@ -56,6 +60,14 @@ var Game = {
       }
     }
     this.renderAll();
+  },
+  getRandomSeed: function() {
+    return this._randomSeed;
+  },
+  setRandomSeed: function(s) {
+    this._randomSeed = s;
+    console.log("using random seed "+this._randomSeed);
+    ROT.RNG.setSeed(this._randomSeed);
   },
   getDisplay: function(displayName) {
     return this.DISPLAYS[displayName].o;
