@@ -30,6 +30,7 @@ window.onload = function() {
 
 var Game = {
   _persistenceNamespace: 'wsrlgame',
+  _DISPLAY_SPACING: 1.1,
   DISPLAYS: {
     avatar: {
       w: 20,
@@ -66,7 +67,9 @@ var Game = {
     this.renderAll();
   },
   toJSON: function() {
-    var json = {"_randomSeed":this._randomSeed};
+    var json = {};
+    json._randomSeed = this._randomSeed;
+    json[Game.UIMode.gamePlay.JSON_KEY] = Game.UIMode.gamePlay.toJSON();
     return json;
   },
   getRandomSeed: function() {
@@ -78,7 +81,10 @@ var Game = {
     ROT.RNG.setSeed(this._randomSeed);
   },
   getDisplay: function(displayName) {
-    return this.DISPLAYS[displayName].o;
+    if(this.DISPLAYS.hasOwnProperty(displayName)){
+      return this.DISPLAYS[displayName].o;
+    }
+    return null;
   },
   renderAll: function() {
     this.renderAvatar();
@@ -90,15 +96,15 @@ var Game = {
     if(this._currUIMode != null && this._currUIMode.hasOwnProperty("renderOnMain")){
       this._currUIMode.renderOnMain(this.DISPLAYS.main.o);
     } else {
-      this.DISPLAYS.main.o.drawText(2,1,"main display")
+      return;
     }
   },
   renderAvatar: function() {
     this.DISPLAYS.avatar.o.clear();
-    if(this._currUIMode != null && this._currUIMode.hasOwnProperty("renderOnAvatar")){
-      this._currUIMode.renderOnAvatar(this.DISPLAYS.avatar.o);
+    if(this._currUIMode != null && this._currUIMode.hasOwnProperty("renderAvatarInfo")){
+      this._currUIMode.renderAvatarInfo(this.DISPLAYS.avatar.o);
     } else {
-      this.DISPLAYS.avatar.o.drawText(2,1,"avatar display")
+      return;
     }
   },
   renderMessage: function() {
@@ -120,5 +126,8 @@ var Game = {
     if(this._currUIMode != null && this._currUIMode.hasOwnProperty("handleInput")){
       this._currUIMode.handleInput(eventType,evt);
     }
+  },
+  refresh: function() {
+    this.renderAll();
   }
 };
