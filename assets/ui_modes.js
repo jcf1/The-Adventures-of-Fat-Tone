@@ -91,6 +91,8 @@ Game.UIMode.gamePersistence = {
       this.loadGame();
     } else if (inputChar == 'N') {
       this.newGame();
+    } else {
+      Game.Message.sendMessage("CAPITALS MATTER");
     }
   },
   saveGame: function(json_state_data) {
