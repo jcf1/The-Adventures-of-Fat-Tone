@@ -29,9 +29,11 @@ Game.UIMode.gamePlay = {
   handleInput: function(eventType,evt) {
     console.log("Game.UIMode.gameStart handleInput");
     if(eventType == 'keypress' && evt.keyCode == 13) {
-        Game.switchUIMode(Game.UIMode.gameWin);
+      Game.switchUIMode(Game.UIMode.gameWin);
     } else if(eventType == 'keydown' && evt.keyCode == 27) {
       Game.switchUIMode(Game.UIMode.gameLose);
+    } else if(eventType == 'keypress' && evt.keyCode == 0) {
+      Game.switchUIMode(Game.UIMode.gamePersistence);
     }
   },
   renderOnMain: function(display) {
@@ -92,23 +94,41 @@ Game.UIMode.gamePersistence = {
     }
   },
   saveGame: function(json_state_data) {
-    Game.switchUIMode(Game.UIMode.gamePlay);
+    if (this.localStorageAvailable()) {
+      window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game._game));
+      console.log("post-save: using random seed "+Game.getRandomSeed());
+      Game.switchUIMode(Game.UIMode.gamePlay);
+    }
   },
   loadGame: function() {
-    var json_state_data = '{"randomSeed":12}';
-    var state_data = JSON.parse(json_state_data);
-    console.dir(state_data);
-    Game.setRandomSeed(state_data.randomSeed);
-    console.log("post-restore: using random seed "+Game.getRandomSeed());
-    Game.switchUIMode(Game.UIMode.gamePlay);
+    if (this.localStorageAvailable()) {
+      var json_state_data =  window.localStorage.getItem(Game._persistenceNamespace);
+      var state_data = JSON.parse(json_state_data);
+      console.dir(state_data);
+      Game.setRandomSeed(state_data._randomSeed);
+      console.log("post-restore: using random seed "+Game.getRandomSeed());
+      Game.switchUIMode(Game.UIMode.gamePlay);
+    }
   },
   newGame: function() {
-    Game.setRandomSeed(5 + Math.floor(Math.random()*100000));
+    Game.setRandomSeed(5 + Math.floor(ROT.RNG.getUniform()*100000));
     Game.switchUIMode(Game.UIMode.gamePlay);
   },
   renderOnMain: function(display) {
     console.log("Game.UIMode.gamePersistence renderOnMain");
     display.clear();
     display.drawText(1,3,"press S to save the current game, L to load the saved game, or N to start a new game");
+  },
+  localStorageAvailable: function() {
+    try {
+      var x = '__storage_test__';
+      window.localStorage.setItem(x,x);
+      window.localStorage.removeItem(x);
+      return true;
+    }
+    catch(e) {
+      Game.Message.sendMessage('Sorry No Local Data Storage is Available For This Browser!');
+      return false;
+    }
   }
 };
