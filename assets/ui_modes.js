@@ -6,7 +6,7 @@ Game.UIMode.DEFAULT_COLOR_STR = '%c{'+Game.UIMode.DEFAULT_COLOR_FG+'}%b{'+Game.U
 
 Game.UIMode.gameStart = {
   enter: function() {
-    console.log("Game.UIMode.gameStart enter");
+    //console.log("Game.UIMode.gameStart enter");
     Game.Message.sendMessage("Welcome to WSLR");
     Game.refresh();
   },
@@ -30,51 +30,73 @@ Game.UIMode.gameStart = {
 };
 Game.UIMode.gamePlay = {
   attr: {
-    _map:null,
-    _mapWidth: 300,
-    _mapHeight: 200,
+    _mapId:'',
     _cameraX: 100,
     _cameraY: 100,
-    _avatarX: 100,
-    _avatarY: 100
+    _avatarId: '',
+    _steps: 0
   },
   JSON_KEY: 'UIMode_gamePlay',
   enter: function() {
-    Game.Message.clear();
+    Game.Message.clearMessage();
+    if (this.attr._avatarId) {
+      this.setCameraToAvatar();
+    }
     Game.refresh();
-    console.log("Game.UIMode.gameStart enter");
+    //console.log("Game.UIMode.gamePlay enter");
   },
   exit: function() {
     Game.refresh();
-    console.log("Game.UIMode.gameStart exit");
+    console.log("Game.UIMode.gamePlay exit");
+  },
+  getMap: function () {
+    return Game.DATASTORE.MAP[this.attr._mapId];
+  },
+  setMap: function (m) {
+    this.attr._mapId = m.getId();
+  },
+  getAvatar: function () {
+    return Game.DATASTORE.ENTITY[this.attr._avatarId];
+  },
+  setAvatar: function (a) {
+    this.attr._avatarId = a.getId();
   },
   handleInput: function(eventType,evt) {
     var pressedKey = String.fromCharCode(evt.charCode);
     Game.Message.sendMessage("you pressed the '" + pressedKey + "' key");
     Game.renderMessage();
-    console.log("Game.UIMode.gameStart handleInput");
+    console.log("Game.UIMode.gamePlay handleInput");
     if(eventType == 'keypress'){
       if(evt.keyIdentifier == 'Enter') {
         Game.switchUIMode(Game.UIMode.gameWin);
         return;
       } else if(pressedKey == '1') {
         this.moveAvatar(-1,1);
+        this.attr._steps++;
       } else if(pressedKey == '2') {
         this.moveAvatar(0,1);
+        this.attr._steps++;
       } else if(pressedKey == '3') {
         this.moveAvatar(1,1);
+        this.attr._steps++;
       } else if(pressedKey == '4') {
         this.moveAvatar(-1,0);
+        this.attr._steps++;
       } else if(pressedKey == '5') {
         //Stay Still
+        this.attr._steps++;
       } else if(pressedKey == '6') {
         this.moveAvatar(1,0);
+        this.attr._steps++;
       } else if(pressedKey == '7') {
         this.moveAvatar(-1,-1);
+        this.attr._steps++;
       } else if(pressedKey == '8') {
         this.moveAvatar(0,-1);
+        this.attr._steps++;
       } else if(pressedKey == '9') {
         this.moveAvatar(1,-1);
+        this.attr._steps++;
       }
       Game.refresh();
     }
@@ -89,122 +111,99 @@ Game.UIMode.gamePlay = {
   renderOnMain: function(display) {
     var fg = Game.UIMode.DEFAULT_COLOR_FG;
     var bg = Game.UIMode.DEFAULT_COLOR_BG;
-    this.attr._map.renderOn(display,this.attr._cameraX,this.attr._cameraY)
-    console.log("Game.UIMode.gameStart renderOnMain");
-    display.drawText(1,3,"Press [Enter] to win, [Esc] to lose",fg,bg);
-    display.drawText(1,4,"press = to save, load, or start a new game",fg,bg);
-    this.renderAvatar(display);
+    // this.attr._map.renderOn(display,this.attr._cameraX,this.attr._cameraY)
+    // console.log("Game.UIMode.gamePlay renderOnMain");
+    // display.drawText(1,3,"Press [Enter] to win, [Esc] to lose",fg,bg);
+    // display.drawText(1,4,"press = to save, load, or start a new game",fg,bg);
+    // this.renderAvatar(display);
+    this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY);
   },
-  renderAvatar: function (display) {
-    Game.Symbol.AVATAR.draw(display,this.attr._avatarX-this.attr._cameraX+display._options.width/2,
-                                    this.attr._avatarY-this.attr._cameraY+display._options.height/2);
-  },
+  // renderAvatar: function (display) {
+  //   Game.Symbol.AVATAR.draw(display,this.attr._avatar.getX()-this.attr._cameraX+display._options.width/2,
+  //   this.attr._avatar.getY()-this.attr._cameraY+display._options.height/2);
+  // },
   renderAvatarInfo: function (display) {
     var fg = Game.UIMode.DEFAULT_COLOR_FG;
     var bg = Game.UIMode.DEFAULT_COLOR_BG;
-    display.drawText(1,2,"avatar x: "+this.attr._avatarX,fg,bg); // DEV
-    display.drawText(1,3,"avatar y: "+this.attr._avatarY,fg,bg); // DEV
+    display.drawText(1,2,"avatar x: "+this.getAvatar().getX(),fg,bg); // DEV
+    display.drawText(1,3,"avatar y: "+this.getAvatar().getY(),fg,bg); // DEV
+    display.drawText(1,4,"avatar steps: "+this.attr._steps,fg,bg);
   },
   moveAvatar: function (dx,dy) {
-    this.attr._avatarX = Math.min(Math.max(0,this.attr._avatarX + dx),this.attr._mapWidth);
-    this.attr._avatarY = Math.min(Math.max(0,this.attr._avatarY + dy),this.attr._mapHeight);
-    this.setCameraToAvatar();
+    if(this.getAvatar().tryWalk(this.getMap(),dx,dy)) {
+      this.setCameraToAvatar();
+    }
   },
   moveCamera: function (dx,dy) {
     this.setCamera(this.attr._cameraX + dx,this.attr._cameraY + dy);
   },
   setCamera: function (sx,sy) {
-    this.attr._cameraX = Math.min(Math.max(0,sx),this.attr._mapWidth);
-    this.attr._cameraY = Math.min(Math.max(0,sy),this.attr._mapHeight);
+    this.attr._cameraX = Math.min(Math.max(0,sx),this.getMap().getWidth());
+    this.attr._cameraY = Math.min(Math.max(0,sy),this.getMap().getHeight());
+    Game.refresh();
   },
   setCameraToAvatar: function () {
-    this.setCamera(this.attr._avatarX,this.attr._avatarY);
+    this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
   },
-  setupPlay: function (restorationData) {
-    var mapTiles = Game.util.init2DArray(this.attr._mapWidth,this.attr._mapHeight,Game.Tile.nullTile);
-    var generator = new ROT.Map.Cellular(this.attr._mapWidth,this.attr._mapHeight);
-    generator.randomize(0.5);
+  setupNewGame: function () {
+    this.setMap(new Game.Map('caves1'));
+    this.setAvatar(Game.EntityGenerator.create('avatar'));
 
-    // repeated cellular automata process
-    var totalIterations = 3;
-    for (var i = 0; i < totalIterations - 1; i++) {
-      generator.create();
-    }
+    this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
+    this.setCameraToAvatar();
 
-    // run again then update map
-    generator.create(function(x,y,v) {
-      if (v === 1) {
-        mapTiles[x][y] = Game.Tile.floorTile;
-      } else {
-        mapTiles[x][y] = Game.Tile.wallTile;
-      }
-    });
-
-    // create map from the tiles
-    this.attr._map =  new Game.Map(mapTiles);
-
-    // restore anything else if the data is available
-    if (restorationData !== undefined && restorationData.hasOwnProperty(Game.UIMode.gamePlay.JSON_KEY)) {
-      this.fromJSON(restorationData[Game.UIMode.gamePlay.JSON_KEY]);
+    for (var ecount = 0; ecount < 4; ecount++) {
+      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
     }
   },
   toJSON: function() {
-    var json = {};
-    for (var at in this.attr) {
-      if (this.attr.hasOwnProperty(at) && at!='_map') {
-        json[at] = this.attr[at];
-      }
-    }
-    return json;
+    return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
   },
   fromJSON: function (json) {
-    for (var at in this.attr) {
-      if (this.attr.hasOwnProperty(at) && at!='_map') {
-        this.attr[at] = json[at];
-      }
-    }
+    Game.UIMode.gamePersistence.BASE_fromJSON.call(this,json);
   }
 };
 Game.UIMode.gameLose = {
   enter: function() {
-      console.log("Game.UIMode.gameStart enter");
+    console.log("Game.UIMode.gameLose enter");
   },
   exit: function() {
-    console.log("Game.UIMode.gameStart exit");
+    console.log("Game.UIMode.gameLose exit");
   },
   handleInput: function() {
     Game.Message.clear();
-    console.log("Game.UIMode.gameStart handleInput");
+    console.log("Game.UIMode.gameLose handleInput");
   },
   renderOnMain: function(display) {
     var fg = Game.UIMode.DEFAULT_COLOR_FG;
     var bg = Game.UIMode.DEFAULT_COLOR_BG;
-    console.log("Game.UIMode.gameStart renderOnMain");
+    console.log("Game.UIMode.gameLose renderOnMain");
     display.drawText(4,4,"You Lose",fg,bg);
   }
 };
 Game.UIMode.gameWin = {
   enter: function() {
-      console.log("Game.UIMode.gameStart enter");
+    console.log("Game.UIMode.gameWin enter");
   },
   exit: function() {
-    console.log("Game.UIMode.gameStart exit");
+    console.log("Game.UIMode.gameWin exit");
   },
   handleInput: function() {
     Game.Message.clear();
-    console.log("Game.UIMode.gameStart handleInput");
+    console.log("Game.UIMode.gameWin handleInput");
   },
   renderOnMain: function(display) {
     var fg = Game.UIMode.DEFAULT_COLOR_FG;
     var bg = Game.UIMode.DEFAULT_COLOR_BG;
-    console.log("Game.UIMode.gameStart renderOnMain");
+    console.log("Game.UIMode.gameWin renderOnMain");
     display.drawText(4,4,"You Win",fg,bg);
   }
 };
 Game.UIMode.gamePersistence = {
+  RANDOM_SEED_KEY: 'gameRandomSeed',
   enter: function() {
-      console.log("Game.UIMode.gamePersistence enter");
-      Game.refresh();
+    //console.log("Game.UIMode.gamePersistence enter");
+    Game.refresh();
   },
   exit: function() {
     console.log("Game.UIMode.gamePersistence exit");
@@ -219,13 +218,12 @@ Game.UIMode.gamePersistence = {
       this.loadGame();
     } else if (inputChar == 'N') {
       this.newGame();
-    } else {
-      Game.Message.sendMessage("CAPITALS MATTER");
     }
   },
-  saveGame: function(json_state_data) {
+  saveGame: function() {
     if (this.localStorageAvailable()) {
-      window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game._game));
+      Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
+      window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game.DATASTORE));
       console.log("post-save: using random seed "+Game.getRandomSeed());
       Game.switchUIMode(Game.UIMode.gamePlay);
     }
@@ -234,16 +232,35 @@ Game.UIMode.gamePersistence = {
     if (this.localStorageAvailable()) {
       var json_state_data =  window.localStorage.getItem(Game._persistenceNamespace);
       var state_data = JSON.parse(json_state_data);
-      console.dir(state_data);
-      Game.setRandomSeed(state_data._randomSeed);
-      console.log("post-restore: using random seed "+Game.getRandomSeed());
-      Game.UIMode.gamePlay.setupPlay(state_data);
+
+      Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
+
+      for (var mapId in state_data.MAP) {
+        if (state_data.MAP.hasOwnProperty(mapId)) {
+          var mapAttr = JSON.parse(state_data.MAP[mapId]);
+          // console.log("restoring map "+mapId+" with attributes:");
+          // console.dir(mapAttr);
+          Game.DATASTORE.MAP[mapId] = new Game.Map(mapAttr._mapTileSetName);
+          Game.DATASTORE.MAP[mapId].fromJSON(state_data.MAP[mapId]);
+        }
+      }
+
+      for (var entityId in state_data.ENTITY) {
+        if (state_data.ENTITY.hasOwnProperty(entityId)) {
+          var entAttr = JSON.parse(state_data.ENTITY[entityId]);
+          Game.DATASTORE.ENTITY[entityId] = Game.EntityGenerator.create(entAttr._generator_template_key);
+          Game.DATASTORE.ENTITY[entityId].fromJSON(state_data.ENTITY[entityId]);
+        }
+      }
+
+      Game.UIMode.gamePlay.attr = state_data.GAME_PLAY;
+
       Game.switchUIMode(Game.UIMode.gamePlay);
     }
   },
   newGame: function() {
-    Game.setRandomSeed(5 + Math.floor(ROT.RNG.getUniform()*100000));
-    Game.UIMode.gamePlay.setupPlay();
+    Game.setRandomSeed(5 + Math.floor(Game.TRANSIENT_RNG.getUniform()*100000));
+    Game.UIMode.gamePlay.setupNewGame();
     Game.switchUIMode(Game.UIMode.gamePlay);
   },
   renderOnMain: function(display) {
@@ -263,5 +280,39 @@ Game.UIMode.gamePersistence = {
       Game.Message.sendMessage('Sorry No Local Data Storage is Available For This Browser!');
       return false;
     }
+  },
+  BASE_toJSON: function(state_hash_name) {
+    var state = this.attr;
+    if (state_hash_name) {
+      state = this[state_hash_name];
+    }
+    var json = JSON.stringify(state);
+    // var json = {};
+    // for (var at in state) {
+    //   if (state.hasOwnProperty(at)) {
+    //     if (state[at] instanceof Object && 'toJSON' in state[at]) {
+    //       json[at] = state[at].toJSON();
+    //     } else {
+    //       json[at] = state[at];
+    //     }
+    //   }
+    // }
+    return json;
+  },
+  BASE_fromJSON: function (json,state_hash_name) {
+    var using_state_hash = 'attr';
+    if (state_hash_name) {
+      using_state_hash = state_hash_name;
+    }
+    this[using_state_hash] = JSON.parse(json);
+    // for (var at in this[using_state_hash]) {
+    //   if (this[using_state_hash].hasOwnProperty(at)) {
+    //     if (this[using_state_hash][at] instanceof Object && 'fromJSON' in this[using_state_hash][at]) {
+    //       this[using_state_hash][at].fromJSON(json[at]);
+    //     } else {
+    //       this[using_state_hash][at] = json[at];
+    //     }
+    //   }
+    // }
   }
 };
