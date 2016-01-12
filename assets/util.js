@@ -31,5 +31,10 @@ Game.util = {
       var range = max - min;
       var offset = Math.floor(ROT.RNG.getUniform()*(range+1));
       return offset + min;
+  },
+
+  randomColorTrippy: function() {
+    var col = ROT.Color.randomize([128,128,128], [128,128,128]);
+    return ROT.Color.toHex(col);
   }
 };

@@ -38,7 +38,7 @@ Game.UIMode.gamePlay = {
   },
   JSON_KEY: 'UIMode_gamePlay',
   enter: function() {
-    Game.Message.clearMessage();
+    //Game.Message.clearMessage();
     if (this.attr._avatarId) {
       this.setCameraToAvatar();
     }
@@ -63,8 +63,8 @@ Game.UIMode.gamePlay = {
   },
   handleInput: function(eventType,evt) {
     var pressedKey = String.fromCharCode(evt.charCode);
-    Game.Message.sendMessage("you pressed the '" + pressedKey + "' key");
-    Game.renderMessage();
+    // Game.Message.sendMessage("you pressed the '" + pressedKey + "' key");
+    // Game.renderMessage();
     console.log("Game.UIMode.gamePlay handleInput");
     if(eventType == 'keypress'){
       if(evt.keyIdentifier == 'Enter') {
@@ -72,33 +72,32 @@ Game.UIMode.gamePlay = {
         return;
       } else if(pressedKey == '1') {
         this.moveAvatar(-1,1);
-        this.attr._steps++;
+        Game.Message.ageMessages();
       } else if(pressedKey == '2') {
         this.moveAvatar(0,1);
-        this.attr._steps++;
+        Game.Message.ageMessages();
       } else if(pressedKey == '3') {
         this.moveAvatar(1,1);
-        this.attr._steps++;
+        Game.Message.ageMessages();
       } else if(pressedKey == '4') {
         this.moveAvatar(-1,0);
-        this.attr._steps++;
+        Game.Message.ageMessages();
       } else if(pressedKey == '5') {
         //Stay Still
-        this.attr._steps++;
+        Game.Message.ageMessages();
       } else if(pressedKey == '6') {
         this.moveAvatar(1,0);
-        this.attr._steps++;
+        Game.Message.ageMessages();
       } else if(pressedKey == '7') {
         this.moveAvatar(-1,-1);
-        this.attr._steps++;
+        Game.Message.ageMessages();
       } else if(pressedKey == '8') {
         this.moveAvatar(0,-1);
-        this.attr._steps++;
+        Game.Message.ageMessages();
       } else if(pressedKey == '9') {
         this.moveAvatar(1,-1);
-        this.attr._steps++;
+        Game.Message.ageMessages();
       }
-      Game.refresh();
     }
     else if(eventType == 'keydown') {
       if(evt.keyCode == 27){
@@ -132,6 +131,12 @@ Game.UIMode.gamePlay = {
   moveAvatar: function (dx,dy) {
     if(this.getAvatar().tryWalk(this.getMap(),dx,dy)) {
       this.setCameraToAvatar();
+      this.attr._steps++;
+      var trip = Math.floor(Math.random()*1000001);
+      if(trip === 1) {
+        Game.Message.sendMessage("You have fallen and can't get up.");
+        Game.switchUIMode(Game.UIMode.gameLose);
+      }
     }
   },
   moveCamera: function (dx,dy) {
@@ -148,11 +153,12 @@ Game.UIMode.gamePlay = {
   setupNewGame: function () {
     this.setMap(new Game.Map('caves1'));
     this.setAvatar(Game.EntityGenerator.create('avatar'));
+    console.log(this.getAvatar());
 
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
     this.setCameraToAvatar();
 
-    for (var ecount = 0; ecount < 4; ecount++) {
+    for (var ecount = 0; ecount < 80; ecount++) {
       this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
     }
   },
@@ -171,7 +177,7 @@ Game.UIMode.gameLose = {
     console.log("Game.UIMode.gameLose exit");
   },
   handleInput: function() {
-    Game.Message.clear();
+    Game.Message.clearMessage();
     console.log("Game.UIMode.gameLose handleInput");
   },
   renderOnMain: function(display) {
@@ -189,7 +195,7 @@ Game.UIMode.gameWin = {
     console.log("Game.UIMode.gameWin exit");
   },
   handleInput: function() {
-    Game.Message.clear();
+    Game.Message.clearMessage();
     console.log("Game.UIMode.gameWin handleInput");
   },
   renderOnMain: function(display) {
@@ -211,18 +217,25 @@ Game.UIMode.gamePersistence = {
   },
   handleInput: function(eventType,evt) {
     console.log("Game.UIMode.gamePersistence handleInput");
-    var inputChar = String.fromCharCode(evt.charCode)
-    if(inputChar == 'S') {
-      this.saveGame();
-    } else if(inputChar == 'L') {
-      this.loadGame();
-    } else if (inputChar == 'N') {
-      this.newGame();
+    if (eventType == 'keypress') {
+      var inputChar = String.fromCharCode(evt.charCode);
+      if (inputChar == 'S') { // ignore the various modding keys - control, shift, etc.
+        this.saveGame();
+      } else if (inputChar == 'L') {
+        this.loadGame();
+      } else if (inputChar == 'N') {
+        this.newGame();
+      }
+    } else if (eventType == 'keydown') {
+      if (evt.keyCode == 27) { // 'Escape'
+        Game.switchUIMode(Game.UIMode.gamePlay);
+      }
     }
   },
   saveGame: function() {
     if (this.localStorageAvailable()) {
       Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
+      Game.DATASTORE.MESSAGES = Game.Message.attr;
       window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game.DATASTORE));
       console.log("post-save: using random seed "+Game.getRandomSeed());
       Game.switchUIMode(Game.UIMode.gamePlay);
@@ -254,6 +267,7 @@ Game.UIMode.gamePersistence = {
       }
 
       Game.UIMode.gamePlay.attr = state_data.GAME_PLAY;
+      Game.Message.attr = state_data.MESSAGES;
 
       Game.switchUIMode(Game.UIMode.gamePlay);
     }
