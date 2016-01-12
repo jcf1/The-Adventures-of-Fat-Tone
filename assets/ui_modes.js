@@ -67,7 +67,7 @@ Game.UIMode.gamePlay = {
     // Game.renderMessage();
     console.log("Game.UIMode.gamePlay handleInput");
     if(eventType == 'keypress'){
-      if(evt.keyIdentifier == 'Enter') {
+      if(evt.keyCode == 13) {
         Game.switchUIMode(Game.UIMode.gameWin);
         return;
       } else if(pressedKey == '1') {
@@ -102,7 +102,7 @@ Game.UIMode.gamePlay = {
     else if(eventType == 'keydown') {
       if(evt.keyCode == 27){
         Game.switchUIMode(Game.UIMode.gameLose);
-      } else if(evt.keyCode == 187){
+      } else if(evt.keyCode == 61){
         Game.switchUIMode(Game.UIMode.gamePersistence);
       }
     }

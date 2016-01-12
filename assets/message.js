@@ -39,7 +39,6 @@ Game.Message = {
     while (this.attr.freshMessagesReverseQueue.length > 0) {
       this.attr.staleMessagesQueue.unshift(this.attr.freshMessagesReverseQueue.shift());
     }
-    display.drawText(0,0,this._currMessage);
   },
   sendMessage: function(msg) {
     this.attr.freshMessagesReverseQueue.push(msg);

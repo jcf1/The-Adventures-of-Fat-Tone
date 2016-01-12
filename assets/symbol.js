@@ -25,6 +25,3 @@ Game.Symbol.prototype.draw = function (display,disp_x,disp_y) {
 Game.Symbol.prototype.drawTrippy = function (display,disp_x,disp_y) {
   display.draw(disp_x,disp_y,this.attr._char,Game.util.randomColorTrippy(),this.attr._bg);
 };
-
-Game.Symbol.NULL_SYMBOL = new Game.Symbol();
-Game.Symbol.AVATAR = new Game.Symbol({chr:'@',fg:'#dda'});
