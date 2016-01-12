@@ -1,4 +1,30 @@
 Game.MapTileSets = {
+  main_town: {
+    _width: 102,
+    _height: 102,
+    getMapTiles: function () {
+      var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.wallTile);
+      var generator = new ROT.Map.Arena(this._width,this._height);
+      // run again then update map
+      generator.create(function(x,y,v) {
+        if (v === 0) {
+          if(x === 30 || x === 50){
+            if(y >= 40 && y <= 50){
+              mapTiles[x][y] = Game.Tile.woodTile;
+            } else mapTiles[x][y] = Game.Tile.floorTile;
+          } else if(y === 40 || y === 50){
+            if(x >= 30 && x <= 50){
+              mapTiles[x][y] = Game.Tile.woodTile;
+            } else mapTiles[x][y] = Game.Tile.floorTile;
+          } else mapTiles[x][y] = Game.Tile.floorTile;
+        } else {
+          mapTiles[x][y] = Game.Tile.wallTile;
+        }
+      });
+
+      return mapTiles;
+    }
+  },
   caves1: {
     _width: 300,
     _height: 200,

@@ -15,3 +15,11 @@ Game.EntityGenerator.learn({
   maxHp: 1,
   mixins: [Game.EntityMixin.HitPoints]
 });
+
+Game.EntityGenerator.learn({
+  name: 'dog',
+  chr:'\u046C',
+  fg:'#8B5A2B',
+  maxHp: 1,
+  mixins: [Game.EntityMixin.HitPoints]
+});
