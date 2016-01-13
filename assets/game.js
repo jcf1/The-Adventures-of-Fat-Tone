@@ -12,16 +12,6 @@ window.onload = function() {
     document.getElementById('wsrl-main-display').appendChild(   Game.getDisplay('main').getContainer());
     document.getElementById('wsrl-message-display').appendChild(   Game.getDisplay('message').getContainer());
 
-    var bindEventToScreen = function(eventType) {
-      window.addEventListener(eventType, function(evt) {
-        Game.eventHandler(eventType, evt);
-      });
-    };
-    // Bind keyboard input events
-    bindEventToScreen('keypress');
-    bindEventToScreen('keydown');
-    //        bindEventToScreen('keyup');
-
     Game.switchUIMode(Game.UIMode.gameStart);
   }
 };
@@ -53,6 +43,9 @@ var Game = {
 
   DATASTORE: {},
 
+  Scheduler: null,
+  TimeEngine: null,
+
   init: function() {
     console.log("WSRL Live initialization");
 
@@ -68,6 +61,28 @@ var Game = {
       }
     }
     this.renderAll();
+
+    var game = this;
+    var bindEventToScreen = function(event) {
+        window.addEventListener(event, function(e) {
+            // When an event is received, send it to the
+            // screen if there is one
+            if (game._currUIMode !== null) {
+                // Send the event type and data to the screen
+                game._currUIMode.handleInput(event, e);
+            }
+        });
+    };
+    // Bind keyboard input events
+    bindEventToScreen('keypress');
+    bindEventToScreen('keydown');
+//        bindEventToScreen('keyup');
+  },
+
+  initializeTimingEngine: function () {
+    // NOTE: single, central timing system for now - might have to refactor this later to deal with mutliple map stuff
+    Game.Scheduler = new ROT.Scheduler.Action();
+    Game.TimeEngine = new ROT.Engine(Game.Scheduler);
   },
   getRandomSeed: function() {
     return this._randomSeed;

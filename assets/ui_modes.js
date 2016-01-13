@@ -38,16 +38,15 @@ Game.UIMode.gamePlay = {
   },
   JSON_KEY: 'UIMode_gamePlay',
   enter: function() {
-    //Game.Message.clearMessage();
     if (this.attr._avatarId) {
       this.setCameraToAvatar();
     }
+    Game.TimeEngine.unlock();
     Game.refresh();
-    //console.log("Game.UIMode.gamePlay enter");
   },
   exit: function() {
     Game.refresh();
-    console.log("Game.UIMode.gamePlay exit");
+    Game.TimeEngine.lock();
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -62,41 +61,34 @@ Game.UIMode.gamePlay = {
     this.attr._avatarId = a.getId();
   },
   handleInput: function(eventType,evt) {
-    var pressedKey = String.fromCharCode(evt.charCode);
+    var tookTurn = false;
     // Game.Message.sendMessage("you pressed the '" + pressedKey + "' key");
     // Game.renderMessage();
     console.log("Game.UIMode.gamePlay handleInput");
     if(eventType == 'keypress'){
+      var pressedKey = String.fromCharCode(evt.charCode);
       if(evt.keyCode == 13) {
         Game.switchUIMode(Game.UIMode.gameWin);
         return;
       } else if(pressedKey == '1') {
-        this.moveAvatar(-1,1);
-        Game.Message.ageMessages();
+        tookTurn = this.moveAvatar(-1,1);
       } else if(pressedKey == '2') {
-        this.moveAvatar(0,1);
-        Game.Message.ageMessages();
+        tookTurn = this.moveAvatar(0,1);
       } else if(pressedKey == '3') {
-        this.moveAvatar(1,1);
-        Game.Message.ageMessages();
+        tookTurn = this.moveAvatar(1,1);
       } else if(pressedKey == '4') {
-        this.moveAvatar(-1,0);
-        Game.Message.ageMessages();
+        tookTurn = this.moveAvatar(-1,0);
       } else if(pressedKey == '5') {
         //Stay Still
-        Game.Message.ageMessages();
+        tookTurn = true;
       } else if(pressedKey == '6') {
-        this.moveAvatar(1,0);
-        Game.Message.ageMessages();
+        tookTurn = this.moveAvatar(1,0);
       } else if(pressedKey == '7') {
-        this.moveAvatar(-1,-1);
-        Game.Message.ageMessages();
+        tookTurn = this.moveAvatar(-1,-1);
       } else if(pressedKey == '8') {
-        this.moveAvatar(0,-1);
-        Game.Message.ageMessages();
+        tookTurn = this.moveAvatar(0,-1);
       } else if(pressedKey == '9') {
-        this.moveAvatar(1,-1);
-        Game.Message.ageMessages();
+        tookTurn = this.moveAvatar(1,-1);
       }
     }
     else if(eventType == 'keydown') {
@@ -105,6 +97,12 @@ Game.UIMode.gamePlay = {
       } else if(evt.keyCode == 187 || evt.keyCode == 61){
         Game.switchUIMode(Game.UIMode.gamePersistence);
       }
+    }
+
+    if (tookTurn) {
+      this.getAvatar().raiseEntityEvent('actionDone');
+      Game.Message.ageMessages();
+      return true;
     }
   },
   renderOnMain: function(display) {
@@ -137,7 +135,9 @@ Game.UIMode.gamePlay = {
         Game.Message.sendMessage("You have fallen and can't get up.");
         Game.switchUIMode(Game.UIMode.gameLose);
       }
+      return true;
     }
+    return false;
   },
   moveCamera: function (dx,dy) {
     this.setCamera(this.attr._cameraX + dx,this.attr._cameraY + dy);
@@ -145,23 +145,22 @@ Game.UIMode.gamePlay = {
   setCamera: function (sx,sy) {
     this.attr._cameraX = Math.min(Math.max(0,sx),this.getMap().getWidth());
     this.attr._cameraY = Math.min(Math.max(0,sy),this.getMap().getHeight());
-    Game.refresh();
   },
   setCameraToAvatar: function () {
     this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
   },
   setupNewGame: function () {
-    this.setMap(new Game.Map('main_town'));
+    // this.setMap(new Game.Map('main_town'));
+    this.setMap(new Game.Map('caves1'));
     this.setAvatar(Game.EntityGenerator.create('avatar'));
     console.log(this.getAvatar());
 
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
     this.setCameraToAvatar();
 
-    for (var ecount = 0; ecount < 80; ecount++) {
+    for (var ecount = 0; ecount < 20; ecount++) {
       this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
-    }
-    for (var ecount = 0; ecount < 50; ecount++) {
+      this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());
     }
   },
@@ -246,8 +245,16 @@ Game.UIMode.gamePersistence = {
     if (this.localStorageAvailable()) {
       Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
       Game.DATASTORE.MESSAGES = Game.Message.attr;
+
+      Game.DATASTORE.SCHEDULE = {};
+      // NOTE: offsetting times by 1 so later restore can just drop them in and go
+      Game.DATASTORE.SCHEDULE[Game.Scheduler._current.getId()] = 1;
+      for (var i = 0; i < Game.Scheduler._queue._eventTimes.length; i++) {
+        Game.DATASTORE.SCHEDULE[Game.Scheduler._queue._events[i].getId()] = Game.Scheduler._queue._eventTimes[i] + 1;
+      }
+      Game.DATASTORE.SCHEDULE_TIME = Game.Scheduler._queue.getTime() - 1; // offset by 1 so that when the engine is started after restore the queue state will match that as when it was saved
+
       window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game.DATASTORE));
-      console.log("post-save: using random seed "+Game.getRandomSeed());
       Game.switchUIMode(Game.UIMode.gamePlay);
     }
   },
@@ -256,22 +263,29 @@ Game.UIMode.gamePersistence = {
       var json_state_data =  window.localStorage.getItem(Game._persistenceNamespace);
       var state_data = JSON.parse(json_state_data);
 
+      Game.DATASTORE = {};
+      Game.DATASTORE.MAP = {};
+      Game.DATASTORE.ENTITY = {};
+      Game.initializeTimingEngine();
+      // NOTE: the timing stuff is initialized here because we need to ensure that the stuff exists when entities are created, but the actual schedule restoration re-runs timing initialization
+
       Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
 
       for (var mapId in state_data.MAP) {
         if (state_data.MAP.hasOwnProperty(mapId)) {
           var mapAttr = JSON.parse(state_data.MAP[mapId]);
-          // console.log("restoring map "+mapId+" with attributes:");
-          // console.dir(mapAttr);
           Game.DATASTORE.MAP[mapId] = new Game.Map(mapAttr._mapTileSetName);
           Game.DATASTORE.MAP[mapId].fromJSON(state_data.MAP[mapId]);
         }
       }
 
+      ROT.RNG.getUniform(); // once the map is regenerated cycle the RNG so we're getting new data for entity generation
+
       for (var entityId in state_data.ENTITY) {
         if (state_data.ENTITY.hasOwnProperty(entityId)) {
           var entAttr = JSON.parse(state_data.ENTITY[entityId]);
-          Game.DATASTORE.ENTITY[entityId] = Game.EntityGenerator.create(entAttr._generator_template_key);
+          var newE = Game.EntityGenerator.create(entAttr._generator_template_key,entAttr._id);
+          Game.DATASTORE.ENTITY[entityId] = newE;
           Game.DATASTORE.ENTITY[entityId].fromJSON(state_data.ENTITY[entityId]);
         }
       }
@@ -279,10 +293,26 @@ Game.UIMode.gamePersistence = {
       Game.UIMode.gamePlay.attr = state_data.GAME_PLAY;
       Game.Message.attr = state_data.MESSAGES;
 
+      // schedule
+      Game.initializeTimingEngine();
+      for (var schedItemId in state_data.SCHEDULE) {
+        if (state_data.SCHEDULE.hasOwnProperty(schedItemId)) {
+          // check here to determine which data store thing will be added to the scheduler (and the actual addition may vary - e.g. not everyting will be a repeatable thing)
+          if (Game.DATASTORE.ENTITY.hasOwnProperty(schedItemId)) {
+            Game.Scheduler.add(Game.DATASTORE.ENTITY[schedItemId],true,state_data.SCHEDULE[schedItemId]);
+          }
+        }
+      }
+      Game.Scheduler._queue._time = state_data.SCHEDULE_TIME;
+
       Game.switchUIMode(Game.UIMode.gamePlay);
     }
   },
   newGame: function() {
+    Game.DATASTORE = {};
+    Game.DATASTORE.MAP = {};
+    Game.DATASTORE.ENTITY = {};
+    Game.initializeTimingEngine();
     Game.setRandomSeed(5 + Math.floor(Game.TRANSIENT_RNG.getUniform()*100000));
     Game.UIMode.gamePlay.setupNewGame();
     Game.switchUIMode(Game.UIMode.gamePlay);
