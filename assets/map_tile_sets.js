@@ -1,4 +1,24 @@
 Game.MapTileSets = {
+  town_main: {
+    _width: 100,
+    _height: 100,
+    getMapTiles: function () {
+      var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
+      var generator = new ROT.Map.Cellular(this._width,this._height);
+      generator.create();
+
+      // run again then update map
+      generator.create(function(x,y,v) {
+        if (v === 1) {
+          mapTiles[x][y] = Game.Tile.floorTile;
+        } else {
+          mapTiles[x][y] = Game.Tile.wallTile;
+        }
+      });
+
+      return mapTiles;
+    }
+  },
   caves1: {
     _width: 300,
     _height: 200,

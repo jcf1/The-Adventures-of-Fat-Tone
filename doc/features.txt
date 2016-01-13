@@ -1,0 +1,15 @@
+Eventual Feature List -
+Items
+Status conditions
+Main town
+Currency
+Randomly generate loot
+Minigames
+User Interface for inventory
+
+Next Milestone(s)
+Items and currency
+Loot drops
+
+Current Work Plan -
+AI Movement and attacks
