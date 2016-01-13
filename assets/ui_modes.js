@@ -102,7 +102,7 @@ Game.UIMode.gamePlay = {
     else if(eventType == 'keydown') {
       if(evt.keyCode == 27){
         Game.switchUIMode(Game.UIMode.gameLose);
-      } else if(evt.keyCode == 61){
+      } else if(evt.keyCode == 187 || evt.keyCode == 61){
         Game.switchUIMode(Game.UIMode.gamePersistence);
       }
     }
@@ -151,7 +151,7 @@ Game.UIMode.gamePlay = {
     this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
   },
   setupNewGame: function () {
-    this.setMap(new Game.Map('caves1'));
+    this.setMap(new Game.Map('main_town'));
     this.setAvatar(Game.EntityGenerator.create('avatar'));
     console.log(this.getAvatar());
 
@@ -160,6 +160,9 @@ Game.UIMode.gamePlay = {
 
     for (var ecount = 0; ecount < 80; ecount++) {
       this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
+    }
+    for (var ecount = 0; ecount < 50; ecount++) {
+      this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());
     }
   },
   toJSON: function() {
@@ -176,33 +179,40 @@ Game.UIMode.gameLose = {
   exit: function() {
     console.log("Game.UIMode.gameLose exit");
   },
-  handleInput: function() {
-    Game.Message.clearMessage();
+  handleInput: function(eventType,evt) {
+    if (eventType == 'keypress' && evt.keyCode == 61) {
+        Game.switchUIMode(Game.UIMode.gamePersistence);
+    }
     console.log("Game.UIMode.gameLose handleInput");
   },
   renderOnMain: function(display) {
+    Game.Message.sendMessage("Press '=' To Start A New Game");
     var fg = Game.UIMode.DEFAULT_COLOR_FG;
     var bg = Game.UIMode.DEFAULT_COLOR_BG;
     console.log("Game.UIMode.gameLose renderOnMain");
-    display.drawText(4,4,"You Lose",fg,bg);
+    display.drawText(4,4,"OHHHH $H!7!!! YOU LOSE!!!",fg,bg);
   }
 };
 Game.UIMode.gameWin = {
   enter: function() {
+    Game.Message.clearMessage();
     console.log("Game.UIMode.gameWin enter");
   },
   exit: function() {
     console.log("Game.UIMode.gameWin exit");
   },
-  handleInput: function() {
-    Game.Message.clearMessage();
+  handleInput: function(eventType,evt) {
+    if (eventType == 'keypress' && evt.keyCode == 61) {
+        Game.switchUIMode(Game.UIMode.gamePersistence);
+    }
     console.log("Game.UIMode.gameWin handleInput");
   },
   renderOnMain: function(display) {
+    Game.Message.sendMessage("Press '=' To Start A New Game");
     var fg = Game.UIMode.DEFAULT_COLOR_FG;
     var bg = Game.UIMode.DEFAULT_COLOR_BG;
     console.log("Game.UIMode.gameWin renderOnMain");
-    display.drawText(4,4,"You Win",fg,bg);
+    display.drawText(4,4,"OHHHHH BABY! You win!",fg,bg);
   }
 };
 Game.UIMode.gamePersistence = {
