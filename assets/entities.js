@@ -2,7 +2,7 @@ Game.EntityGenerator = new Game.Generator('entities',Game.Entity);
 
 Game.EntityGenerator.learn({
   name: 'avatar',
-  chr:'\u26C4',
+  chr:'@',
   fg:'#dda',
   maxHp: 10,
   mixins: ["PlayerActor","PlayerMessager","WalkerCorporeal","HitPoints","Chronicle","MeleeAttacker"]
@@ -18,7 +18,7 @@ Game.EntityGenerator.learn({
 
 Game.EntityGenerator.learn({
   name: 'newt',
-  chr:'🐊',
+  chr:'~',
   fg:'#f98',
   maxHp: 2,
   mixins: ["HitPoints","WanderActor","WalkerCorporeal"]
@@ -26,7 +26,7 @@ Game.EntityGenerator.learn({
 
 Game.EntityGenerator.learn({
   name: 'dog',
-  chr:'🐕',
+  chr:'&',
   fg:'#8B5A2B',
   maxHp: 3,
   mixins: ["HitPoints","WanderActor","WalkerCorporeal","MeleeAttacker"]
@@ -34,7 +34,7 @@ Game.EntityGenerator.learn({
 
 Game.EntityGenerator.learn({
   name: 'Evan Williams',
-  chr:'🎅',
+  chr:'E',
   fg:'#8B5A2B',
   maxHp: 3,
   mixins: ["HitPoints","WanderActor","WalkerCorporeal","MeleeAttacker"]

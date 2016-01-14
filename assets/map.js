@@ -15,9 +15,13 @@ Game.Map = function (mapTileSetName) {
   Game.DATASTORE.MAP[this.attr._id] = this;
 };
 
+Game.Map.prototype.getTileSetName = function (){
+  return this.attr._mapTileSetName;
+};
+
 Game.Map.prototype.getId = function () {
   return this.attr._id;
-}
+};
 
 Game.Map.prototype.getWidth = function () {
   return this.attr._width;

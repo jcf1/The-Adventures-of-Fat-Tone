@@ -8,13 +8,13 @@ Game.MapTileSets = {
       // run again then update map
       generator.create(function(x,y,v) {
         if (v === 0) {
-          if(x == 40 && y == 45) mapTiles[x][y] = Game.Tile.doorTile;
-          else if(x === 30 || x === 50){
-            if(y >= 40 && y <= 50){
+          if(x == 34 && y == 37 ) mapTiles[x][y] = Game.Tile.mirrorDoorTile;
+          else if(x === 31 || x === 37){
+            if(y >= 34 && y <= 37){
               mapTiles[x][y] = Game.Tile.woodTile;
             } else mapTiles[x][y] = Game.Tile.floorTile;
-          } else if(y === 40 || y === 50){
-            if(x >= 30 && x <= 50){
+          } else if(y === 34 || y === 37){
+            if(x >= 31 && x <= 37){
               mapTiles[x][y] = Game.Tile.woodTile;
             } else mapTiles[x][y] = Game.Tile.floorTile;
           } else mapTiles[x][y] = Game.Tile.floorTile;
@@ -53,15 +53,15 @@ Game.MapTileSets = {
     }
   },
   hallOfMirrors: {
-    _width: 100,
-    _height: 100,
+    _width: 40,
+    _height: 20,
     getMapTiles: function () {
       var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
       var generator = new ROT.Map.EllerMaze(this._width,this._height);
       generator.create(function(x,y,v) {
         if (v === 1){
-          mapTiles[x][y] = Game.Tile.floorTile;
-        } else mapTiles[x][y] = Game.Tile.invisibleTile;
+          mapTiles[x][y] = Game.Tile.invisibleTile;
+        } else mapTiles[x][y] = Game.Tile.floorTile;
       });
       return mapTiles;
     }

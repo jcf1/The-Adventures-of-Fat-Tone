@@ -129,7 +129,7 @@ Game.UIMode.gamePlay = {
   },
   moveAvatar: function (dx,dy) {
     if(this.getAvatar().tryWalk(this.getMap(),dx,dy)) {
-      this.setCameraToAvatar();
+      if(this.getMap().getTileSetName() != 'hallOfMirrors') this.setCameraToAvatar();
       this.attr._steps++;
       var trip = Math.floor(Math.random()*1000001);
       if(trip === 666666) {
@@ -150,20 +150,35 @@ Game.UIMode.gamePlay = {
   setCameraToAvatar: function () {
     this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
   },
+  setCameraToMirror: function () {
+    this.setCamera(this.getMap().getWidth()/2,this.getMap().getHeight()/2);
+  },
   setupNewGame: function () {
     // this.setMap(new Game.Map('main_town'));
-    this.setMap(new Game.Map('hallOfMirrors'));
+    this.setMap(new Game.Map('main_town'));
     this.setAvatar(Game.EntityGenerator.create('avatar'));
     console.log(this.getAvatar());
 
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
     this.setCameraToAvatar();
 
-    for (var ecount = 0; ecount < 20; ecount++) {
+    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
+
+    for (var ecount = 0; ecount < 0; ecount++) {
       this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
       this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());
     }
+  },
+  setupMirror: function () {
+    // this.setMap(new Game.Map('main_town'));
+    this.setMap(new Game.Map('hallOfMirrors'));
+//    console.log(this.getAvatar());
+
+    this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
+    this.setCameraToMirror();
+
+    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
   },
   toJSON: function() {
     return Game.UIMode.gamePersistence.BASE_toJSON.call(this);

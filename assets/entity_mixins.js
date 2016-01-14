@@ -46,6 +46,11 @@ Game.EntityMixin.PlayerActor = {
       Game.Scheduler.add(this,true,1);
     },
     listeners: {
+      'walkForbidden' : function(evtData) {
+        if(evtData.target.getName() == 'mirror door'){
+          Game.UIMode.gamePlay.setupMirror();
+        }
+      },
       'actionDone': function(evtData) {
         Game.Scheduler.setDuration(this.getCurrentActionDuration());
         this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-5,5));
@@ -105,7 +110,7 @@ Game.EntityMixin.WalkerCorporeal = {
         myMap.updateEntityLocation(this);
       }
       return true;
-      } else {
+    } else {
       this.raiseEntityEvent('walkForbidden',{target:targetTile});
     }
     return false;
@@ -262,6 +267,51 @@ Game.EntityMixin.WanderActor = {
   },
   getMoveDeltas: function () {
     return Game.util.positionsAdjacentTo({x:0,y:0}).random();
+  },
+  act: function () {
+    Game.TimeEngine.lock();
+    // console.log("begin wander acting");
+    // console.log('wander for '+this.getName());
+    var moveDeltas = this.getMoveDeltas();
+    if (this.hasMixin('Walker')) { // NOTE: this pattern suggests that maybe tryWalk shoudl be converted to an event
+      // console.log('trying to walk to '+moveDeltas.x+','+moveDeltas.y);
+      this.tryWalk(this.getMap(), moveDeltas.x, moveDeltas.y);
+    }
+    Game.Scheduler.setDuration(this.getCurrentActionDuration());
+    this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-10,10));
+    this.raiseEntityEvent('actionDone');
+    // console.log("end wander acting");
+    Game.TimeEngine.unlock();
+  }
+};
+
+Game.EntityMixin.ChaserActor = {
+  META: {
+    mixinName: 'ChaserActor',
+    mixinGroup: 'Actor',
+    stateNamespace: '_ChaserActor_attr',
+    stateModel:  {
+      baseActionDuration: 1000,
+      currentActionDuration: 1000
+    },
+    init: function (template) {
+      Game.Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
+    }
+  },
+  getBaseActionDuration: function () {
+    return this.attr._ChaserActor_attr.baseActionDuration;
+  },
+  setBaseActionDuration: function (n) {
+    this.attr._ChaserActor_attr.baseActionDuration = n;
+  },
+  getCurrentActionDuration: function () {
+    return this.attr._ChaserActor_attr.currentActionDuration;
+  },
+  setCurrentActionDuration: function (n) {
+    this.attr._ChaserActor_attr.currentActionDuration = n;
+  },
+  getMoveDeltas: function () {
+    return Game.util.positionClosestToAvatar({x:0,y:0}).random();
   },
   act: function () {
     Game.TimeEngine.lock();

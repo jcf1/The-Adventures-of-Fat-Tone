@@ -22,7 +22,9 @@ Game.Tile.prototype.isDiggable = function () {
 
 Game.Tile.nullTile = new Game.Tile({name:'nullTile'});
 Game.Tile.floorTile = new Game.Tile({name:'floor',chr:' ',walkable:true});
-Game.Tile.wallTile = new Game.Tile({name:'wall',chr:'\u2610'});
-Game.Tile.woodTile = new Game.Tile({name:'wood',chr:'\u25A5',fg: '#670A0A'});
-Game.Tile.doorTile = new Game.Tile({name:'door',chr:'\u1F532',fg:'#cc3300',walkable:true});
+Game.Tile.wallTile = new Game.Tile({name:'wall',chr:'#'});
+Game.Tile.woodTile = new Game.Tile({name:'wood',chr:'#',fg: '#670A0A'});
+Game.Tile.doorTile = new Game.Tile({name:'door',chr:'-',fg:'#cc3300',walkable:true});
 Game.Tile.invisibleTile = new Game.Tile({name:'invisible',chr:' '});
+Game.Tile.lockedDoorTile = new Game.Tile({name:'locked door',chr:'='});
+Game.Tile.mirrorDoorTile = new Game.Tile({name:'mirror door',chr: '-',fg:'#cc3300'});
