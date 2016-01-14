@@ -122,8 +122,9 @@ Game.UIMode.gamePlay = {
   renderAvatarInfo: function (display) {
     var fg = Game.UIMode.DEFAULT_COLOR_FG;
     var bg = Game.UIMode.DEFAULT_COLOR_BG;
-    display.drawText(1,2,"avatar x: "+this.getAvatar().getX(),fg,bg); // DEV
-    display.drawText(1,3,"avatar y: "+this.getAvatar().getY(),fg,bg); // DEV
+    //display.drawText(1,2,"avatar x: "+this.getAvatar().getX(),fg,bg); // DEV
+    //display.drawText(1,3,"avatar y: "+this.getAvatar().getY(),fg,bg); // DEV
+    display.drawText(1,2,"avatar health: " + this.getAvatar().getCurHp(),fg,fg);
     display.drawText(1,4,"avatar steps: "+this.attr._steps,fg,bg);
   },
   moveAvatar: function (dx,dy) {
@@ -131,7 +132,7 @@ Game.UIMode.gamePlay = {
       this.setCameraToAvatar();
       this.attr._steps++;
       var trip = Math.floor(Math.random()*1000001);
-      if(trip === 1) {
+      if(trip === 666666) {
         Game.Message.sendMessage("You have fallen and can't get up.");
         Game.switchUIMode(Game.UIMode.gameLose);
       }
@@ -151,7 +152,7 @@ Game.UIMode.gamePlay = {
   },
   setupNewGame: function () {
     // this.setMap(new Game.Map('main_town'));
-    this.setMap(new Game.Map('caves1'));
+    this.setMap(new Game.Map('hallOfMirrors'));
     this.setAvatar(Game.EntityGenerator.create('avatar'));
     console.log(this.getAvatar());
 
