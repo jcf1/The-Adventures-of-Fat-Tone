@@ -302,35 +302,35 @@ Game.EntityMixin.ChaserActor = {
       currentActionDuration: 1000
     },
     init: function (template) {
-      Game.Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration2()));
+      Game.Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
     }
   },
-  getBaseActionDuration2: function () {
+  getBaseActionDuration: function () {
     return this.attr._ChaserActor_attr.baseActionDuration;
   },
-  setBaseActionDuration2: function (n) {
+  setBaseActionDuration: function (n) {
     this.attr._ChaserActor_attr.baseActionDuration = n;
   },
-  getCurrentActionDuration2: function () {
+  getCurrentActionDuration: function () {
     return this.attr._ChaserActor_attr.currentActionDuration;
   },
-  setCurrentActionDuration2: function (n) {
+  setCurrentActionDuration: function (n) {
     this.attr._ChaserActor_attr.currentActionDuration = n;
   },
-  getMoveDeltas2: function () {
+  getMoveDeltas: function () {
     return Game.util.positionClosestToAvatar(this,this.getMap());
   },
   act: function () {
     Game.TimeEngine.lock();
     // console.log("begin wander acting");
     // console.log('wander for '+this.getName());
-    var moveDeltas = this.getMoveDeltas2();
+    var moveDeltas = this.getMoveDeltas();
     if (this.hasMixin('Walker')) { // NOTE: this pattern suggests that maybe tryWalk shoudl be converted to an event
       //console.log('trying to walk to '+moveDeltas.x+','+moveDeltas.y);
       this.tryWalk(this.getMap(), moveDeltas.x, moveDeltas.y);
     }
-    Game.Scheduler.setDuration(this.getCurrentActionDuration2());
-    this.setCurrentActionDuration2(this.getBaseActionDuration2()+Game.util.randomInt(-10,10));
+    Game.Scheduler.setDuration(this.getCurrentActionDuration());
+    this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-10,10));
     this.raiseEntityEvent('actionDone');
     // console.log("end wander acting");
     Game.TimeEngine.unlock();
