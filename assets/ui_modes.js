@@ -157,23 +157,36 @@ Game.UIMode.gamePlay = {
     // this.setMap(new Game.Map('main_town'));
     this.setMap(new Game.Map('main_town'));
     this.setAvatar(Game.EntityGenerator.create('avatar'));
-    console.log(this.getAvatar());
+  //  console.log(this.getAvatar());
 
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
     this.setCameraToAvatar();
 
-    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
+    this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkableLocation());
 
-    for (var ecount = 0; ecount < 0; ecount++) {
-      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
-      this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
+    for (var ecount = 0; ecount < 50; ecount++) {
+      //this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
+      //this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());
     }
+  },
+  makeTrippy: function() {
+      this.setMap(new Game.Map('caves1'));
+      this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
+      this.setCameraToAvatar();
+
+      this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkableLocation());
+
+      for (var ecount = 0; ecount < 50; ecount++) {
+        this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
+        this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
+        this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());
+      }
   },
   setupMirror: function () {
     // this.setMap(new Game.Map('main_town'));
     this.setMap(new Game.Map('hallOfMirrors'));
-//    console.log(this.getAvatar());
+    // console.log(this.getAvatar());
 
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
     this.setCameraToMirror();

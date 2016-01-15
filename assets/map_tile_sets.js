@@ -32,7 +32,7 @@ Game.MapTileSets = {
     getMapTiles: function () {
       var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
       var generator = new ROT.Map.Cellular(this._width,this._height);
-      generator.randomize(0.6);
+      generator.randomize(0.54);
 
       // repeated cellular automata process
       var totalIterations = 3;
@@ -43,7 +43,7 @@ Game.MapTileSets = {
       // run again then update map
       generator.create(function(x,y,v) {
         if (v === 1) {
-          mapTiles[x][y] = Game.Tile.floorTile;
+          mapTiles[x][y] = Game.Tile.trippyFloorTile;
         } else {
           mapTiles[x][y] = Game.Tile.wallTile;
         }

@@ -56,6 +56,12 @@ Game.EntityMixin.PlayerActor = {
         this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-5,5));
         setTimeout(function() {Game.TimeEngine.unlock();},1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
         // console.log("end player acting");
+      },
+      'bumpEntity': function(evtData) {
+        //console.log('MeleeAttacker bumpEntity');
+        if(evtData.recipient.getName() == 'Evan Williams') {
+          Game.UIMode.gamePlay.makeTrippy();
+        }
       }
     }
   },
@@ -231,7 +237,8 @@ Game.EntityMixin.MeleeAttacker = {
     listeners: {
       'bumpEntity': function(evtData) {
         //console.log('MeleeAttacker bumpEntity');
-        evtData.recipient.raiseEntityEvent('attacked',{attacker:evtData.actor,attackPower:this.getAttackPower()});
+        if (evtData.recipient.getName() != 'Evan Williams')
+          evtData.recipient.raiseEntityEvent('attacked',{attacker:evtData.actor,attackPower:this.getAttackPower()});
       }
     }
   },
@@ -295,35 +302,35 @@ Game.EntityMixin.ChaserActor = {
       currentActionDuration: 1000
     },
     init: function (template) {
-      Game.Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
+      Game.Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration2()));
     }
   },
-  getBaseActionDuration: function () {
+  getBaseActionDuration2: function () {
     return this.attr._ChaserActor_attr.baseActionDuration;
   },
-  setBaseActionDuration: function (n) {
+  setBaseActionDuration2: function (n) {
     this.attr._ChaserActor_attr.baseActionDuration = n;
   },
-  getCurrentActionDuration: function () {
+  getCurrentActionDuration2: function () {
     return this.attr._ChaserActor_attr.currentActionDuration;
   },
-  setCurrentActionDuration: function (n) {
+  setCurrentActionDuration2: function (n) {
     this.attr._ChaserActor_attr.currentActionDuration = n;
   },
-  getMoveDeltas: function () {
-    return Game.util.positionClosestToAvatar({x:0,y:0}).random();
+  getMoveDeltas2: function () {
+    return Game.util.positionClosestToAvatar(this,this.getMap());
   },
   act: function () {
     Game.TimeEngine.lock();
     // console.log("begin wander acting");
     // console.log('wander for '+this.getName());
-    var moveDeltas = this.getMoveDeltas();
+    var moveDeltas = this.getMoveDeltas2();
     if (this.hasMixin('Walker')) { // NOTE: this pattern suggests that maybe tryWalk shoudl be converted to an event
       // console.log('trying to walk to '+moveDeltas.x+','+moveDeltas.y);
       this.tryWalk(this.getMap(), moveDeltas.x, moveDeltas.y);
     }
-    Game.Scheduler.setDuration(this.getCurrentActionDuration());
-    this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-10,10));
+    Game.Scheduler.setDuration(this.getCurrentActionDuration2());
+    this.setCurrentActionDuration2(this.getBaseActionDuration2()+Game.util.randomInt(-10,10));
     this.raiseEntityEvent('actionDone');
     // console.log("end wander acting");
     Game.TimeEngine.unlock();

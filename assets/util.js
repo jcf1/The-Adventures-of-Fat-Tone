@@ -49,15 +49,29 @@ Game.util = {
     }
     return adjPos;
   },
-  positionClosestToAvatar: function (pos) {
-    var adjPos = [];
-    for (var dx = -1; dx <= 1; dx++) {
-      for (var dy = -1; dy <= 1; dy++) {
-        if (dx !== 0 && dy !== 0) {
-          adjPos.push({x:pos.x+dx,y:pos.y+dy});
-        }
-      }
+  positionClosestToAvatar: function (ent,map) {
+    var xpos = ent.getX();
+    var ypos = ent.getY();
+    //console.log(ent.getPos());
+    var avtpos = Game.UIMode.gamePlay.getAvatar().getPos();
+    if((xpos > avtpos.x && ypos > avtpos.y) && map.getTile(xpos-1,ypos-1).isWalkable()) {
+      xpos--;ypos--;
+    } else if((xpos < avtpos.x && ypos < avtpos.y) && map.getTile(xpos+1,ypos+1).isWalkable()) {
+      xpos++;ypos++;
+    } else if((xpos > avtpos.x && ypos < avtpos.y) && map.getTile(xpos-1,ypos+1).isWalkable()) {
+      xpos--;ypos++;
+    } else if((xpos < avtpos.x && ypos > avtpos.y) && map.getTile(xpos+1,ypos-1).isWalkable()) {
+      xpos++;ypos--;
+    } else if((xpos > avtpos.x) && map.getTile(xpos-1,ypos).isWalkable()) {
+      xpos--;
+    } else if((xpos < avtpos.x) && map.getTile(xpos+1,ypos).isWalkable()) {
+      xpos++;
+    } else if((ypos < avtpos.y) && map.getTile(xpos,ypos+1).isWalkable()) {
+      ypos++;
+    } else if((ypos > avtpos.y) && map.getTile(xpos,ypos-1).isWalkable()) {
+      xpos--;
     }
-    return adjPos;
+    //console.log({x:xpos,y:ypos})
+    return {x:xpos,y:ypos};
   }
 };

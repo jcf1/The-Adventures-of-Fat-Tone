@@ -29,7 +29,7 @@ Game.EntityGenerator.learn({
   chr:'&',
   fg:'#8B5A2B',
   maxHp: 3,
-  mixins: ["HitPoints","WanderActor","WalkerCorporeal","MeleeAttacker"]
+  mixins: ["HitPoints","ChaserActor","WalkerCorporeal","MeleeAttacker"]
 });
 
 Game.EntityGenerator.learn({
@@ -37,5 +37,5 @@ Game.EntityGenerator.learn({
   chr:'E',
   fg:'#8B5A2B',
   maxHp: 3,
-  mixins: ["HitPoints","WanderActor","WalkerCorporeal","MeleeAttacker"]
+  mixins: ["HitPoints","WalkerCorporeal","MeleeAttacker"]
 });
