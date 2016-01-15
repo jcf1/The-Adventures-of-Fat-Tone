@@ -4,7 +4,7 @@ Game.EntityGenerator.learn({
   name: 'avatar',
   chr:'@',
   fg:'#dda',
-  maxHp: 10,
+  maxHp: 1000,
   mixins: ["PlayerActor","PlayerMessager","WalkerCorporeal","HitPoints","Chronicle","MeleeAttacker"]
 });
 
