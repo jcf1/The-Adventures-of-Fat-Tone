@@ -164,7 +164,7 @@ Game.UIMode.gamePlay = {
 
     this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkableLocation());
 
-    for (var ecount = 0; ecount < 50; ecount++) {
+    for (var ecount = 0; ecount < 5; ecount++) {
       //this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
       //this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());

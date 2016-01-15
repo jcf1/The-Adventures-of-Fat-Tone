@@ -52,26 +52,24 @@ Game.util = {
   positionClosestToAvatar: function (ent,map) {
     var xpos = ent.getX();
     var ypos = ent.getY();
-    //console.log(ent.getPos());
     var avtpos = Game.UIMode.gamePlay.getAvatar().getPos();
     if((xpos > avtpos.x && ypos > avtpos.y) && map.getTile(xpos-1,ypos-1).isWalkable()) {
-      xpos--;ypos--;
+      xpos = -1;ypos= -1;
     } else if((xpos < avtpos.x && ypos < avtpos.y) && map.getTile(xpos+1,ypos+1).isWalkable()) {
-      xpos++;ypos++;
+      xpos = 1;ypos = 1;
     } else if((xpos > avtpos.x && ypos < avtpos.y) && map.getTile(xpos-1,ypos+1).isWalkable()) {
-      xpos--;ypos++;
+      xpos = -1;ypos = 1;
     } else if((xpos < avtpos.x && ypos > avtpos.y) && map.getTile(xpos+1,ypos-1).isWalkable()) {
-      xpos++;ypos--;
+      xpos = 1;ypos = -1;
     } else if((xpos > avtpos.x) && map.getTile(xpos-1,ypos).isWalkable()) {
-      xpos--;
+      xpos = -1;ypos = 0;
     } else if((xpos < avtpos.x) && map.getTile(xpos+1,ypos).isWalkable()) {
-      xpos++;
+      xpos = 1;ypos = 0;
     } else if((ypos < avtpos.y) && map.getTile(xpos,ypos+1).isWalkable()) {
-      ypos++;
+      ypos = 1;xpos = 0;
     } else if((ypos > avtpos.y) && map.getTile(xpos,ypos-1).isWalkable()) {
-      xpos--;
+      ypos = -1;xpos = 0;
     }
-    //console.log({x:xpos,y:ypos})
     return {x:xpos,y:ypos};
   }
 };

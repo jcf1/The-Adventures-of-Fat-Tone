@@ -326,7 +326,7 @@ Game.EntityMixin.ChaserActor = {
     // console.log('wander for '+this.getName());
     var moveDeltas = this.getMoveDeltas2();
     if (this.hasMixin('Walker')) { // NOTE: this pattern suggests that maybe tryWalk shoudl be converted to an event
-      // console.log('trying to walk to '+moveDeltas.x+','+moveDeltas.y);
+      //console.log('trying to walk to '+moveDeltas.x+','+moveDeltas.y);
       this.tryWalk(this.getMap(), moveDeltas.x, moveDeltas.y);
     }
     Game.Scheduler.setDuration(this.getCurrentActionDuration2());

@@ -35,7 +35,7 @@ Game.EntityGenerator.learn({
 Game.EntityGenerator.learn({
   name: 'Evan Williams',
   chr:'E',
-  fg:'#8B5A2B',
+  fg:'#dda',
   maxHp: 3,
   mixins: ["HitPoints","WalkerCorporeal","MeleeAttacker"]
 });
