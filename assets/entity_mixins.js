@@ -47,8 +47,11 @@ Game.EntityMixin.PlayerActor = {
     },
     listeners: {
       'walkForbidden' : function(evtData) {
+        console.log("Walk forbidden reg");
         if(evtData.target.getName() == 'mirror door'){
-          Game.UIMode.gamePlay.setupMirror();
+          console.log("bump mirror");
+          Game.UIMode.gamePlayMirror.setupMirror();
+          Game.switchUIMode(Game.UIMode.gamePlayMirror);
         }
       },
       'actionDone': function(evtData) {

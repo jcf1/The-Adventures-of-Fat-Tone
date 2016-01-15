@@ -129,7 +129,7 @@ Game.UIMode.gamePlay = {
   },
   moveAvatar: function (dx,dy) {
     if(this.getAvatar().tryWalk(this.getMap(),dx,dy)) {
-      if(this.getMap().getTileSetName() != 'hallOfMirrors') this.setCameraToAvatar();
+      this.setCameraToAvatar();
       this.attr._steps++;
       var trip = Math.floor(Math.random()*1000001);
       if(trip === 666666) {
@@ -150,9 +150,6 @@ Game.UIMode.gamePlay = {
   setCameraToAvatar: function () {
     this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
   },
-  setCameraToMirror: function () {
-    this.setCamera(this.getMap().getWidth()/2,this.getMap().getHeight()/2);
-  },
   setupNewGame: function () {
     // this.setMap(new Game.Map('main_town'));
     this.setMap(new Game.Map('main_town'));
@@ -170,11 +167,127 @@ Game.UIMode.gamePlay = {
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());
     }
   },
-  setupMirror: function () {
-    // this.setMap(new Game.Map('main_town'));
-    this.setMap(new Game.Map('hallOfMirrors'));
-//    console.log(this.getAvatar());
+  toJSON: function() {
+    return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
+  },
+  fromJSON: function (json) {
+    Game.UIMode.gamePersistence.BASE_fromJSON.call(this,json);
+  }
+};
+Game.UIMode.gamePlayMirror = {
+  attr: {
+    _mapId:'',
+    _cameraX: 100,
+    _cameraY: 100,
+    _avatarId: '',
+    _input: 0
+  },
+  JSON_KEY: 'UIMode_gamePlayMirror',
+  enter: function() {
+    Game.TimeEngine.unlock();
+    Game.refresh();
+  },
+  exit: function() {
+    Game.refresh();
+    Game.TimeEngine.lock();
+  },
+  getMap: function () {
+    return Game.DATASTORE.MAP[this.attr._mapId];
+  },
+  setMap: function (m) {
+    this.attr._mapId = m.getId();
+  },
+  getAvatar: function () {
+    return Game.DATASTORE.ENTITY[this.attr._avatarId];
+  },
+  setAvatar: function (a) {
+    this.attr._avatarId = a.getId();
+  },
+  handleInput: function(eventType,evt) {
+    var tookTurn = false;
+    console.log("Game.UIMode.gamePlayMirror handleInput");
+    if(eventType == 'keypress'){
+      var pressedKey = String.fromCharCode(evt.charCode);
+      if(pressedKey == '1') {
+        tookTurn = this.moveAvatar(-1,1);
+        this.attr._input++;
+      } else if(pressedKey == '2') {
+        tookTurn = this.moveAvatar(0,1);
+        this.attr._input++;
+      } else if(pressedKey == '3') {
+        tookTurn = this.moveAvatar(1,1);
+        this.attr._input++;
+      } else if(pressedKey == '4') {
+        tookTurn = this.moveAvatar(-1,0);
+        this.attr._input++;
+      } else if(pressedKey == '5') {
+        //Stay Still
+        tookTurn = true;
+        this.attr._input++;
+      } else if(pressedKey == '6') {
+        tookTurn = this.moveAvatar(1,0);
+        this.attr._input++;
+      } else if(pressedKey == '7') {
+        tookTurn = this.moveAvatar(-1,-1);
+        this.attr._input++;
+      } else if(pressedKey == '8') {
+        tookTurn = this.moveAvatar(0,-1);
+        this.attr._input++;
+      } else if(pressedKey == '9') {
+        tookTurn = this.moveAvatar(1,-1);
+        this.attr._input++;
+      }
+    }
+    else if(eventType == 'keydown') {
+      console.log(evt);
+      if(evt.keyCode == 27){
+        this.returnToTown();
+      }
+    }
 
+    if(this.attr._input === 400){
+      this.returnToTown();
+    }
+
+    if (tookTurn) {
+      this.getAvatar().raiseEntityEvent('actionDone');
+      Game.Message.ageMessages();
+      return true;
+    }
+  },
+  returnToTown: function() {
+    Game.UIMode.gamePlay.setAvatar(Game.UIMode.gamePlay.getAvatar());
+    Game.UIMode.gamePlay.setCameraToAvatar();
+    Game.switchUIMode(Game.UIMode.gamePlay);
+  },
+  renderOnMain: function(display) {
+    var fg = Game.UIMode.DEFAULT_COLOR_FG;
+    var bg = Game.UIMode.DEFAULT_COLOR_BG;
+    this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY);
+  },
+  renderAvatarInfo: function (display) {
+    var fg = Game.UIMode.DEFAULT_COLOR_FG;
+    var bg = Game.UIMode.DEFAULT_COLOR_BG;
+    display.drawText(1,2,"Lose at 400 inputs or by pressing Esc",fg,bg);
+    display.drawText(1,4,"# of inputs: "+this.attr._input,fg,bg);
+  },
+  moveAvatar: function (dx,dy) {
+    if(this.getAvatar().tryWalk(this.getMap(),dx,dy)) {
+      return true;
+    }
+    return false;
+  },
+  setCamera: function (sx,sy) {
+    this.attr._cameraX = Math.min(Math.max(0,sx),this.getMap().getWidth());
+    this.attr._cameraY = Math.min(Math.max(0,sy),this.getMap().getHeight());
+  },
+  setCameraToMirror: function () {
+    this.setCamera(this.getMap().getWidth()/2,this.getMap().getHeight()/2);
+  },
+  setupMirror: function () {
+    this.setMap(new Game.Map('hallOfMirrors'));
+
+    this.setAvatar(Game.UIMode.gamePlay.getAvatar());
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
     this.setCameraToMirror();
 

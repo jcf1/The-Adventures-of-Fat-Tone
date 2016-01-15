@@ -131,9 +131,7 @@ var Game = {
     this._currUIMode = newMode;
     console.log(this._currUIMode);
     if(this._currUIMode !== null) {
-      console.log("here2");
       this._currUIMode.enter();
-      console.log("here3");
     }
     this.renderAll();
   },
