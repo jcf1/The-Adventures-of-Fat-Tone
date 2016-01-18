@@ -154,18 +154,31 @@ Game.UIMode.gamePlay = {
     // this.setMap(new Game.Map('main_town'));
     this.setMap(new Game.Map('main_town'));
     this.setAvatar(Game.EntityGenerator.create('avatar'));
-    console.log(this.getAvatar());
+  //  console.log(this.getAvatar());
 
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
     this.setCameraToAvatar();
 
-    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
+    this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkableLocation());
 
-    for (var ecount = 0; ecount < 0; ecount++) {
-      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
-      this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
+    for (var ecount = 0; ecount < 1; ecount++) {
+      //this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
+      //this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());
     }
+  },
+  makeTrippy: function() {
+      this.setMap(new Game.Map('caves1'));
+      this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
+      this.setCameraToAvatar();
+
+      this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkableLocation());
+
+      for (var ecount = 0; ecount < 50; ecount++) {
+        this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkableLocation());
+        this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkableLocation());
+        this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkableLocation());
+      }
   },
   toJSON: function() {
     return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
@@ -268,8 +281,9 @@ Game.UIMode.gamePlayMirror = {
   renderAvatarInfo: function (display) {
     var fg = Game.UIMode.DEFAULT_COLOR_FG;
     var bg = Game.UIMode.DEFAULT_COLOR_BG;
-    display.drawText(1,2,"Lose at 400 inputs or by pressing Esc",fg,bg);
-    display.drawText(1,4,"# of inputs: "+this.attr._input,fg,bg);
+    display.drawText(1,2,"Lose at 400 inputs",fg,bg);
+    display.drawText(1,3,"or by pressing Esc",fg,bg);
+    display.drawText(1,5,"# of inputs: "+this.attr._input,fg,bg);
   },
   moveAvatar: function (dx,dy) {
     if(this.getAvatar().tryWalk(this.getMap(),dx,dy)) {

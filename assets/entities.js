@@ -4,7 +4,7 @@ Game.EntityGenerator.learn({
   name: 'avatar',
   chr:'@',
   fg:'#dda',
-  maxHp: 10,
+  maxHp: 1000,
   mixins: ["PlayerActor","PlayerMessager","WalkerCorporeal","HitPoints","Chronicle","MeleeAttacker"]
 });
 
@@ -29,13 +29,13 @@ Game.EntityGenerator.learn({
   chr:'&',
   fg:'#8B5A2B',
   maxHp: 3,
-  mixins: ["HitPoints","WanderActor","WalkerCorporeal","MeleeAttacker"]
+  mixins: ["HitPoints","ChaserActor","WalkerCorporeal","MeleeAttacker"]
 });
 
 Game.EntityGenerator.learn({
   name: 'Evan Williams',
   chr:'E',
-  fg:'#8B5A2B',
+  fg:'#dda',
   maxHp: 3,
-  mixins: ["HitPoints","WanderActor","WalkerCorporeal","MeleeAttacker"]
+  mixins: ["HitPoints","WalkerCorporeal","MeleeAttacker"]
 });
