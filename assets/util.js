@@ -1,3 +1,10 @@
+if (!String.prototype.startsWith) { // nabbed from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
+  String.prototype.startsWith = function(searchString, position) {
+    position = position || 0;
+    return this.indexOf(searchString, position) === position;
+  };
+}
+
 Game.util = {
 
   randomString: function (len) {
@@ -53,15 +60,7 @@ Game.util = {
     var xpos = ent.getX();
     var ypos = ent.getY();
     var avtpos = Game.UIMode.gamePlay.getAvatar().getPos();
-    if((xpos > avtpos.x && ypos > avtpos.y) && map.getTile(xpos-1,ypos-1).isWalkable()) {
-      xpos = -1;ypos= -1;
-    } else if((xpos < avtpos.x && ypos < avtpos.y) && map.getTile(xpos+1,ypos+1).isWalkable()) {
-      xpos = 1;ypos = 1;
-    } else if((xpos > avtpos.x && ypos < avtpos.y) && map.getTile(xpos-1,ypos+1).isWalkable()) {
-      xpos = -1;ypos = 1;
-    } else if((xpos < avtpos.x && ypos > avtpos.y) && map.getTile(xpos+1,ypos-1).isWalkable()) {
-      xpos = 1;ypos = -1;
-    } else if((xpos > avtpos.x) && map.getTile(xpos-1,ypos).isWalkable()) {
+    if((xpos > avtpos.x) && map.getTile(xpos-1,ypos).isWalkable()) {
       xpos = -1;ypos = 0;
     } else if((xpos < avtpos.x) && map.getTile(xpos+1,ypos).isWalkable()) {
       xpos = 1;ypos = 0;
@@ -71,5 +70,8 @@ Game.util = {
       ypos = -1;xpos = 0;
     }
     return {x:xpos,y:ypos};
+  },
+  getDisplayDim: function (display) {
+    return {w:display._options.width, h:display._options.height};
   }
 };

@@ -26,7 +26,7 @@ Game.EntityMixin.PlayerMessager = {
       'killed': function(evtData) {
         Game.Message.sendMessage('you were killed by the '+evtData.killedBy.getName());
         Game.renderMessage();
-        Game.switchUIMode(Game.UIMode.gameLose);
+        Game.switchUIMode('gameLose');
       }
     }
   }
@@ -51,7 +51,7 @@ Game.EntityMixin.PlayerActor = {
         if(evtData.target.getName() == 'mirror door'){
           console.log("bump mirror");
           Game.UIMode.gamePlayMirror.setupMirror();
-          Game.switchUIMode(Game.UIMode.gamePlayMirror);
+          Game.switchUIMode('gamePlayMirror');
         }
       },
       'actionDone': function(evtData) {
