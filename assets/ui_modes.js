@@ -287,7 +287,7 @@ Game.UIMode.gamePlayMirror = {
   setupMirror: function () {
     this.setMap(new Game.Map('hallOfMirrors'));
 
-    this.setAvatar(Game.UIMode.gamePlay.getAvatar());
+    this.setAvatar(Game.EntityGenerator.create('avatar'));
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkableLocation());
     this.setCameraToMirror();
 
@@ -309,7 +309,7 @@ Game.UIMode.gameLose = {
   },
   handleInput: function(eventType,evt) {
     if (eventType == 'keypress' && evt.keyCode == 61) {
-        Game.switchUIMode(Game.UIMode.gamePersistence);
+      Game.switchUIMode(Game.UIMode.gamePersistence);
     }
     console.log("Game.UIMode.gameLose handleInput");
   },
@@ -331,7 +331,7 @@ Game.UIMode.gameWin = {
   },
   handleInput: function(eventType,evt) {
     if (eventType == 'keypress' && evt.keyCode == 61) {
-        Game.switchUIMode(Game.UIMode.gamePersistence);
+      Game.switchUIMode(Game.UIMode.gamePersistence);
     }
     console.log("Game.UIMode.gameWin handleInput");
   },
@@ -366,136 +366,136 @@ Game.UIMode.gamePersistence = {
       }
     } else if (eventType == 'keydown') {
       if (evt.keyCode == 27) { // 'Escape'
-        Game.switchUIMode(Game.UIMode.gamePlay);
-      }
-    }
-  },
-  saveGame: function() {
-    if (this.localStorageAvailable()) {
-      Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
-      Game.DATASTORE.MESSAGES = Game.Message.attr;
-
-      Game.DATASTORE.SCHEDULE = {};
-      // NOTE: offsetting times by 1 so later restore can just drop them in and go
-      Game.DATASTORE.SCHEDULE[Game.Scheduler._current.getId()] = 1;
-      for (var i = 0; i < Game.Scheduler._queue._eventTimes.length; i++) {
-        Game.DATASTORE.SCHEDULE[Game.Scheduler._queue._events[i].getId()] = Game.Scheduler._queue._eventTimes[i] + 1;
-      }
-      Game.DATASTORE.SCHEDULE_TIME = Game.Scheduler._queue.getTime() - 1; // offset by 1 so that when the engine is started after restore the queue state will match that as when it was saved
-
-      window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game.DATASTORE));
       Game.switchUIMode(Game.UIMode.gamePlay);
     }
-  },
-  loadGame: function() {
-    if (this.localStorageAvailable()) {
-      var json_state_data =  window.localStorage.getItem(Game._persistenceNamespace);
-      var state_data = JSON.parse(json_state_data);
+  }
+},
+saveGame: function() {
+  if (this.localStorageAvailable()) {
+    Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
+    Game.DATASTORE.MESSAGES = Game.Message.attr;
 
-      Game.DATASTORE = {};
-      Game.DATASTORE.MAP = {};
-      Game.DATASTORE.ENTITY = {};
-      Game.initializeTimingEngine();
-      // NOTE: the timing stuff is initialized here because we need to ensure that the stuff exists when entities are created, but the actual schedule restoration re-runs timing initialization
-
-      Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
-
-      for (var mapId in state_data.MAP) {
-        if (state_data.MAP.hasOwnProperty(mapId)) {
-          var mapAttr = JSON.parse(state_data.MAP[mapId]);
-          Game.DATASTORE.MAP[mapId] = new Game.Map(mapAttr._mapTileSetName);
-          Game.DATASTORE.MAP[mapId].fromJSON(state_data.MAP[mapId]);
-        }
-      }
-
-      ROT.RNG.getUniform(); // once the map is regenerated cycle the RNG so we're getting new data for entity generation
-
-      for (var entityId in state_data.ENTITY) {
-        if (state_data.ENTITY.hasOwnProperty(entityId)) {
-          var entAttr = JSON.parse(state_data.ENTITY[entityId]);
-          var newE = Game.EntityGenerator.create(entAttr._generator_template_key,entAttr._id);
-          Game.DATASTORE.ENTITY[entityId] = newE;
-          Game.DATASTORE.ENTITY[entityId].fromJSON(state_data.ENTITY[entityId]);
-        }
-      }
-
-      Game.UIMode.gamePlay.attr = state_data.GAME_PLAY;
-      Game.Message.attr = state_data.MESSAGES;
-
-      // schedule
-      Game.initializeTimingEngine();
-      for (var schedItemId in state_data.SCHEDULE) {
-        if (state_data.SCHEDULE.hasOwnProperty(schedItemId)) {
-          // check here to determine which data store thing will be added to the scheduler (and the actual addition may vary - e.g. not everyting will be a repeatable thing)
-          if (Game.DATASTORE.ENTITY.hasOwnProperty(schedItemId)) {
-            Game.Scheduler.add(Game.DATASTORE.ENTITY[schedItemId],true,state_data.SCHEDULE[schedItemId]);
-          }
-        }
-      }
-      Game.Scheduler._queue._time = state_data.SCHEDULE_TIME;
-
-      Game.switchUIMode(Game.UIMode.gamePlay);
+    Game.DATASTORE.SCHEDULE = {};
+    // NOTE: offsetting times by 1 so later restore can just drop them in and go
+    Game.DATASTORE.SCHEDULE[Game.Scheduler._current.getId()] = 1;
+    for (var i = 0; i < Game.Scheduler._queue._eventTimes.length; i++) {
+      Game.DATASTORE.SCHEDULE[Game.Scheduler._queue._events[i].getId()] = Game.Scheduler._queue._eventTimes[i] + 1;
     }
-  },
-  newGame: function() {
+    Game.DATASTORE.SCHEDULE_TIME = Game.Scheduler._queue.getTime() - 1; // offset by 1 so that when the engine is started after restore the queue state will match that as when it was saved
+
+    window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game.DATASTORE));
+    Game.switchUIMode(Game.UIMode.gamePlay);
+  }
+},
+loadGame: function() {
+  if (this.localStorageAvailable()) {
+    var json_state_data =  window.localStorage.getItem(Game._persistenceNamespace);
+    var state_data = JSON.parse(json_state_data);
+
     Game.DATASTORE = {};
     Game.DATASTORE.MAP = {};
     Game.DATASTORE.ENTITY = {};
     Game.initializeTimingEngine();
-    Game.setRandomSeed(5 + Math.floor(Game.TRANSIENT_RNG.getUniform()*100000));
-    Game.UIMode.gamePlay.setupNewGame();
+    // NOTE: the timing stuff is initialized here because we need to ensure that the stuff exists when entities are created, but the actual schedule restoration re-runs timing initialization
+
+    Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
+
+    for (var mapId in state_data.MAP) {
+      if (state_data.MAP.hasOwnProperty(mapId)) {
+        var mapAttr = JSON.parse(state_data.MAP[mapId]);
+        Game.DATASTORE.MAP[mapId] = new Game.Map(mapAttr._mapTileSetName);
+        Game.DATASTORE.MAP[mapId].fromJSON(state_data.MAP[mapId]);
+      }
+    }
+
+    ROT.RNG.getUniform(); // once the map is regenerated cycle the RNG so we're getting new data for entity generation
+
+    for (var entityId in state_data.ENTITY) {
+      if (state_data.ENTITY.hasOwnProperty(entityId)) {
+        var entAttr = JSON.parse(state_data.ENTITY[entityId]);
+        var newE = Game.EntityGenerator.create(entAttr._generator_template_key,entAttr._id);
+        Game.DATASTORE.ENTITY[entityId] = newE;
+        Game.DATASTORE.ENTITY[entityId].fromJSON(state_data.ENTITY[entityId]);
+      }
+    }
+
+    Game.UIMode.gamePlay.attr = state_data.GAME_PLAY;
+    Game.Message.attr = state_data.MESSAGES;
+
+    // schedule
+    Game.initializeTimingEngine();
+    for (var schedItemId in state_data.SCHEDULE) {
+      if (state_data.SCHEDULE.hasOwnProperty(schedItemId)) {
+        // check here to determine which data store thing will be added to the scheduler (and the actual addition may vary - e.g. not everyting will be a repeatable thing)
+        if (Game.DATASTORE.ENTITY.hasOwnProperty(schedItemId)) {
+          Game.Scheduler.add(Game.DATASTORE.ENTITY[schedItemId],true,state_data.SCHEDULE[schedItemId]);
+        }
+      }
+    }
+    Game.Scheduler._queue._time = state_data.SCHEDULE_TIME;
+
     Game.switchUIMode(Game.UIMode.gamePlay);
-  },
-  renderOnMain: function(display) {
-    var fg = Game.UIMode.DEFAULT_COLOR_FG;
-    var bg = Game.UIMode.DEFAULT_COLOR_BG;
-    console.log("Game.UIMode.gamePersistence renderOnMain");
-    display.drawText(1,3,"press S to save the current game, L to load the saved game, or N to start a new game",fg,bg);
-  },
-  localStorageAvailable: function() {
-    try {
-      var x = '__storage_test__';
-      window.localStorage.setItem(x,x);
-      window.localStorage.removeItem(x);
-      return true;
-    }
-    catch(e) {
-      Game.Message.sendMessage('Sorry No Local Data Storage is Available For This Browser!');
-      return false;
-    }
-  },
-  BASE_toJSON: function(state_hash_name) {
-    var state = this.attr;
-    if (state_hash_name) {
-      state = this[state_hash_name];
-    }
-    var json = JSON.stringify(state);
-    // var json = {};
-    // for (var at in state) {
-    //   if (state.hasOwnProperty(at)) {
-    //     if (state[at] instanceof Object && 'toJSON' in state[at]) {
-    //       json[at] = state[at].toJSON();
-    //     } else {
-    //       json[at] = state[at];
-    //     }
-    //   }
-    // }
-    return json;
-  },
-  BASE_fromJSON: function (json,state_hash_name) {
-    var using_state_hash = 'attr';
-    if (state_hash_name) {
-      using_state_hash = state_hash_name;
-    }
-    this[using_state_hash] = JSON.parse(json);
-    // for (var at in this[using_state_hash]) {
-    //   if (this[using_state_hash].hasOwnProperty(at)) {
-    //     if (this[using_state_hash][at] instanceof Object && 'fromJSON' in this[using_state_hash][at]) {
-    //       this[using_state_hash][at].fromJSON(json[at]);
-    //     } else {
-    //       this[using_state_hash][at] = json[at];
-    //     }
-    //   }
-    // }
   }
+},
+newGame: function() {
+  Game.DATASTORE = {};
+  Game.DATASTORE.MAP = {};
+  Game.DATASTORE.ENTITY = {};
+  Game.initializeTimingEngine();
+  Game.setRandomSeed(5 + Math.floor(Game.TRANSIENT_RNG.getUniform()*100000));
+  Game.UIMode.gamePlay.setupNewGame();
+  Game.switchUIMode(Game.UIMode.gamePlay);
+},
+renderOnMain: function(display) {
+  var fg = Game.UIMode.DEFAULT_COLOR_FG;
+  var bg = Game.UIMode.DEFAULT_COLOR_BG;
+  console.log("Game.UIMode.gamePersistence renderOnMain");
+  display.drawText(1,3,"press S to save the current game, L to load the saved game, or N to start a new game",fg,bg);
+},
+localStorageAvailable: function() {
+  try {
+    var x = '__storage_test__';
+    window.localStorage.setItem(x,x);
+    window.localStorage.removeItem(x);
+    return true;
+  }
+  catch(e) {
+    Game.Message.sendMessage('Sorry No Local Data Storage is Available For This Browser!');
+    return false;
+  }
+},
+BASE_toJSON: function(state_hash_name) {
+  var state = this.attr;
+  if (state_hash_name) {
+    state = this[state_hash_name];
+  }
+  var json = JSON.stringify(state);
+  // var json = {};
+  // for (var at in state) {
+  //   if (state.hasOwnProperty(at)) {
+  //     if (state[at] instanceof Object && 'toJSON' in state[at]) {
+  //       json[at] = state[at].toJSON();
+  //     } else {
+  //       json[at] = state[at];
+  //     }
+  //   }
+  // }
+  return json;
+},
+BASE_fromJSON: function (json,state_hash_name) {
+  var using_state_hash = 'attr';
+  if (state_hash_name) {
+    using_state_hash = state_hash_name;
+  }
+  this[using_state_hash] = JSON.parse(json);
+  // for (var at in this[using_state_hash]) {
+  //   if (this[using_state_hash].hasOwnProperty(at)) {
+  //     if (this[using_state_hash][at] instanceof Object && 'fromJSON' in this[using_state_hash][at]) {
+  //       this[using_state_hash][at].fromJSON(json[at]);
+  //     } else {
+  //       this[using_state_hash][at] = json[at];
+  //     }
+  //   }
+  // }
+}
 };
