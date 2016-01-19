@@ -56,22 +56,54 @@ Game.util = {
     }
     return adjPos;
   },
-  positionClosestToAvatar: function (ent,map) {
-    var xpos = ent.getX();
-    var ypos = ent.getY();
-    var avtpos = Game.UIMode.gamePlay.getAvatar().getPos();
-    if((xpos > avtpos.x) && map.getTile(xpos-1,ypos).isWalkable()) {
-      xpos = -1;ypos = 0;
-    } else if((xpos < avtpos.x) && map.getTile(xpos+1,ypos).isWalkable()) {
-      xpos = 1;ypos = 0;
-    } else if((ypos < avtpos.y) && map.getTile(xpos,ypos+1).isWalkable()) {
-      ypos = 1;xpos = 0;
-    } else if((ypos > avtpos.y) && map.getTile(xpos,ypos-1).isWalkable()) {
-      ypos = -1;xpos = 0;
-    }
-    return {x:xpos,y:ypos};
-  },
   getDisplayDim: function (display) {
     return {w:display._options.width, h:display._options.height};
+  },
+  cdebug: function (a) {
+    if (typeof a == 'object') {
+      console.dir(JSON.parse(JSON.stringify(a)));
+    } else {
+      console.log(a);
+    }
+  },
+
+  objectArrayToIdArray: function (ar) {
+    return ar.map(function (elt) {
+      return elt.getId();
+    });
+  },
+
+  compactBooleanArray_or: function (ar) {
+    if (! ar) { return false; }
+    var ret = false;
+    for (var i = 0; i < ar.length; i++) {
+      ret = ret || ar[i];
+    }
+    return ret;
+  },
+  compactBooleanArray_and: function (ar) {
+    if (! ar) { return false; }
+    var ret = true;
+    for (var i = 0; i < ar.length; i++) {
+      ret = ret && ar[i];
+    }
+    return ret;
+  },
+
+  compactNumberArray_add: function (ar) {
+    if (! ar) { return 0; }
+    var ret = 0;
+    for (var i = 0; i < ar.length; i++) {
+      ret += ar[i];
+    }
+    return ret;
+  },
+  compactNumberArray_mult: function (ar) {
+    if (! ar) { return 1; }
+    var ret = 1;
+    for (var i = 0; i < ar.length; i++) {
+      ret *= ar[i];
+    }
+    return ret;
   }
 };
