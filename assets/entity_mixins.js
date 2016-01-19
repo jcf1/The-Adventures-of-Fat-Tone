@@ -117,7 +117,8 @@ Game.EntityMixin.PlayerActor = {
       'bumpEntity': function(evtData) {
         //console.log('MeleeAttacker bumpEntity');
         if(evtData.recipient.getName() == 'Evan Williams') {
-          Game.UIMode.gamePlay.makeTrippy();
+          Game.UIMode.gamePlayTrippy.setupTrippy();
+          Game.switchUIMode('gamePlayTrippy')
         }
       },
       'madeKill': function(evtData) {

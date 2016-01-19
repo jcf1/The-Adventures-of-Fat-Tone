@@ -57,7 +57,7 @@ Game.EntityGenerator.learn({
   chr:'E',
   fg:'#dda',
   maxHp: 3,
-  mixins: ["HitPoints","WalkerCorporeal","MeleeAttacker"]
+  mixins: ["WalkerCorporeal"]
 });
 
 Game.EntityGenerator.learn({

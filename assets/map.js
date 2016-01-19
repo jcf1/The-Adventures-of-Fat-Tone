@@ -211,7 +211,8 @@ Game.Map.prototype.renderAll = function (display,camX,camY) {
       if (tile.getName() == 'nullTile') {
         tile = Game.Tile.wallTile;
       }
-      tile.draw(display,x,y);
+      if (this.getTileSetName() == 'caves1') tile.drawTrippy(display,x,y);
+      else tile.draw(display,x,y);
       var ent = this.getEntity(mapPos);
       if (ent) {
         ent.draw(display,x,y);
