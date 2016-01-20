@@ -10,12 +10,25 @@ Game.Map = function (mapTileSetName, presetId) {
     _height: this._tiles[0].length,
     _entitiesByLocation: {},
     _locationsByEntity: {},
-    _itemsByLocation: {}
+    _itemsByLocation: {},
+    _Scheduler: null,
+    _TimeEngine: null
   };
 
   this._fov = null;
   this.setUpFov();
   Game.DATASTORE.MAP[this.attr._id] = this;
+};
+
+Game.Map.prototype.initializeTimingEngine = function () {
+  this.attr._Scheduler = new ROT.Scheduler.Action();
+  this.attr._TimeEngine = new ROT.Engine(this.attr.Scheduler);
+};
+Game.Map.prototype.haltTimingEngine = function () {
+  this.attr._TimeEngine.lock();
+};
+Game.Map.prototype.restartTimingEngine = function () {
+  this.attr._TimeEngine.unlock();
 };
 
 Game.Map.prototype.setUpFov = function () {

@@ -95,7 +95,7 @@ Game.EntityMixin.PlayerActor = {
       currentActionDuration: 1000
     },
     init: function (template) {
-      Game.Scheduler.add(this,true,1);
+      this.getMap().attr._Scheduler.add(this,true,1);
     },
     listeners: {
       'walkForbidden' : function(evtData) {
@@ -107,10 +107,10 @@ Game.EntityMixin.PlayerActor = {
         }
       },
       'actionDone': function(evtData) {
-        Game.Scheduler.setDuration(this.getCurrentActionDuration());
+        this.getMap().attr._Scheduler.setDuration(this.getCurrentActionDuration());
         this.raiseSymbolActiveEvent('getHungrier',{duration:this.getCurrentActionDuration()});
         this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-5,5));
-        setTimeout(function() {Game.TimeEngine.unlock();},1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
+        setTimeout(function() {this.getMap().attr._TimeEngine.unlock();},1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
         Game.renderMessage();
         // console.log("end player acting");
       },
@@ -131,7 +131,7 @@ Game.EntityMixin.PlayerActor = {
         },1);
       },
       'killed': function(evtData) {
-      //Game.TimeEngine.lock();
+      //this.getMap().attr._TimeEngine.lock();
       Game.DeadAvatar = this;
       Game.switchUIMode("gameLose");
       }
@@ -157,14 +157,14 @@ Game.EntityMixin.PlayerActor = {
   },
   act: function () {
     // console.log("begin player acting");
-    // console.log("player pre-lock engine lock state is "+Game.TimeEngine._lock);
+    // console.log("player pre-lock engine lock state is "+this.getMap().attr._TimeEngine._lock);
     if (this.isActing()) { return; } // a gate to deal with JS timing issues
     this.isActing(true);
     Game.refresh();
     Game.renderMain();
     Game.renderAvatar();
-    Game.TimeEngine.lock();
-    // console.log("player post-lock engine lock state is "+Game.TimeEngine._lock);
+    this.getMap().attr._TimeEngine.lock();
+    // console.log("player post-lock engine lock state is "+this.getMap().attr._TimeEngine._lock);
     this.isActing(false);
   }
 };
@@ -683,7 +683,7 @@ Game.EntityMixin.WanderActor = {
       currentActionDuration: 1000
     },
     init: function (template) {
-      Game.Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
+      this.getMap().attr._Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
       this.attr._WanderActor_attr.baseActionDuration = template.wanderActionDuration || 1000;
       this.attr._WanderActor_attr.currentActionDuration = this.attr._WanderActor_attr.baseActionDuration;
     }
@@ -704,16 +704,16 @@ Game.EntityMixin.WanderActor = {
     return Game.util.positionsAdjacentTo({x:0,y:0}).random();
   },
   act: function () {
-    Game.TimeEngine.lock();
+    this.getMap().attr._TimeEngine.lock();
     // console.log("begin wander acting");
     // console.log('wander for '+this.getName());
     var moveDeltas = this.getMoveDeltas();
     this.raiseSymbolActiveEvent('adjacentMove',{dx:moveDeltas.x,dy:moveDeltas.y});
-    Game.Scheduler.setDuration(this.getCurrentActionDuration());
+    this.getMap().attr._Scheduler.setDuration(this.getCurrentActionDuration());
     this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-10,10));
     this.raiseSymbolActiveEvent('actionDone');
     // console.log("end wander acting");
-    Game.TimeEngine.unlock();
+    this.getMap().attr._TimeEngine.unlock();
   }
 };
 
@@ -727,7 +727,7 @@ Game.EntityMixin.ChaserActor = {
       currentActionDuration: 1000
     },
     init: function (template) {
-      Game.Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
+      this.getMap().attr._Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
       this.attr._ChaserActor_attr.baseActionDuration = template.chaserActionDuration || 1000;
       this.attr._ChaserActor_attr.currentActionDuration = this.attr._ChaserActor_attr.baseActionDuration;
     }
@@ -777,15 +777,15 @@ Game.EntityMixin.ChaserActor = {
     return Game.util.positionsAdjacentTo({x:0,y:0}).random();
   },
   act: function () {
-    Game.TimeEngine.lock();
+    this.getMap().attr._TimeEngine.lock();
     // console.log("begin wander acting");
     // console.log('wander for '+this.getName());
     var moveDeltas = this.getMoveDeltas();
     this.raiseSymbolActiveEvent('adjacentMove',{dx:moveDeltas.x,dy:moveDeltas.y});
-    Game.Scheduler.setDuration(this.getCurrentActionDuration());
+    this.getMap().attr._Scheduler.setDuration(this.getCurrentActionDuration());
     this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-10,10));
     this.raiseSymbolActiveEvent('actionDone');
     // console.log("end wander acting");
-    Game.TimeEngine.unlock();
+    this.getMap().attr._TimeEngine.unlock();
   }
 };

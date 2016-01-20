@@ -45,9 +45,6 @@ var Game = {
   DATASTORE: {},
   DeadAvatar: null,
 
-  Scheduler: null,
-  TimeEngine: null,
-
   init: function() {
     this._game = this;
 
@@ -75,12 +72,6 @@ var Game = {
     bindEventToUIMode('keypress');
     bindEventToUIMode('keydown');
 //        bindEventToUIMode('keyup');
-  },
-
-  initializeTimingEngine: function () {
-    // NOTE: single, central timing system for now - might have to refactor this later to deal with mutliple map stuff
-    Game.Scheduler = new ROT.Scheduler.Action();
-    Game.TimeEngine = new ROT.Engine(Game.Scheduler);
   },
   getRandomSeed: function() {
     return this._randomSeed;

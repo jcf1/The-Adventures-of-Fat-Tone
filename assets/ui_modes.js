@@ -44,12 +44,12 @@ Game.UIMode.gamePlay = {
     if (this.attr._avatarId) {
       this.setCameraToAvatar();
     }
-    Game.TimeEngine.unlock();
+    this.getMap().attr._TimeEngine.unlock();
     Game.refresh();
   },
   exit: function() {
     Game.refresh();
-    Game.TimeEngine.lock();
+    this.getMap().attr._TimeEngine.lock();
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -167,6 +167,7 @@ Game.UIMode.gamePlay = {
   setupNewGame: function () {
     // this.setMap(new Game.Map('main_town'));
     this.setMap(new Game.Map('main_town'));
+    this.getMap().initializeTimingEngine();
     this.setAvatar(Game.EntityGenerator.create('avatar'));
     //  console.log(this.getAvatar());
 
@@ -213,12 +214,12 @@ Game.UIMode.gamePlayTrippy = {
   },
   JSON_KEY: 'UIMode_gamePlayTrippy',
   enter: function() {
-    Game.TimeEngine.unlock();
+    this.getMap().attr._TimeEngine.unlock();
     Game.refresh();
   },
   exit: function() {
     Game.refresh();
-    Game.TimeEngine.lock();
+    this.getMap().attr._TimeEngine.lock();
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -332,6 +333,7 @@ Game.UIMode.gamePlayTrippy = {
   },
   setupTrippy: function() {
     this.setMap(new Game.Map('caves1'));
+    this.getMap().initializeTimingEngine();
     this.setAvatar(Game.EntityGenerator.create('avatar'));
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToAvatar();
@@ -376,12 +378,12 @@ Game.UIMode.gamePlayMirror = {
   },
   JSON_KEY: 'UIMode_gamePlayMirror',
   enter: function() {
-    Game.TimeEngine.unlock();
+    this.getMap().attr._TimeEngine.unlock();
     Game.refresh();
   },
   exit: function() {
     Game.refresh();
-    Game.TimeEngine.lock();
+    this.getMap().attr._TimeEngine.lock();
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -484,11 +486,11 @@ Game.UIMode.gamePlayMirror = {
   },
   setupMirror: function () {
     this.setMap(new Game.Map('hallOfMirrors'));
+    this.getMap().initializeTimingEngine();
     this.attr._input = 0;
     this.setAvatar(Game.EntityGenerator.create('mirrorAvatar'));
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToMirror();
-
     this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
   },
   toJSON: function() {
@@ -505,7 +507,6 @@ Game.UIMode.gamePlayMirror = {
 Game.UIMode.gameLose = {
   enter: function() {
     Game.Message.clearMessage();
-    Game.TimeEngine.lock();
     Game.renderAvatar();
     Game.renderMain();
   },
@@ -528,7 +529,6 @@ Game.UIMode.gameLose = {
 Game.UIMode.gameWin = {
   enter: function() {
     Game.Message.clearMessage();
-    Game.TimeEngine.lock();
     Game.renderAvatar();
     Game.renderMain();
   },
@@ -595,11 +595,11 @@ Game.UIMode.gamePersistence = {
 
       Game.DATASTORE.SCHEDULE = {};
       // NOTE: offsetting times by 1 so later restore can just drop them in and go
-      Game.DATASTORE.SCHEDULE[Game.Scheduler._current.getId()] = 1;
-      for (var i = 0; i < Game.Scheduler._queue._eventTimes.length; i++) {
-        Game.DATASTORE.SCHEDULE[Game.Scheduler._queue._events[i].getId()] = Game.Scheduler._queue._eventTimes[i] + 1;
+      Game.DATASTORE.SCHEDULE[this.getMap().attr._Scheduler._current.getId()] = 1;
+      for (var i = 0; i < this.getMap().attr._Scheduler._queue._eventTimes.length; i++) {
+        Game.DATASTORE.SCHEDULE[this.getMap().attr._Scheduler._queue._events[i].getId()] = this.getMap().attr._Scheduler._queue._eventTimes[i] + 1;
       }
-      Game.DATASTORE.SCHEDULE_TIME = Game.Scheduler._queue.getTime() - 1; // offset by 1 so that when the engine is started after restore the queue state will match that as when it was saved
+      Game.DATASTORE.SCHEDULE_TIME = this.getMap().attr._Scheduler._queue.getTime() - 1; // offset by 1 so that when the engine is started after restore the queue state will match that as when it was saved
 
       window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game.DATASTORE));
       Game.Message.sendMessage('game saved');
@@ -615,11 +615,14 @@ Game.UIMode.gamePersistence = {
 
       Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
 
+      var loadedMap = null;
       for (var mapId in state_data.MAP) {
         if (state_data.MAP.hasOwnProperty(mapId)) {
           var mapAttr = JSON.parse(state_data.MAP[mapId]);
           Game.DATASTORE.MAP[mapId] = new Game.Map(mapAttr._mapTileSetName, mapId);
           Game.DATASTORE.MAP[mapId].fromJSON(state_data.MAP[mapId]);
+          loadedMap = Game.DATASTORE.MAP[mapId];
+          loadedMap.initializeTimingEngine();
         }
       }
 
@@ -649,16 +652,15 @@ Game.UIMode.gamePersistence = {
       this._storedKeyBinding = state_data.KEY_BINDING_SET; // NOTE: not setting the key binding directly because it's set to _storedKeyBinding when this ui mode is exited
 
       // schedule
-      Game.initializeTimingEngine();
       for (var schedItemId in state_data.SCHEDULE) {
         if (state_data.SCHEDULE.hasOwnProperty(schedItemId)) {
           // check here to determine which data store thing will be added to the scheduler (and the actual addition may vary - e.g. not everyting will be a repeatable thing)
           if (Game.DATASTORE.ENTITY.hasOwnProperty(schedItemId)) {
-            Game.Scheduler.add(Game.DATASTORE.ENTITY[schedItemId],true,state_data.SCHEDULE[schedItemId]);
+            loadedMap.attr._Scheduler.add(Game.DATASTORE.ENTITY[schedItemId],true,state_data.SCHEDULE[schedItemId]);
           }
         }
       }
-      Game.Scheduler._queue._time = state_data.SCHEDULE_TIME;
+      loadedMap.attr._Scheduler._queue._time = state_data.SCHEDULE_TIME;
 
       Game.Message.sendMessage('game loaded');
       Game.switchUIMode('gamePlay');
@@ -677,7 +679,6 @@ Game.UIMode.gamePersistence = {
     Game.DATASTORE.MAP = {};
     Game.DATASTORE.ENTITY = {};
     Game.DATASTORE.ITEM = {};
-    Game.initializeTimingEngine();
   },
   renderOnMain: function(display) {
     display.drawText(3,3,Game.UIMode.DEFAULT_COLOR_STR+"press S to save the current game, L to load the saved game, or N start a new one",70);
