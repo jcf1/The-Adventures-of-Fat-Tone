@@ -79,6 +79,14 @@ Game.EntityMixin.PlayerMessager = {
           Game.Message.sendMessage('you dropped the '+evtData.lastItemDroppedName);
         }
         Game.renderMessage();
+      },
+      'cantAfford': function(evtData){
+        Game.Message.sendMessage('You don\'t have enough money to afford that');
+        Game.renderMesage();
+      },
+      'pickUpMoney': function(evtData) {
+        Game.Message.sendMessage('You picked up '+evtData.amount+' gold');
+        Game.renderMesage();
       }
     }
   }
@@ -168,6 +176,61 @@ Game.EntityMixin.PlayerActor = {
     this.isActing(false);
   }
 };
+
+Game.EntityMixin.WalletHolder = {
+  META: {
+    mixinName: 'WalletHolder',
+    mixinGroup: 'WalletHolder',
+    stateNamespace: '_WalletHolder_attr',
+    stateModel:  {
+      currentMoney: 0
+    },
+    init: function(template) {
+      this.attr._WalletHolder_attr.currentMoney = template.currentMoney || 0;
+    },
+    listeners: {
+      'dropMoney': function(evtData) {
+        this.addMoney(evtData.dropAmount);
+        this.raiseSymbolActiveEvent('pickUpMoney',{amount:evtData.dropAmount});
+      },
+      'spendMoney': function(evtData) {
+        if(evtData > this._WalletHolder_attr.currentMoney){
+          this.subMoney(evtData.price);
+        } else {
+          this.raiseSymbolActiveEvent('cantAfford');
+        }
+      }
+    }
+  },
+  addMoney: function(n) {
+    this._WalletHolder_attr.currentMoney = this._WalletHolder_attr.currentMoney + n;
+  },
+  subMoney: function(n) {
+    this._WalletHolder_attr.currentMoney = this._WalletHolder_attr.currentMoney - n;
+  }
+}
+
+Game.EntityMixin.MoneyDropper = {
+  META: {
+    mixinName: 'MoneyDropper',
+    mixinGroup: 'MoneyDropper',
+    stateNamespace: '_MoneyDropper_attr',
+    stateModel: {
+      minDropAmount: 0,
+      maxDropAmount: 0
+    },
+    init: function(template) {
+      this.attr._MoneyDropper_attr.minDropAmount = template.minDropAmount || 0;
+      this.attr._MoneyDropper_attr.maxDropAmount = template.maxDropAmount || 0;
+    },
+    listeners: {
+      'killed': function(evtData) {
+        var amount = Game.util.randomInt(this.attr._MoneyDropper_attr.minDropAmount,this.attr._MoneyDropper_attr.maxDropAmount);
+        this.raiseSymbolActiveEvent('dropMoney',{dropAmount:amount});
+      }
+    }
+  }
+}
 
 Game.EntityMixin.FoodConsumer = {
   META: {

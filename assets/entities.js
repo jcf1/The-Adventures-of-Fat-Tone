@@ -11,7 +11,7 @@ Game.EntityGenerator.learn({
   attackDamage: 2,
   inventoryCapacity: 35,
   maxFood: 400,
-  mixins: ["PlayerActor", "PlayerMessager", "WalkerCorporeal", "Sight", "MapMemory", "HitPoints", "Chronicle", "MeleeAttacker", "MeleeDefender","InventoryHolder","FoodConsumer"]
+  mixins: ["PlayerActor", "PlayerMessager", "WalkerCorporeal", "Sight", "MapMemory", "HitPoints", "Chronicle", "MeleeAttacker", "MeleeDefender","InventoryHolder","FoodConsumer","WalletHolder"]
 });
 
 Game.EntityGenerator.learn({
@@ -82,5 +82,5 @@ Game.EntityGenerator.learn({
   attackDamage: 1,
   chaserActionDuration: 1200,
   attackActionDuration: 3000,
-  mixins: ["HitPoints", "Sight", "ChaserActor", "WalkerCorporeal", "MeleeAttacker"]
+  mixins: ["HitPoints", "Sight", "ChaserActor", "WalkerCorporeal", "MeleeAttacker","MoneyDropper"]
 });
