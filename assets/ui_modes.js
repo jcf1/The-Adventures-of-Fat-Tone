@@ -44,12 +44,12 @@ Game.UIMode.gamePlay = {
     if (this.attr._avatarId) {
       this.setCameraToAvatar();
     }
-    this.getMap().attr._TimeEngine.unlock();
+    this.getMap().unlockTimingEngine();
     Game.refresh();
   },
   exit: function() {
     Game.refresh();
-    this.getMap().attr._TimeEngine.lock();
+    this.getMap().lockTimingEngine();
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -214,12 +214,12 @@ Game.UIMode.gamePlayTrippy = {
   },
   JSON_KEY: 'UIMode_gamePlayTrippy',
   enter: function() {
-    this.getMap().attr._TimeEngine.unlock();
+    this.getMap().unlockTimingEngine();
     Game.refresh();
   },
   exit: function() {
     Game.refresh();
-    this.getMap().attr._TimeEngine.lock();
+    this.getMap().lockTimingEngine();
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -378,12 +378,12 @@ Game.UIMode.gamePlayMirror = {
   },
   JSON_KEY: 'UIMode_gamePlayMirror',
   enter: function() {
-    this.getMap().attr._TimeEngine.unlock();
+    this.getMap().unlockTimingEngine();
     Game.refresh();
   },
   exit: function() {
     Game.refresh();
-    this.getMap().attr._TimeEngine.lock();
+    this.getMap().lockTimingEngine();
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -438,7 +438,7 @@ Game.UIMode.gamePlayMirror = {
     } else if (actionBinding.actionKey == 'CHANGE_BINDINGS') {
       Game.KeyBinding.swapToNextKeyBinding();
     } else if (actionBinding.actionKey == 'PERSISTENCE') {
-      Game.Message.sendMesage('You cannot save while in the Mirror World.');
+      Game.Message.sendMessage('You cannot save or load within the Hall of Mirrors');
     } else if (actionBinding.actionKey == 'HELP') {
       // console.log('TODO: set up help stuff for gameplay');
       Game.UIMode.LAYER_textReading.setText(Game.KeyBinding.getBindingHelpText());
@@ -568,7 +568,10 @@ Game.UIMode.gamePersistence = {
     }
 
     if (actionBinding.actionKey == 'PERSISTENCE_SAVE') {
-      this.saveGame();
+      if (!Game.UIMode.gamePlay.getMap()) {
+        Game.Message.sendMessage('You have no game to save!');
+      } else
+        this.saveGame(Game.UIMode.gamePlay.getMap());
     } else if (actionBinding.actionKey == 'PERSISTENCE_LOAD') {
       this.loadGame();
     } else if (actionBinding.actionKey == 'PERSISTENCE_NEW') {
@@ -586,7 +589,7 @@ Game.UIMode.gamePersistence = {
     }
     return false;
   },
-  saveGame: function() {
+  saveGame: function(gameMap) {
     if (this.localStorageAvailable()) {
       Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
       Game.DATASTORE.MESSAGES = Game.Message.attr;
@@ -595,11 +598,11 @@ Game.UIMode.gamePersistence = {
 
       Game.DATASTORE.SCHEDULE = {};
       // NOTE: offsetting times by 1 so later restore can just drop them in and go
-      Game.DATASTORE.SCHEDULE[this.getMap().attr._Scheduler._current.getId()] = 1;
-      for (var i = 0; i < this.getMap().attr._Scheduler._queue._eventTimes.length; i++) {
-        Game.DATASTORE.SCHEDULE[this.getMap().attr._Scheduler._queue._events[i].getId()] = this.getMap().attr._Scheduler._queue._eventTimes[i] + 1;
+      Game.DATASTORE.SCHEDULE[gameMap.getScheduler()._current.getId()] = 1;
+      for (var i = 0; i < gameMap.getScheduler()._queue._eventTimes.length; i++) {
+        Game.DATASTORE.SCHEDULE[gameMap.getScheduler()._queue._events[i].getId()] = gameMap.getScheduler()._queue._eventTimes[i] + 1;
       }
-      Game.DATASTORE.SCHEDULE_TIME = this.getMap().attr._Scheduler._queue.getTime() - 1; // offset by 1 so that when the engine is started after restore the queue state will match that as when it was saved
+      Game.DATASTORE.SCHEDULE_TIME = gameMap.getScheduler()._queue.getTime() - 1; // offset by 1 so that when the engine is started after restore the queue state will match that as when it was saved
 
       window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game.DATASTORE));
       Game.Message.sendMessage('game saved');
@@ -610,7 +613,6 @@ Game.UIMode.gamePersistence = {
     if (this.localStorageAvailable()) {
       var json_state_data =  window.localStorage.getItem(Game._persistenceNamespace);
       var state_data = JSON.parse(json_state_data);
-
       this._resetGameDataStructures();
 
       Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
@@ -624,6 +626,11 @@ Game.UIMode.gamePersistence = {
           loadedMap = Game.DATASTORE.MAP[mapId];
           loadedMap.initializeTimingEngine();
         }
+      }
+
+      if (!loadedMap) {
+        Game.Message.sendMessage('You have no game to load');
+        return;
       }
 
       ROT.RNG.getUniform(); // once the map is regenerated cycle the RNG so we're getting new data for entity generation
@@ -656,11 +663,11 @@ Game.UIMode.gamePersistence = {
         if (state_data.SCHEDULE.hasOwnProperty(schedItemId)) {
           // check here to determine which data store thing will be added to the scheduler (and the actual addition may vary - e.g. not everyting will be a repeatable thing)
           if (Game.DATASTORE.ENTITY.hasOwnProperty(schedItemId)) {
-            loadedMap.attr._Scheduler.add(Game.DATASTORE.ENTITY[schedItemId],true,state_data.SCHEDULE[schedItemId]);
+            loadedMap.getScheduler().add(Game.DATASTORE.ENTITY[schedItemId],true,state_data.SCHEDULE[schedItemId]);
           }
         }
       }
-      loadedMap.attr._Scheduler._queue._time = state_data.SCHEDULE_TIME;
+      loadedMap.getScheduler()._queue._time = state_data.SCHEDULE_TIME;
 
       Game.Message.sendMessage('game loaded');
       Game.switchUIMode('gamePlay');

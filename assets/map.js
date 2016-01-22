@@ -19,18 +19,22 @@ Game.Map = function (mapTileSetName, presetId) {
   this.setUpFov();
   Game.DATASTORE.MAP[this.attr._id] = this;
 };
-
+Game.Map.prototype.getScheduler = function () {
+  return this.attr._Scheduler;
+};
+Game.Map.prototype.getTimeEngine = function () {
+  return this.attr._TimeEngine;
+};
 Game.Map.prototype.initializeTimingEngine = function () {
   this.attr._Scheduler = new ROT.Scheduler.Action();
-  this.attr._TimeEngine = new ROT.Engine(this.attr.Scheduler);
+  this.attr._TimeEngine = new ROT.Engine(this.attr._Scheduler);
 };
-Game.Map.prototype.haltTimingEngine = function () {
+Game.Map.prototype.lockTimingEngine = function () {
   this.attr._TimeEngine.lock();
 };
-Game.Map.prototype.restartTimingEngine = function () {
+Game.Map.prototype.unlockTimingEngine = function () {
   this.attr._TimeEngine.unlock();
 };
-
 Game.Map.prototype.setUpFov = function () {
   var map = this;
   this._fov = new ROT.FOV.DiscreteShadowcasting(function(x, y) {
@@ -73,6 +77,7 @@ Game.Map.prototype.addEntity = function (ent,pos) {
   this.attr._locationsByEntity[ent.getId()] = pos.x+","+pos.y;
   ent.setMap(this);
   ent.setPos(pos);
+  ent.raiseSymbolActiveEvent('createdEntity');
 };
 
 Game.Map.prototype.addItem = function (itm,pos) {

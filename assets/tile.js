@@ -35,7 +35,7 @@ Game.Tile.trippyFloorTile = new Game.Tile({name:'trippy floor',chr:'.',walkable:
 Game.Tile.wallTile = new Game.Tile({name:'wall',chr:'#'});
 Game.Tile.woodTile = new Game.Tile({name:'wood',chr:'#',fg: '#670A0A',transparent:true});
 Game.Tile.doorTile = new Game.Tile({name:'door',chr:'-',fg:'#cc3300',walkable:true,transparent:true});
-Game.Tile.invisibleTile = new Game.Tile({name:'invisible',chr:' ',transparent:true});
+Game.Tile.invisibleTile = new Game.Tile({name:'invisible wall',chr:' ',transparent:true});
 Game.Tile.lockedDoorTile = new Game.Tile({name:'locked door',chr:'='});
 Game.Tile.mirrorDoorTile = new Game.Tile({name:'mirror door',chr: '-', transparent:true});
 Game.Tile.hTile = new Game.Tile({name:'H',chr:'H',transparent:true});

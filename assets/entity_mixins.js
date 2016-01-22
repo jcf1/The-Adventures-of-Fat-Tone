@@ -95,9 +95,12 @@ Game.EntityMixin.PlayerActor = {
       currentActionDuration: 1000
     },
     init: function (template) {
-      this.getMap().attr._Scheduler.add(this,true,1);
+      //this.getMap().attr._Scheduler.add(this,true,1);
     },
     listeners: {
+      'createdEntity' : function() {
+        this.getMap().attr._Scheduler.add(this,true,1);
+      },
       'walkForbidden' : function(evtData) {
         console.log("Walk forbidden reg");
         if(evtData.target.getName() == 'mirror door'){
@@ -110,7 +113,8 @@ Game.EntityMixin.PlayerActor = {
         this.getMap().attr._Scheduler.setDuration(this.getCurrentActionDuration());
         this.raiseSymbolActiveEvent('getHungrier',{duration:this.getCurrentActionDuration()});
         this.setCurrentActionDuration(this.getBaseActionDuration()+Game.util.randomInt(-5,5));
-        setTimeout(function() {this.getMap().attr._TimeEngine.unlock();},1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
+        var timeEngine = this.getMap().attr._TimeEngine;
+        setTimeout(function() {timeEngine.unlock();},1); // NOTE: this tiny delay ensures console output happens in the right order, which in turn means I have confidence in the turn-taking order of the various entities
         Game.renderMessage();
         // console.log("end player acting");
       },
@@ -683,9 +687,14 @@ Game.EntityMixin.WanderActor = {
       currentActionDuration: 1000
     },
     init: function (template) {
-      this.getMap().attr._Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
+      //this.getMap().attr._Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
       this.attr._WanderActor_attr.baseActionDuration = template.wanderActionDuration || 1000;
       this.attr._WanderActor_attr.currentActionDuration = this.attr._WanderActor_attr.baseActionDuration;
+    },
+    listeners: {
+      'createdEntity' : function() {
+        this.getMap().attr._Scheduler.add(this,true,1);
+      },
     }
   },
   getBaseActionDuration: function () {
@@ -727,9 +736,14 @@ Game.EntityMixin.ChaserActor = {
       currentActionDuration: 1000
     },
     init: function (template) {
-      this.getMap().attr._Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
+      //this.getMap().attr._Scheduler.add(this,true, Game.util.randomInt(2,this.getBaseActionDuration()));
       this.attr._ChaserActor_attr.baseActionDuration = template.chaserActionDuration || 1000;
       this.attr._ChaserActor_attr.currentActionDuration = this.attr._ChaserActor_attr.baseActionDuration;
+    },
+    listeners: {
+      'createdEntity' : function() {
+        this.getMap().attr._Scheduler.add(this,true,1);
+      },
     }
   },
   getBaseActionDuration: function () {
