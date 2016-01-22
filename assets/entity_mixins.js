@@ -82,11 +82,11 @@ Game.EntityMixin.PlayerMessager = {
       },
       'cantAfford': function(evtData){
         Game.Message.sendMessage('You don\'t have enough money to afford that');
-        Game.renderMesage();
+        Game.renderMessage();
       },
       'pickUpMoney': function(evtData) {
         Game.Message.sendMessage('You picked up '+evtData.amount+' gold');
-        Game.renderMesage();
+        Game.renderMessage();
       }
     }
   }
@@ -203,10 +203,13 @@ Game.EntityMixin.WalletHolder = {
     }
   },
   addMoney: function(n) {
-    this._WalletHolder_attr.currentMoney = this._WalletHolder_attr.currentMoney + n;
+    this.attr._WalletHolder_attr.currentMoney = this.attr._WalletHolder_attr.currentMoney + n;
   },
   subMoney: function(n) {
-    this._WalletHolder_attr.currentMoney = this._WalletHolder_attr.currentMoney - n;
+    this.attr._WalletHolder_attr.currentMoney = this.attr._WalletHolder_attr.currentMoney - n;
+  },
+  getCurrentMoney: function() {
+    return this.attr._WalletHolder_attr.currentMoney;
   }
 }
 
@@ -226,7 +229,7 @@ Game.EntityMixin.MoneyDropper = {
     listeners: {
       'killed': function(evtData) {
         var amount = Game.util.randomInt(this.attr._MoneyDropper_attr.minDropAmount,this.attr._MoneyDropper_attr.maxDropAmount);
-        this.raiseSymbolActiveEvent('dropMoney',{dropAmount:amount});
+        evtData.killedBy.raiseSymbolActiveEvent('dropMoney',{dropAmount:amount});
       }
     }
   }

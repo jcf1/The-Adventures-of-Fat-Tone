@@ -28,7 +28,7 @@ Game.EntityGenerator.learn({
   chr:'%',
   fg:'#6b6',
   maxHp: 1,
-  mixins: ["HitPoints"]
+  mixins: ["HitPoints","MoneyDropper"]
 });
 
 Game.EntityGenerator.learn({
@@ -82,5 +82,7 @@ Game.EntityGenerator.learn({
   attackDamage: 1,
   chaserActionDuration: 1200,
   attackActionDuration: 3000,
+  minDropAmount: 5,
+  maxDropAmount: 10,
   mixins: ["HitPoints", "Sight", "ChaserActor", "WalkerCorporeal", "MeleeAttacker","MoneyDropper"]
 });
