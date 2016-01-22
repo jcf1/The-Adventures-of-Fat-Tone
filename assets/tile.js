@@ -41,3 +41,5 @@ Game.Tile.mirrorDoorTile = new Game.Tile({name:'mirror door',chr: '-', transpare
 Game.Tile.hTile = new Game.Tile({name:'H',chr:'H',transparent:true});
 Game.Tile.oTile = new Game.Tile({name:'o',chr:'o',transparent:true});
 Game.Tile.mTile = new Game.Tile({name:'M',chr:'M',transparent:true});
+Game.Tile.toDungeonTile = new Game.Tile({name:'to the Dungeon',chr:'⭅',fg: '#CD8500',transparent:true});
+Game.Tile.toForrestTile = new Game.Tile({name:'to the Forrest',chr:'⭆',fg: '#008B45',transparent:true});

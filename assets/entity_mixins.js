@@ -7,9 +7,11 @@ Game.EntityMixin.PlayerMessager = {
     mixinGroup: 'PlayerMessager',
     listeners: {
       'walkForbidden': function(evtData) {
-        Game.Message.sendMessage('you can\'t walk into the '+evtData.target.getName());
-        Game.renderMessage();
-        Game.Message.ageMessages();
+        if(evtData.target.getName() != 'mirror door'){
+          Game.Message.sendMessage('you can\'t walk into the '+evtData.target.getName());
+          Game.renderMessage();
+          Game.Message.ageMessages();
+        }
       },
       'attackAvoided': function(evtData) {
         Game.Message.sendMessage('you avoided the '+evtData.attacker.getName());
@@ -92,7 +94,7 @@ Game.EntityMixin.PlayerActor = {
     stateModel:  {
       baseActionDuration: 1000,
       actingState: false,
-      currentActionDuration: 1000
+      currentActionDuration: 1000,
     },
     init: function (template) {
       //this.getMap().attr._Scheduler.add(this,true,1);
@@ -102,11 +104,13 @@ Game.EntityMixin.PlayerActor = {
         this.getMap().attr._Scheduler.add(this,true,1);
       },
       'walkForbidden' : function(evtData) {
-        console.log("Walk forbidden reg");
-        if(evtData.target.getName() == 'mirror door'){
-          console.log("bump mirror");
+        if(evtData.target.getName() == 'mirror door' && this.mirrorBumps == 0){
+          this.mirrorBumps++;
+          Game.Message.sendMessage('Bump into the door again to go to the Hall of Mirrors Mini-Game');
+        } else if (evtData.target.getName() == 'mirror door'){
           Game.UIMode.gamePlayMirror.setupMirror();
           Game.switchUIMode('gamePlayMirror');
+          this.mirrorBumps = 0;
         }
       },
       'actionDone': function(evtData) {

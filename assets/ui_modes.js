@@ -492,6 +492,7 @@ Game.UIMode.gamePlayMirror = {
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToMirror();
     this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
+    Game.Message.sendMessage('Try to get to the moss to win!');
   },
   toJSON: function() {
     return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
