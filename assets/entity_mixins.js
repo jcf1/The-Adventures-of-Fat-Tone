@@ -120,6 +120,13 @@ Game.EntityMixin.PlayerActor = {
           Game.switchUIMode('gamePlayMirror');
           this.mirrorBumps = 0;
         }
+
+        if(evtData.target.getName() == 'to the Forrest'){
+          Game.Message.sendMessage("You entered the Forrest");
+          Game.UIMode.gamePlayForrest.setupForrest(Game.UIMode.gamePlay.getAvatar());
+          Game.UIMode.gamePlay.removeAvatar();
+          Game.switchUIMode('gamePlayForrest');
+        }
       },
       'actionDone': function(evtData) {
         this.getMap().attr._Scheduler.setDuration(this.getCurrentActionDuration());
