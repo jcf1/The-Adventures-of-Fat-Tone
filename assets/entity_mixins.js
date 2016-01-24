@@ -7,11 +7,13 @@ Game.EntityMixin.PlayerMessager = {
     mixinGroup: 'PlayerMessager',
     listeners: {
       'walkForbidden': function(evtData) {
-        if(evtData.target.getName() != 'mirror door'){
-          Game.Message.sendMessage('you can\'t walk into the '+evtData.target.getName());
+        var nameEvt = evtData.target.getName();
+        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest')
+          Game.Message.sendMessage('Do you want to walk into the '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
+        else Game.Message.sendMessage('You cannot walk into the ' + nameEvt);
           Game.renderMessage();
           Game.Message.ageMessages();
-        }
+
       },
       'attackAvoided': function(evtData) {
         Game.Message.sendMessage('you avoided the '+evtData.attacker.getName());
@@ -103,6 +105,7 @@ Game.EntityMixin.PlayerActor = {
       baseActionDuration: 1000,
       actingState: false,
       currentActionDuration: 1000,
+      bumpEvt: ''
     },
     init: function (template) {
       //this.getMap().attr._Scheduler.add(this,true,1);
@@ -111,14 +114,26 @@ Game.EntityMixin.PlayerActor = {
       'createdEntity' : function() {
         this.getMap().attr._Scheduler.add(this,true,1);
       },
+      'answeredQ' : function (ans) {
+        if (ans == 'yes') {
+          if (this.getBumpEvt() == 'Hall of Mirrors') {
+            Game.UIMode.gamePlayMirror.setupMirror();
+            Game.switchUIMode('gamePlayMirror');
+          }
+          Game.UIMode.gamePlay.setBumped(false);
+        } else if (ans == 'no answer') {
+          Game.Message.sendMessage('Please answer yes [y] or no [n]');
+        } else {
+          Game.UIMode.gamePlay.setBumped(false);
+          Game.Message.sendMessage('You chose not to enter the ' +this.getBumpEvt() + '. YOU COWARD!');
+        }
+        Game.Message.ageMessages();
+      },
       'walkForbidden' : function(evtData) {
-        if(evtData.target.getName() == 'mirror door' && this.mirrorBumps == 0){
-          this.mirrorBumps++;
-          Game.Message.sendMessage('Bump into the door again to go to the Hall of Mirrors Mini-Game');
-        } else if (evtData.target.getName() == 'mirror door'){
-          Game.UIMode.gamePlayMirror.setupMirror();
-          Game.switchUIMode('gamePlayMirror');
-          this.mirrorBumps = 0;
+        var nameEvt = evtData.target.getName();
+        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest'){
+          Game.UIMode.gamePlay.setBumped(true);
+          this.setBumpEvt(nameEvt);
         }
       },
       'actionDone': function(evtData) {
@@ -154,6 +169,12 @@ Game.EntityMixin.PlayerActor = {
       Game.switchUIMode("gameLose");
       }
     }
+  },
+  getBumpEvt: function () {
+    return this.attr._PlayerActor_attr.bumpEvt;
+  },
+  setBumpEvt: function (n) {
+    this.attr._PlayerActor_attr.bumpEvt = n;
   },
   getBaseActionDuration: function () {
     return this.attr._PlayerActor_attr.baseActionDuration;

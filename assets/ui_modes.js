@@ -38,7 +38,8 @@ Game.UIMode.gamePlay = {
     _cameraX: 100,
     _cameraY: 100,
     _steps: 0,
-    _trippy:false
+    _trippy:false,
+    _bumped: false
   },
   JSON_KEY: 'UIMode_gamePlay',
   enter: function() {
@@ -51,6 +52,12 @@ Game.UIMode.gamePlay = {
   exit: function() {
     Game.refresh();
     this.getMap().lockTimingEngine();
+  },
+  hasBumped: function () {
+    return this.attr._bumped;
+  },
+  setBumped: function (m) {
+    this.attr._bumped = m;
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -66,9 +73,16 @@ Game.UIMode.gamePlay = {
   },
   handleInput: function(eventType,evt) {
     var actionBinding = Game.KeyBinding.getInputBinding(eventType, evt);
-    if ((!actionBinding) || (actionBinding.actionKey == 'CANCEL')) {
-      return false;
-    }
+
+    if (!actionBinding) return false;
+    else if (this.hasBumped()) {
+      if (actionBinding.actionKey == 'ANSWER_YES') {
+        this.getAvatar().raiseSymbolActiveEvent('answeredQ','yes');
+      } else if (actionBinding.actionKey == 'ANSWER_NO') {
+        this.getAvatar().raiseSymbolActiveEvent('answeredQ','no');
+      } else this.getAvatar().raiseSymbolActiveEvent('answeredQ','no answer')
+      return;
+    } else if (actionBinding.actionKey == 'CANCEL') return false
     var tookTurn = false;
     if (actionBinding.actionKey == 'MOVE_U') {
       tookTurn = this.moveAvatar(0, -1);
@@ -332,6 +346,7 @@ Game.UIMode.gamePlayMirror = {
     this.setCameraToMirror();
     this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
     Game.Message.sendMessage('Try to get to the moss to win!');
+    Game.Message.ageMessages();
   },
   toJSON: function() {
     return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
