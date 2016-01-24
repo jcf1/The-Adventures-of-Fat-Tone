@@ -229,7 +229,7 @@ Game.Map.prototype.renderAll = function (display,camX,camY) {
       if (tile.getName() == 'nullTile') {
         tile = Game.Tile.wallTile;
       }
-      if (this.getTileSetName() == 'caves1') tile.drawTrippy(display,x,y);
+      if (Game.UIMode.gamePlay.attr._trippy) tile.drawTrippy(display,x,y);
       else tile.draw(display,x,y);
       var ent = this.getEntity(mapPos);
       if (ent) {
@@ -274,10 +274,13 @@ Game.Map.prototype.renderOn = function (display,camX,camY,renderOptions) {
       if (tile.getName() == 'nullTile') {
         tile = Game.Tile.wallTile;
       }
+      if (Game.UIMode.gamePlay.attr._trippy) tile.drawTrippy(display,x,y);
       if (showVisibleTiles && visibleCells[mapCoord]) {
-        tile.draw(display,x,y);
+        if (Game.UIMode.gamePlay.attr._trippy) tile.drawTrippy(display,x,y);
+        else tile.draw(display,x,y);
       } else if (showMaskedTiles && maskedCells[mapCoord]) {
-        tile.draw(display,x,y,true);
+        if (Game.UIMode.gamePlay.attr._trippy) tile.drawTrippy(display,x,y);
+        else tile.draw(display,x,y,true);
       }
 
       var items = this.getItems(mapPos);

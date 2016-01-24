@@ -17,8 +17,16 @@ Game.MapTileSets = {
           else if(x>=31 && x <=37){
             if(y>=34 && y<=37) {
               mapTiles[x][y] = Game.Tile.woodTile;
-            } else mapTiles[x][y] = Game.Tile.floorTile;
-          } else mapTiles[x][y] = Game.Tile.floorTile;
+            } else if(Game.UIMode.gamePlay.attr._trippy) {
+              mapTiles[x][y] = Game.Tile.trippyFloorTile;
+            } else {
+              mapTiles[x][y] = Game.Tile.floorTile;
+            }
+          } else if(Game.UIMode.gamePlay.attr._trippy) {
+            mapTiles[x][y] = Game.Tile.trippyFloorTile;
+          } else {
+            mapTiles[x][y] = Game.Tile.floorTile;
+          }
         } else {
           mapTiles[x][y] = Game.Tile.wallTile;
         }
