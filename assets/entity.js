@@ -19,7 +19,7 @@ Game.Entity.prototype.destroy = function() {
     //remove from datastore
     Game.DATASTORE.ENTITY[this.getId()] = undefined;
     //remove from scheduler
-    Game.Scheduler.remove(this);
+    this.getMap().attr._Scheduler.remove(this);
 };
 Game.Entity.prototype.getMap = function() {
   return Game.DATASTORE.MAP[this.attr._mapId];

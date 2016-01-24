@@ -8,7 +8,9 @@ Game.MapTileSets = {
       // run again then update map
       generator.create(function(x,y,v) {
         if (v === 0) {
-          if(x == 34 && y == 37 ) mapTiles[x][y] = Game.Tile.mirrorDoorTile;
+          if (x == 48 && y == 25 ) mapTiles[x][y] = Game.Tile.toForrestTile;
+          else if (x == 1 && y == 25 ) mapTiles[x][y] = Game.Tile.toDungeonTile;
+          else if(x == 34 && y == 37 ) mapTiles[x][y] = Game.Tile.mirrorDoorTile;
           else if(x == 33 && y == 35 ) mapTiles[x][y] = Game.Tile.hTile;
           else if(x == 34 && y == 35 ) mapTiles[x][y] = Game.Tile.oTile;
           else if(x == 35 && y == 35 ) mapTiles[x][y] = Game.Tile.mTile;

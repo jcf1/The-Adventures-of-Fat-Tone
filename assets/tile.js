@@ -35,9 +35,11 @@ Game.Tile.trippyFloorTile = new Game.Tile({name:'trippy floor',chr:'.',walkable:
 Game.Tile.wallTile = new Game.Tile({name:'wall',chr:'#'});
 Game.Tile.woodTile = new Game.Tile({name:'wood',chr:'#',fg: '#670A0A',transparent:true});
 Game.Tile.doorTile = new Game.Tile({name:'door',chr:'-',fg:'#cc3300',walkable:true,transparent:true});
-Game.Tile.invisibleTile = new Game.Tile({name:'invisible',chr:' ',transparent:true});
+Game.Tile.invisibleTile = new Game.Tile({name:'invisible wall',chr:' ',transparent:true});
 Game.Tile.lockedDoorTile = new Game.Tile({name:'locked door',chr:'='});
 Game.Tile.mirrorDoorTile = new Game.Tile({name:'mirror door',chr: '-', transparent:true});
 Game.Tile.hTile = new Game.Tile({name:'H',chr:'H',transparent:true});
 Game.Tile.oTile = new Game.Tile({name:'o',chr:'o',transparent:true});
 Game.Tile.mTile = new Game.Tile({name:'M',chr:'M',transparent:true});
+Game.Tile.toDungeonTile = new Game.Tile({name:'to the Dungeon',chr:'⭅',fg: '#CD8500',transparent:true});
+Game.Tile.toForrestTile = new Game.Tile({name:'to the Forrest',chr:'⭆',fg: '#008B45',transparent:true});
