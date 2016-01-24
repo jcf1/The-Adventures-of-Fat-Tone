@@ -166,7 +166,12 @@ Game.KeyBinding = {
     PERSISTENCE_NEW  : {action_group:'persist' ,guid:Game.util.uniqueId() ,ordering:2.3 ,short:'new game' ,long :'start a new game',
       persist: {label:'N' ,inputMatch:ROT.VK_N ,inputType:'keydown'  ,inputMetaShift:true  ,inputMetaCtrl:false}
     },
-
+    ANSWER_YES : {action_group:'answer' ,guid:Game.util.uniqueId() ,ordering:2.4 ,short:'yes' ,long :'answer yes to a question',
+      all: {label:'y' ,inputMatch:ROT.VK_Y ,inputType:'keydown'  ,inputMetaShift:false  ,inputMetaCtrl:false}
+    },
+    ANSWER_NO : {action_group:'answer' ,guid:Game.util.uniqueId() ,ordering:2.5 ,short:'no' ,long :'answer no to a question',
+      all: {label:'n' ,inputMatch:ROT.VK_N ,inputType:'keydown'  ,inputMetaShift:false  ,inputMetaCtrl:false}
+    },
     MOVE_U    : {action_group:'base_movement' ,guid:Game.util.uniqueId() ,ordering:3 ,short:'move' ,long :'move straight up',
       directional:{label:'↑' ,inputMatch:ROT.VK_UP ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false},
       numpad: {label:'8' ,inputMatch:ROT.VK_NUMPAD8 ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false} ,
