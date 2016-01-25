@@ -210,7 +210,7 @@ Game.UIMode.gamePlay = {
 //#############################################################################
 //#############################################################################
 
-Game.UIMode.gamePlayForrest = {
+Game.UIMode.gamePlayForest = {
   attr: {
     _mapId:'',
     _cameraX: 100,
@@ -220,7 +220,7 @@ Game.UIMode.gamePlayForrest = {
     _prevX: 0,
     _prevY: 0
   },
-  JSON_KEY: 'UIMode_gamePlayForrest',
+  JSON_KEY: 'UIMode_gamePlayForest',
   enter: function() {
     if (this.attr._avatarId) {
       this.setCameraToAvatar();
@@ -348,8 +348,8 @@ Game.UIMode.gamePlayForrest = {
     }
     return false;
   },
-  setupForrest: function(ava) {
-    this.setMap(new Game.Map('forrest'));
+  setupForest: function(ava) {
+    this.setMap(new Game.Map('forest'));
     this.getMap().initializeTimingEngine();
     this.setAvatar(ava);
     this.attr._prevX = ava.getX();
@@ -359,7 +359,7 @@ Game.UIMode.gamePlayForrest = {
 
     this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
 
-    for (var ecount = 0; ecount < 50; ecount++) {
+    for (var ecount = 0; ecount < 0; ecount++) {
       this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkablePosition());
@@ -421,21 +421,19 @@ Game.UIMode.gamePlayMirror = {
       this.returnToTown();
       return false;
     }
-    var tookTurn = false;
     if (actionBinding.actionKey == 'MOVE_U') {
-      tookTurn = this.moveAvatar(0, -1);
+      this.moveAvatar(0, -1);
       this.attr._input++;
     } else if (actionBinding.actionKey == 'MOVE_L') {
-      tookTurn = this.moveAvatar(-1, 0);
+      this.moveAvatar(-1, 0);
       this.attr._input++;
     } else if (actionBinding.actionKey == 'MOVE_WAIT') {
-      tookTurn = true;
       this.attr._input++;
     } else if (actionBinding.actionKey == 'MOVE_R') {
-      tookTurn = this.moveAvatar(1, 0);
+      this.moveAvatar(1, 0);
       this.attr._input++;
     } else if (actionBinding.actionKey == 'MOVE_D') {
-      tookTurn = this.moveAvatar(0, 1);
+      this.moveAvatar(0, 1);
       this.attr._input++;
     } else if (actionBinding.actionKey == 'INVENTORY') {
       Game.addUIMode('LAYER_inventoryListing');
@@ -443,7 +441,7 @@ Game.UIMode.gamePlayMirror = {
       var pickUpList = Game.util.objectArrayToIdArray(this.getAvatar().getMap().getItems(this.getAvatar().getPos()));
       if (pickUpList.length <= 1) {
         var pickupRes = this.getAvatar().pickupItems(pickUpList);
-        tookTurn = pickupRes.numItemsPickedUp > 0;
+        pickupRes.numItemsPickedUp > 0;
       } else {
         Game.addUIMode('LAYER_inventoryPickup');
       }
@@ -464,12 +462,13 @@ Game.UIMode.gamePlayMirror = {
     }
 
     this.getAvatar().raiseSymbolActiveEvent('actionDone');
-    if (tookTurn) {
-      //this.getAvatar().raiseSymbolActiveEvent('actionDone');
-      Game.Message.ageMessages();
-      return true;
+    Game.Message.ageMessages();
+    console.log(this.attr._input);
+    if(this.attr._input >= 400) {
+      console.log('here')
+      this.returnToTown();
+      Game.Message.sendMessage('You failed to get the item in the time limit.');
     }
-    return false;
   },
   returnToTown: function() {
     Game.UIMode.gamePlay.setAvatar(Game.UIMode.gamePlay.getAvatar());

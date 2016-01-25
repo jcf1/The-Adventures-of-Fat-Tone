@@ -8,7 +8,7 @@ Game.MapTileSets = {
       // run again then update map
       generator.create(function(x,y,v) {
         if (v === 0) {
-          if (x == 48 && y == 25 ) mapTiles[x][y] = Game.Tile.toForrestTile;
+          if (x == 48 && y == 25 ) mapTiles[x][y] = Game.Tile.toForestTile;
           else if (x == 1 && y == 25 ) mapTiles[x][y] = Game.Tile.toDungeonTile;
           else if(x == 34 && y == 37 ) mapTiles[x][y] = Game.Tile.mirrorDoorTile;
           else if(x == 33 && y == 35 ) mapTiles[x][y] = Game.Tile.hTile;
@@ -35,9 +35,9 @@ Game.MapTileSets = {
       return mapTiles;
     }
   },
-  forrest: {
-    _width: 300,
-    _height: 200,
+  forest: {
+    _width: 30,
+    _height: 20,
     getMapTiles: function () {
       var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
       var generator = new ROT.Map.Cellular(this._width,this._height);
@@ -54,7 +54,7 @@ Game.MapTileSets = {
         if (v === 1) {
           mapTiles[x][y] = Game.Tile.floorTile;
         } else {
-          mapTiles[x][y] = Game.Tile.wallTile;
+          mapTiles[x][y] = Game.Tile.forestTile;
         }
       });
 

@@ -113,6 +113,7 @@ Game.EntityMixin.PlayerActor = {
       },
       'walkForbidden' : function(evtData) {
         if(evtData.target.getName() == 'mirror door' && this.mirrorBumps == 0){
+          console.log("here "+this.mirrorBumps);
           this.mirrorBumps++;
           Game.Message.sendMessage('Bump into the door again to go to the Hall of Mirrors Mini-Game');
         } else if (evtData.target.getName() == 'mirror door'){
@@ -121,11 +122,17 @@ Game.EntityMixin.PlayerActor = {
           this.mirrorBumps = 0;
         }
 
-        if(evtData.target.getName() == 'to the Forrest'){
-          Game.Message.sendMessage("You entered the Forrest");
-          Game.UIMode.gamePlayForrest.setupForrest(Game.UIMode.gamePlay.getAvatar());
+        if(evtData.target.getName() == 'to the Forest'){
+          Game.Message.sendMessage("You entered the Forest");
+          Game.UIMode.gamePlayForest.setupForest(Game.UIMode.gamePlay.getAvatar());
           Game.UIMode.gamePlay.removeAvatar();
-          Game.switchUIMode('gamePlayForrest');
+          Game.switchUIMode('gamePlayForest');
+        }
+
+        if(evtData.target.getName() == 'forest wall'){
+          var turns = Game.util.randomInt(1,5);
+          
+          Game.Message.sendMessage("You cut down a tree which took "+turns+" turns");
         }
       },
       'actionDone': function(evtData) {
