@@ -124,7 +124,6 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlayForrest.setupForrest(Game.UIMode.gamePlay.getAvatar());
             Game.UIMode.gamePlay.removeAvatar();
             Game.switchUIMode('gamePlayForrest');
-            this.setBumpEvt(nameEvt);
           }
           Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
@@ -140,11 +139,6 @@ Game.EntityMixin.PlayerActor = {
         if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest'){
           Game.UIMode.gamePlay.setBumped(true);
           this.setBumpEvt(nameEvt);
-        }
-
-        if(nameEvt == 'Forrest'){
-          Game.Message.sendMessage("You entered the Forrest");
-
         }
       },
       'actionDone': function(evtData) {
