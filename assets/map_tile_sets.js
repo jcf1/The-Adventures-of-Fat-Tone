@@ -35,7 +35,7 @@ Game.MapTileSets = {
       return mapTiles;
     }
   },
-  caves1: {
+  forrest: {
     _width: 300,
     _height: 200,
     getMapTiles: function () {
@@ -52,7 +52,7 @@ Game.MapTileSets = {
       // run again then update map
       generator.create(function(x,y,v) {
         if (v === 1) {
-          mapTiles[x][y] = Game.Tile.trippyFloorTile;
+          mapTiles[x][y] = Game.Tile.floorTile;
         } else {
           mapTiles[x][y] = Game.Tile.wallTile;
         }

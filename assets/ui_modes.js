@@ -71,6 +71,9 @@ Game.UIMode.gamePlay = {
   setAvatar: function (a) {
     this.attr._avatarId = a.getId();
   },
+  removeAvatar: function() {
+    this.getMap().extractEntity(this.getAvatar());
+  },
   handleInput: function(eventType,evt) {
     var actionBinding = Game.KeyBinding.getInputBinding(eventType, evt);
 
@@ -221,6 +224,182 @@ Game.UIMode.gamePlay = {
 //#############################################################################
 //#############################################################################
 
+Game.UIMode.gamePlayForrest = {
+  attr: {
+    _mapId:'',
+    _cameraX: 100,
+    _cameraY: 100,
+    _avatarId: '',
+    _input: 0,
+    _prevX: 0,
+    _prevY: 0
+  },
+  JSON_KEY: 'UIMode_gamePlayForrest',
+  enter: function() {
+    if (this.attr._avatarId) {
+      this.setCameraToAvatar();
+    }
+    this.getMap().unlockTimingEngine();
+    Game.refresh();
+  },
+  exit: function() {
+    Game.refresh();
+    this.getMap().lockTimingEngine();
+  },
+  getMap: function () {
+    return Game.DATASTORE.MAP[this.attr._mapId];
+  },
+  setMap: function (m) {
+    this.attr._mapId = m.getId();
+  },
+  getAvatar: function () {
+    return Game.DATASTORE.ENTITY[this.attr._avatarId];
+  },
+  setAvatar: function (a) {
+    this.attr._avatarId = a.getId();
+  },
+  handleInput: function(eventType,evt) {
+    var actionBinding = Game.KeyBinding.getInputBinding(eventType, evt);
+    if (actionBinding.actionKey == 'CANCEL') {
+      this.returnToTown();
+      return false;
+    }
+    var tookTurn = false;
+    if (actionBinding.actionKey == 'MOVE_U') {
+      tookTurn = this.moveAvatar(0, -1);
+      this.attr._input++;
+    } else if (actionBinding.actionKey == 'MOVE_L') {
+      tookTurn = this.moveAvatar(-1, 0);
+      this.attr._input++;
+    } else if (actionBinding.actionKey == 'MOVE_WAIT') {
+      tookTurn = true;
+      this.attr._input++;
+    } else if (actionBinding.actionKey == 'MOVE_R') {
+      tookTurn = this.moveAvatar(1, 0);
+      this.attr._input++;
+    } else if (actionBinding.actionKey == 'MOVE_D') {
+      tookTurn = this.moveAvatar(0, 1);
+      this.attr._input++;
+    } else if (actionBinding.actionKey == 'INVENTORY') {
+      Game.addUIMode('LAYER_inventoryListing');
+    } else if (actionBinding.actionKey == 'PICKUP') {
+      var pickUpList = Game.util.objectArrayToIdArray(this.getAvatar().getMap().getItems(this.getAvatar().getPos()));
+      if (pickUpList.length <= 1) {
+        var pickupRes = this.getAvatar().pickupItems(pickUpList);
+        tookTurn = pickupRes.numItemsPickedUp > 0;
+      } else {
+        Game.addUIMode('LAYER_inventoryPickup');
+      }
+    } else if (actionBinding.actionKey == 'DROP') {
+      Game.addUIMode('LAYER_inventoryDrop');
+    } else if (actionBinding.actionKey == 'EAT') {
+      Game.addUIMode('LAYER_inventoryEat');
+    } else if (actionBinding.actionKey == 'EXAMINE') {
+      Game.addUIMode('LAYER_inventoryExamine');
+    } else if (actionBinding.actionKey == 'CHANGE_BINDINGS') {
+      Game.KeyBinding.swapToNextKeyBinding();
+    } else if (actionBinding.actionKey == 'PERSISTENCE') {
+      Game.Message.sendMesage('You cannot save while in the Mirror World.');
+    } else if (actionBinding.actionKey == 'HELP') {
+      // console.log('TODO: set up help stuff for gameplay');
+      Game.UIMode.LAYER_textReading.setText(Game.KeyBinding.getBindingHelpText());
+      Game.addUIMode('LAYER_textReading');
+    }
+
+    if (tookTurn) {
+      this.getAvatar().raiseSymbolActiveEvent('actionDone');
+      Game.Message.ageMessages();
+      return true;
+    }
+    return false;
+  },
+  returnToTown: function() {
+    Game.UIMode.gamePlay.setAvatar(this.getAvatar());
+    Game.UIMode.gamePlay.getMap().addEntity(Game.UIMode.gamePlay.getAvatar(),{x:this.attr._prevX,y:this.attr._prevY});
+    Game.UIMode.gamePlay.setCameraToAvatar();
+    Game.switchUIMode('gamePlay');
+  },
+  renderOnMain: function(display) {
+    var seenCells = this.getAvatar().getVisibleCells();
+    this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY,{
+      visibleCells:seenCells,
+      maskedCells:this.getAvatar().getRememberedCoordsForMap()
+    });
+    this.getAvatar().rememberCoords(seenCells);
+  },
+  renderAvatarInfo: function (display) {
+    var av = this.getAvatar();
+    var y = 0;
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"ATTACK");
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"Accuracy: "+av.getAttackHit());
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"Power: "+av.getAttackDamage());
+    y++;
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"DEFENSE");
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"Dodging: "+av.getAttackAvoid());
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"Toughness: "+av.getDamageMitigation());
+    y++;
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"LIFE: "+av.getCurHp()+"/"+av.getMaxHp());
+    y++;
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"MOVES: "+av.getTurns());
+    y++;
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"KILLS: "+av.getTotalKills());
+    y++;
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"GOLD: "+av.getCurrentMoney());
+    y++;
+    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+av.getHungerStateDescr());
+  },
+  moveAvatar: function (pdx,pdy) {
+    var moveResp = this.getAvatar().raiseSymbolActiveEvent('adjacentMove',{dx:pdx,dy:pdy});
+    // if (this.getAvatar().tryWalk(this.getMap(),dx,dy)) {
+    if (moveResp.madeAdjacentMove && moveResp.madeAdjacentMove[0]) {
+      this.setCameraToAvatar();
+      var trip = Math.floor(Math.random()*1000001);
+      if(trip === 666666) {
+        Game.Message.sendMessage("You have fallen and can't get up.");
+        Game.switchUIMode('gameLose');
+      }
+      return true;
+    }
+    return false;
+  },
+  setupForrest: function(ava) {
+    this.setMap(new Game.Map('forrest'));
+    this.getMap().initializeTimingEngine();
+    this.setAvatar(ava);
+    this.attr._prevX = ava.getX();
+    this.attr._prevY = ava.getY();
+    this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
+    this.setCameraToAvatar();
+
+    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
+
+    for (var ecount = 0; ecount < 50; ecount++) {
+      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
+      this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
+      this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkablePosition());
+    }
+  },
+  moveCamera: function (dx,dy) {
+    this.setCamera(this.attr._cameraX + dx,this.attr._cameraY + dy);
+  },
+  setCamera: function (sx,sy) {
+    this.attr._cameraX = Math.min(Math.max(0,sx),this.getMap().getWidth());
+    this.attr._cameraY = Math.min(Math.max(0,sy),this.getMap().getHeight());
+  },
+  setCameraToAvatar: function () {
+    this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
+  },
+  toJSON: function() {
+    return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
+  },
+  fromJSON: function (json) {
+    Game.UIMode.gamePersistence.BASE_fromJSON.call(this,json);
+  }
+};
+
+//#############################################################################
+//#############################################################################
+
 Game.UIMode.gamePlayMirror = {
   attr: {
     _mapId:'',
@@ -298,8 +477,9 @@ Game.UIMode.gamePlayMirror = {
       Game.addUIMode('LAYER_textReading');
     }
 
+    this.getAvatar().raiseSymbolActiveEvent('actionDone');
     if (tookTurn) {
-      this.getAvatar().raiseSymbolActiveEvent('actionDone');
+      //this.getAvatar().raiseSymbolActiveEvent('actionDone');
       Game.Message.ageMessages();
       return true;
     }
