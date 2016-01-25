@@ -8,8 +8,10 @@ Game.EntityMixin.PlayerMessager = {
     listeners: {
       'walkForbidden': function(evtData) {
         var nameEvt = evtData.target.getName();
-        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest')
+        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle')
           Game.Message.sendMessage('Do you want to walk into the '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
+        else if (nameEvt == 'The Red Heeringa')
+          Game.Message.sendMessage('Do you want to walk into '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else Game.Message.sendMessage('You cannot walk into the ' + nameEvt);
           Game.renderMessage();
           Game.Message.ageMessages();
@@ -136,7 +138,7 @@ Game.EntityMixin.PlayerActor = {
       },
       'walkForbidden' : function(evtData) {
         var nameEvt = evtData.target.getName();
-        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest'){
+        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle' || nameEvt == 'The Red Heeringa'){
           Game.UIMode.gamePlay.setBumped(true);
           this.setBumpEvt(nameEvt);
         }
