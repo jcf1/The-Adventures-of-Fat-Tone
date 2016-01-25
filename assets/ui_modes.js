@@ -232,7 +232,8 @@ Game.UIMode.gamePlayForrest = {
     _avatarId: '',
     _input: 0,
     _prevX: 0,
-    _prevY: 0
+    _prevY: 0,
+    _bumped: false
   },
   JSON_KEY: 'UIMode_gamePlayForrest',
   enter: function() {
@@ -245,6 +246,12 @@ Game.UIMode.gamePlayForrest = {
   exit: function() {
     Game.refresh();
     this.getMap().lockTimingEngine();
+  },
+  hasBumped: function () {
+    return this.attr._bumped;
+  },
+  setBumped: function (m) {
+    this.attr._bumped = m;
   },
   getMap: function () {
     return Game.DATASTORE.MAP[this.attr._mapId];
@@ -260,10 +267,10 @@ Game.UIMode.gamePlayForrest = {
   },
   handleInput: function(eventType,evt) {
     var actionBinding = Game.KeyBinding.getInputBinding(eventType, evt);
-    if (actionBinding.actionKey == 'CANCEL') {
-      this.returnToTown();
-      return false;
-    }
+
+    if (!actionBinding) return false;
+    else if (actionBinding.actionKey == 'CANCEL') { this.returnToTown(); return false;}
+
     var tookTurn = false;
     if (actionBinding.actionKey == 'MOVE_U') {
       tookTurn = this.moveAvatar(0, -1);

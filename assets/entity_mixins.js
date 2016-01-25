@@ -120,6 +120,12 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlayMirror.setupMirror();
             Game.switchUIMode('gamePlayMirror');
           }
+          if (this.getBumpEvt() == 'Forrest') {
+            Game.UIMode.gamePlayForrest.setupForrest(Game.UIMode.gamePlay.getAvatar());
+            Game.UIMode.gamePlay.removeAvatar();
+            Game.switchUIMode('gamePlayForrest');
+            this.setBumpEvt(nameEvt);
+          }
           Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
           Game.Message.sendMessage('Please answer yes [y] or no [n]');
@@ -136,11 +142,9 @@ Game.EntityMixin.PlayerActor = {
           this.setBumpEvt(nameEvt);
         }
 
-        if(evtData.target.getName() == 'to the Forrest'){
+        if(nameEvt == 'Forrest'){
           Game.Message.sendMessage("You entered the Forrest");
-          Game.UIMode.gamePlayForrest.setupForrest(Game.UIMode.gamePlay.getAvatar());
-          Game.UIMode.gamePlay.removeAvatar();
-          Game.switchUIMode('gamePlayForrest');
+
         }
       },
       'actionDone': function(evtData) {
