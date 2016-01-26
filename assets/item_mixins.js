@@ -22,6 +22,37 @@ Game.ItemMixin.Food = {
   },
   setFoodValue: function (v) {
     this.attr._Food_attr.foodValue = v;
+  },
+  isElixir: function () {
+    return false;
+  }
+};
+
+Game.ItemMixin.Elixir = {
+  META: {
+    mixinName: 'Elixir',
+    mixinGroup: 'Elixir',
+    stateNamespace: '_Elixir_attr',
+    stateModel:  {
+      elixirBoost: ''
+    },
+    init: function (template) {
+      this.attr._Elixir_attr.elixirBoost = template.elixirBoost || '';
+    },
+    listeners: {
+      'getStatsForDisplay': function(evtData) {
+        return {'elixir boost': this.getElixirBoost()};
+      }
+    }
+  },
+  getElixirBoost: function() {
+    return this.attr._Elixir_attr.elixirBoost;
+  },
+  setElixirBoost: function (v) {
+    this.attr._Elixir_attr.elixirBoost = v;
+  },
+  isElixir: function () {
+    return true;
   }
 };
 

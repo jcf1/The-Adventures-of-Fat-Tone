@@ -341,9 +341,26 @@ Game.EntityMixin.FoodConsumer = {
   setFoodConsumedPer1000: function (n) {
     this.attr._FoodConsumer_attr.foodConsumedPer1000Ticks = n;
   },
-  eatFood: function (foodAmt) {
-    this.attr._FoodConsumer_attr.currentFood += foodAmt;
+  eatFood: function (foodItm) {
+    this.attr._FoodConsumer_attr.currentFood += foodItm.getFoodValue();
     if (this.attr._FoodConsumer_attr.currentFood > this.attr._FoodConsumer_attr.maxFood) {this.attr._FoodConsumer_attr.currentFood = this.attr._FoodConsumer_attr.maxFood;}
+    if (foodItm.isElixir()) {
+      var boost = foodItm.getElixirBoost();
+      if (boost == 'power') {
+        this.raiseSymbolActiveEvent('raiseAttackDamage', 1);
+      } else if (boost == 'accuracy') {
+        this.raiseSymbolActiveEvent('raiseAttackHit', 1);
+      } else if (boost == 'dodging') {
+        this.raiseSymbolActiveEvent('raiseAttackAvoid', 1);
+      } else if (boost == 'toughness') {
+        this.raiseSymbolActiveEvent('raiseDamageMitigation', 1);
+      } else if (boost == 'all') {
+        this.raiseSymbolActiveEvent('raiseAttackDamage', 1)
+        this.raiseSymbolActiveEvent('raiseAttackHit', 1);
+        this.raiseSymbolActiveEvent('raiseAttackAvoid', 1);
+        this.raiseSymbolActiveEvent('raiseDamageMitigation', 1);
+      }
+    }
   },
   getHungrierBy: function (foodAmt) {
     //this.attr._FoodConsumer_attr.currentFood -= foodAmt;
@@ -559,6 +576,12 @@ Game.EntityMixin.MeleeAttacker = {
       'calcAttackDamage': function(evtData) {
         // console.log('MeleeAttacker bumpEntity');
         return {attackDamage:this.getAttackDamage()};
+      },
+      'raiseAttackDamage': function(evtData) {
+        this.setAttackDamage(this.getAttackDamage() + evtData);
+      },
+      'raiseAttackAccuracy' : function(evtData) {
+        this.setAttackHit(this.getAttackHit() + evtData)
       }
     }
   },
@@ -567,6 +590,12 @@ Game.EntityMixin.MeleeAttacker = {
   },
   getAttackDamage: function () {
     return this.attr._MeleeAttacker_attr.attackDamage;
+  },
+  setAttackHit: function (n) {
+    this.attr._MeleeAttacker_attr.attackHit = n;
+  },
+  setAttackDamage: function (n) {
+    this.attr._MeleeAttacker_attr.attackDamage = n;
   }
 };
 
@@ -591,6 +620,12 @@ Game.EntityMixin.MeleeDefender = {
       'calcDamageMitigation': function(evtData) {
         // console.log('MeleeAttacker bumpEntity');
         return {damageMitigation:this.getDamageMitigation()};
+      },
+      'raiseAttackAvoid': function(evtData) {
+        this.setAttackAvoid(this.getAttackAvoid() + evtData);
+      },
+      'raiseDamageMitigation' : function(evtData) {
+        this.setDamageMitigation(this.getDamageMitigation() + evtData)
       }
     }
   },
@@ -599,6 +634,12 @@ Game.EntityMixin.MeleeDefender = {
   },
   getDamageMitigation: function () {
     return this.attr._MeleeDefenderr_attr.damageMitigation;
+  },
+  setAttackAvoid: function (n) {
+    this.attr._MeleeDefenderr_attr.attackAvoid = n;
+  },
+  setDamageMitigation: function (n) {
+    this.attr._MeleeDefenderr_attr.damageMitigation = n;
   }
 };
 

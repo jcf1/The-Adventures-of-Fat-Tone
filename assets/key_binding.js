@@ -22,6 +22,10 @@ Game.KeyBinding = {
     this.informPlayer();
   },
   informPlayer: function () {
+    if (this._curBindingKey == 'directional') {
+      Game.Message.sendMessage('Please use the arrow keys to move.')
+    }
+    else 
     Game.Message.sendMessage('using '+this._curBindingKey+' key bindings');
     Game.renderMessage();
   },

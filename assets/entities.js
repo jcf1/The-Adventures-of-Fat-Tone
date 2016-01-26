@@ -65,7 +65,7 @@ Game.EntityGenerator.learn({
   attackAvoid: 2,
   chaserActionDuration: 1200,
   attackActionDuration: 3000,
-  mixins: ["HitPoints","ChaserActor","WalkerCorporeal","MeleeAttacker"]
+  mixins: ["HitPoints","ChaserActor","WalkerCorporeal","MeleeAttacker", "Sight"]
 });
 
 Game.EntityGenerator.learn({

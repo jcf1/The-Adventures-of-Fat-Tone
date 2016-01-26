@@ -88,7 +88,7 @@ Game.UIMode.gamePlay = {
       } else this.getAvatar().raiseSymbolActiveEvent('answeredQ','no answer')
       return;
     } else if (actionBinding.actionKey == 'CANCEL') {
-      if(this.getMap().getId() != 'main_town') {
+      if(this.getMap().getTileSetName() != 'main_town') {
         this.returnToTown();
         return false;
       }
@@ -211,19 +211,21 @@ Game.UIMode.gamePlay = {
     this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkablePosition());
 
     var itemPos = '';
-    for (var ecount = 0; ecount < 0; ecount++) {
-     this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
-     this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
-     this.getMap().addEntity(Game.EntityGenerator.create('angry squirrel'),this.getMap().getRandomWalkablePosition());
-     this.getMap().addEntity(Game.EntityGenerator.create('attack slug'),this.getMap().getRandomWalkablePosition());
+    for (var ecount = 0; ecount < 10; ecount++) {
+      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
+    //  this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
+    //  this.getMap().addEntity(Game.EntityGenerator.create('angry squirrel'),this.getMap().getRandomWalkablePosition());
+    //  this.getMap().addEntity(Game.EntityGenerator.create('attack slug'),this.getMap().getRandomWalkablePosition());
 
-     itemPos = this.getMap().getRandomWalkablePosition();
-     this.getMap().addItem(Game.ItemGenerator.create('rock'),itemPos);
+    //  itemPos = this.getMap().getRandomWalkablePosition();
+    //  this.getMap().addItem(Game.ItemGenerator.create('BrewDog Beer'),itemPos);
 
-     itemPos = this.getMap().getRandomWalkablePosition();
-     this.getMap().addItem(Game.ItemGenerator.create('apple'),itemPos);
+     //itemPos = this.getMap().getRandomWalkablePosition();
+     //this.getMap().addItem(Game.ItemGenerator.create('BrewDog Beer'),itemPos);
+
+    //  itemPos = this.getMap().getRandomWalkablePosition();
+    //  this.getMap().addItem(Game.ItemGenerator.create('cup noodle'),itemPos);
     }
-    //this.getMap().addItem(Game.ItemGenerator.create('rock'),itemPos);
 
     Game.Message.sendMessage("Kill 3 or more attack slugs to win!");
   },
@@ -1194,7 +1196,7 @@ Game.UIMode.LAYER_inventoryEat = new Game.UIMode.LAYER_itemListing({
       if (selectedItemIds[0]) {
         var foodItem = Game.getAvatar().extractInventoryItems([selectedItemIds[0]])[0];
 //        Game.util.cdebug(foodItem);
-        Game.getAvatar().eatFood(foodItem.getFoodValue());
+        Game.getAvatar().eatFood(foodItem);
         return true;
       }
       return false;

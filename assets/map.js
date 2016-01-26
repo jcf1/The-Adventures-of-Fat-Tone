@@ -235,6 +235,12 @@ Game.Map.prototype.renderAll = function (display,camX,camY) {
       if (ent) {
         ent.draw(display,x,y);
       }
+      var items = this.getItems(mapPos);
+      if (items.length == 1) {
+          items[0].draw(display,x,y);
+      } else if (items.length > 1) {
+          Game.Symbol.ITEM_PILE.draw(display,x,y);
+      }
     }
   }
 
