@@ -88,9 +88,10 @@ Game.UIMode.gamePlay = {
       } else this.getAvatar().raiseSymbolActiveEvent('answeredQ','no answer')
       return;
     } else if (actionBinding.actionKey == 'CANCEL') {
-      if(this.getMap().getId() != 'main_town')
-      this.returnToTown();
-      return false;
+      if(this.getMap().getId() != 'main_town') {
+        this.returnToTown();
+        return false;
+      }
     }
     var tookTurn = false;
     if (actionBinding.actionKey == 'MOVE_U') {
@@ -211,7 +212,7 @@ Game.UIMode.gamePlay = {
     this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkablePosition());
 
     var itemPos = '';
-    for (var ecount = 0; ecount < 4; ecount++) {
+    for (var ecount = 0; ecount < 0; ecount++) {
      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
      this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
      this.getMap().addEntity(Game.EntityGenerator.create('angry squirrel'),this.getMap().getRandomWalkablePosition());
@@ -401,8 +402,7 @@ Game.UIMode.gameLose = {
     Game.renderAvatar();
     Game.renderMain();
   },
-  exit: function() {
-  },
+  exit: function() {},
   handleInput: function(eventType,evt) {
     if (eventType == 'keypress' && evt.keyCode == 61) {
       Game.switchUIMode('gamePersistence');
