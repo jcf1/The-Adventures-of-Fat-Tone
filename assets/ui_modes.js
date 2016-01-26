@@ -39,7 +39,9 @@ Game.UIMode.gamePlay = {
     _cameraY: 100,
     _steps: 0,
     _trippy:false,
-    _bumped: false
+    _bumped: false,
+    _prevX: 0,
+    _prevY: 0
   },
   JSON_KEY: 'UIMode_gamePlay',
   enter: function() {
@@ -85,7 +87,11 @@ Game.UIMode.gamePlay = {
         this.getAvatar().raiseSymbolActiveEvent('answeredQ','no');
       } else this.getAvatar().raiseSymbolActiveEvent('answeredQ','no answer')
       return;
-    } else if (actionBinding.actionKey == 'CANCEL') return false
+    } else if (actionBinding.actionKey == 'CANCEL') {
+      if(this.getMap().getId() != 'main_town')
+      this.returnToTown();
+      return false;
+    }
     var tookTurn = false;
     if (actionBinding.actionKey == 'MOVE_U') {
       tookTurn = this.moveAvatar(0, -1);
@@ -131,12 +137,13 @@ Game.UIMode.gamePlay = {
     return false;
   },
   renderOnMain: function(display) {
-    var seenCells = this.getAvatar().getVisibleCells();
-    this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY,{
-      visibleCells:seenCells,
-      maskedCells:this.getAvatar().getRememberedCoordsForMap()
-    });
-    this.getAvatar().rememberCoords(seenCells);
+    // var seenCells = this.getAvatar().getVisibleCells();
+    // this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY,{
+    //   visibleCells:seenCells,
+    //   maskedCells:this.getAvatar().getRememberedCoordsForMap()
+    // });
+    // this.getAvatar().rememberCoords(seenCells);
+    this.getMap().renderAll(display,this.attr._cameraX,this.attr._cameraY);
   },
   renderAvatarInfo: function (display) {
     var av = this.getAvatar();
@@ -184,6 +191,13 @@ Game.UIMode.gamePlay = {
   setCameraToAvatar: function () {
     this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
   },
+  returnToTown: function() {
+    this.setMap(new Game.Map('main_town'));
+    this.getMap().initializeTimingEngine();
+    this.getMap().addEntity(this.getAvatar(),{x:this.attr._prevX,y:this.attr._prevY});
+    this.setCameraToAvatar();
+    Game.renderMain();
+  },
   setupNewGame: function () {
     // this.setMap(new Game.Map('main_town'));
     this.setMap(new Game.Map('main_town'));
@@ -213,168 +227,11 @@ Game.UIMode.gamePlay = {
 
     Game.Message.sendMessage("Kill 3 or more attack slugs to win!");
   },
-  toJSON: function() {
-    return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
-  },
-  fromJSON: function (json) {
-    Game.UIMode.gamePersistence.BASE_fromJSON.call(this,json);
-  }
-};
-
-//#############################################################################
-//#############################################################################
-
-Game.UIMode.gamePlayForrest = {
-  attr: {
-    _mapId:'',
-    _cameraX: 100,
-    _cameraY: 100,
-    _avatarId: '',
-    _input: 0,
-    _prevX: 0,
-    _prevY: 0,
-    _bumped: false
-  },
-  JSON_KEY: 'UIMode_gamePlayForrest',
-  enter: function() {
-    if (this.attr._avatarId) {
-      this.setCameraToAvatar();
-    }
-    this.getMap().unlockTimingEngine();
-    Game.refresh();
-  },
-  exit: function() {
-    Game.refresh();
-    this.getMap().lockTimingEngine();
-  },
-  hasBumped: function () {
-    return this.attr._bumped;
-  },
-  setBumped: function (m) {
-    this.attr._bumped = m;
-  },
-  getMap: function () {
-    return Game.DATASTORE.MAP[this.attr._mapId];
-  },
-  setMap: function (m) {
-    this.attr._mapId = m.getId();
-  },
-  getAvatar: function () {
-    return Game.DATASTORE.ENTITY[this.attr._avatarId];
-  },
-  setAvatar: function (a) {
-    this.attr._avatarId = a.getId();
-  },
-  handleInput: function(eventType,evt) {
-    var actionBinding = Game.KeyBinding.getInputBinding(eventType, evt);
-
-    if (!actionBinding) return false;
-    else if (actionBinding.actionKey == 'CANCEL') { this.returnToTown(); return false;}
-
-    var tookTurn = false;
-    if (actionBinding.actionKey == 'MOVE_U') {
-      tookTurn = this.moveAvatar(0, -1);
-      this.attr._input++;
-    } else if (actionBinding.actionKey == 'MOVE_L') {
-      tookTurn = this.moveAvatar(-1, 0);
-      this.attr._input++;
-    } else if (actionBinding.actionKey == 'MOVE_WAIT') {
-      tookTurn = true;
-      this.attr._input++;
-    } else if (actionBinding.actionKey == 'MOVE_R') {
-      tookTurn = this.moveAvatar(1, 0);
-      this.attr._input++;
-    } else if (actionBinding.actionKey == 'MOVE_D') {
-      tookTurn = this.moveAvatar(0, 1);
-      this.attr._input++;
-    } else if (actionBinding.actionKey == 'INVENTORY') {
-      Game.addUIMode('LAYER_inventoryListing');
-    } else if (actionBinding.actionKey == 'PICKUP') {
-      var pickUpList = Game.util.objectArrayToIdArray(this.getAvatar().getMap().getItems(this.getAvatar().getPos()));
-      if (pickUpList.length <= 1) {
-        var pickupRes = this.getAvatar().pickupItems(pickUpList);
-        tookTurn = pickupRes.numItemsPickedUp > 0;
-      } else {
-        Game.addUIMode('LAYER_inventoryPickup');
-      }
-    } else if (actionBinding.actionKey == 'DROP') {
-      Game.addUIMode('LAYER_inventoryDrop');
-    } else if (actionBinding.actionKey == 'EAT') {
-      Game.addUIMode('LAYER_inventoryEat');
-    } else if (actionBinding.actionKey == 'EXAMINE') {
-      Game.addUIMode('LAYER_inventoryExamine');
-    } else if (actionBinding.actionKey == 'CHANGE_BINDINGS') {
-      Game.KeyBinding.swapToNextKeyBinding();
-    } else if (actionBinding.actionKey == 'PERSISTENCE') {
-      Game.Message.sendMesage('You cannot save while in the Mirror World.');
-    } else if (actionBinding.actionKey == 'HELP') {
-      // console.log('TODO: set up help stuff for gameplay');
-      Game.UIMode.LAYER_textReading.setText(Game.KeyBinding.getBindingHelpText());
-      Game.addUIMode('LAYER_textReading');
-    }
-
-    if (tookTurn) {
-      this.getAvatar().raiseSymbolActiveEvent('actionDone');
-      Game.Message.ageMessages();
-      return true;
-    }
-    return false;
-  },
-  returnToTown: function() {
-    Game.UIMode.gamePlay.setAvatar(this.getAvatar());
-    Game.UIMode.gamePlay.getMap().addEntity(Game.UIMode.gamePlay.getAvatar(),{x:this.attr._prevX,y:this.attr._prevY});
-    Game.UIMode.gamePlay.setCameraToAvatar();
-    Game.switchUIMode('gamePlay');
-  },
-  renderOnMain: function(display) {
-    var seenCells = this.getAvatar().getVisibleCells();
-    this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY,{
-      visibleCells:seenCells,
-      maskedCells:this.getAvatar().getRememberedCoordsForMap()
-    });
-    this.getAvatar().rememberCoords(seenCells);
-  },
-  renderAvatarInfo: function (display) {
-    var av = this.getAvatar();
-    var y = 0;
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"ATTACK");
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"Accuracy: "+av.getAttackHit());
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"Power: "+av.getAttackDamage());
-    y++;
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"DEFENSE");
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"Dodging: "+av.getAttackAvoid());
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"Toughness: "+av.getDamageMitigation());
-    y++;
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"LIFE: "+av.getCurHp()+"/"+av.getMaxHp());
-    y++;
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"MOVES: "+av.getTurns());
-    y++;
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"KILLS: "+av.getTotalKills());
-    y++;
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+"GOLD: "+av.getCurrentMoney());
-    y++;
-    y += display.drawText(1,y,Game.UIMode.DEFAULT_COLOR_STR+av.getHungerStateDescr());
-  },
-  moveAvatar: function (pdx,pdy) {
-    var moveResp = this.getAvatar().raiseSymbolActiveEvent('adjacentMove',{dx:pdx,dy:pdy});
-    // if (this.getAvatar().tryWalk(this.getMap(),dx,dy)) {
-    if (moveResp.madeAdjacentMove && moveResp.madeAdjacentMove[0]) {
-      this.setCameraToAvatar();
-      var trip = Math.floor(Math.random()*1000001);
-      if(trip === 666666) {
-        Game.Message.sendMessage("You have fallen and can't get up.");
-        Game.switchUIMode('gameLose');
-      }
-      return true;
-    }
-    return false;
-  },
-  setupForrest: function(ava) {
-    this.setMap(new Game.Map('forrest'));
+  setupMap: function(map) {
+    this.setMap(new Game.Map(map));
     this.getMap().initializeTimingEngine();
-    this.setAvatar(ava);
-    this.attr._prevX = ava.getX();
-    this.attr._prevY = ava.getY();
+    this.attr._prevX = this.getAvatar().getX();
+    this.attr._prevY = this.getAvatar().getY();
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToAvatar();
 
@@ -385,16 +242,8 @@ Game.UIMode.gamePlayForrest = {
       this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkablePosition());
     }
-  },
-  moveCamera: function (dx,dy) {
-    this.setCamera(this.attr._cameraX + dx,this.attr._cameraY + dy);
-  },
-  setCamera: function (sx,sy) {
-    this.attr._cameraX = Math.min(Math.max(0,sx),this.getMap().getWidth());
-    this.attr._cameraY = Math.min(Math.max(0,sy),this.getMap().getHeight());
-  },
-  setCameraToAvatar: function () {
-    this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
+
+    Game.renderMain();
   },
   toJSON: function() {
     return Game.UIMode.gamePersistence.BASE_toJSON.call(this);

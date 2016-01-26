@@ -123,9 +123,16 @@ Game.EntityMixin.PlayerActor = {
             Game.switchUIMode('gamePlayMirror');
           }
           if (this.getBumpEvt() == 'Forrest') {
-            Game.UIMode.gamePlayForrest.setupForrest(Game.UIMode.gamePlay.getAvatar());
+            Game.UIMode.gamePlay.setupMap('forrest');
             Game.UIMode.gamePlay.removeAvatar();
-            Game.switchUIMode('gamePlayForrest');
+          }
+          if (this.getBumpEvt() == 'Dungeon') {
+            Game.UIMode.gamePlay.setupMap('dungeon');
+            Game.UIMode.gamePlay.removeAvatar();
+          }
+          if (this.getBumpEvt() == 'Castle') {
+            Game.UIMode.gamePlay.setupMap('castle');
+            Game.UIMode.gamePlay.removeAvatar();
           }
           Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
@@ -317,7 +324,7 @@ Game.EntityMixin.FoodConsumer = {
     if (this.attr._FoodConsumer_attr.currentFood > this.attr._FoodConsumer_attr.maxFood) {this.attr._FoodConsumer_attr.currentFood = this.attr._FoodConsumer_attr.maxFood;}
   },
   getHungrierBy: function (foodAmt) {
-    this.attr._FoodConsumer_attr.currentFood -= foodAmt;
+    //this.attr._FoodConsumer_attr.currentFood -= foodAmt;
     if (this.attr._FoodConsumer_attr.currentFood < 0) {
       this.raiseSymbolActiveEvent('killed',{killedBy: 'starvation'});
     }
