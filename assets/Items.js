@@ -12,7 +12,7 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-  name: 'cup noodle',
+  name: 'Cup Noodle',
   description: 'The Food of the Gods!',
   chr:'🍜',
   fg:'#f32',
@@ -21,7 +21,7 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-  name: 'bagel bite',
+  name: 'Bagel Bite',
   description: 'OHH BABY! Decilicious Pizza Bagels!',
   chr:'🍕',
   fg:'#f32',
@@ -30,7 +30,7 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-  name: 'curry and rice',
+  name: 'Curry and Rice',
   description: 'Ahhhh, nothing like warm curry to fill ya up!',
   chr:'🍛',
   fg:'#f32',

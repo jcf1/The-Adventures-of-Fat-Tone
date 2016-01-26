@@ -25,7 +25,7 @@ Game.KeyBinding = {
     if (this._curBindingKey == 'directional') {
       Game.Message.sendMessage('Please use the arrow keys to move.')
     }
-    else 
+    else
     Game.Message.sendMessage('using '+this._curBindingKey+' key bindings');
     Game.renderMessage();
   },
@@ -103,7 +103,7 @@ Game.KeyBinding = {
           "|mLmWmR|\n" + //The left and right arrows plus the '[SPACE]' cause the need for more space on the other lines
           "|      mD      |\n" +
           "---------------\n";
-        movementHelpTemplate += "Use Directional Arrow Keys"
+        movementHelpTemplate += "Use Directional Arrow Keys\n"
       } else
         var movementHelpTemplate = "-------\n|  mU  |\n|  |  |\n|mL-mW-mR|\n|  |  |\n|  mD  |\n-------";
       movementHelpTemplate = movementHelpTemplate.replace('mU',Game.KeyBinding.Action.MOVE_U[this._curBindingKey].label);
@@ -156,6 +156,24 @@ Game.KeyBinding = {
   },
 
   Action: {
+    CANCEL          : {action_group:'meta' ,guid :Game.util.uniqueId() ,ordering:1.5 ,short:'cancel'   ,long:'cancel/close the current action/screen' ,
+      all: {label:'Esc' ,inputMatch:ROT.VK_ESCAPE     ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false}
+    },
+    CHANGE_BINDINGS : {action_group:'meta' ,guid :Game.util.uniqueId() ,ordering:1.9 ,short:'controls' ,long:'change which keys do which commands'    ,
+      all: {label:'\\'  ,inputMatch:ROT.VK_BACK_SLASH ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false}
+    },
+    DATA_NAV_UP : {action_group:'data_nav' ,guid:Game.util.uniqueId() ,ordering:4.1 ,short:'up' ,long :'scroll content up',
+      all: {label:'['     ,inputMatch:'['      ,inputType:'keypress' ,inputMetaShift:false ,inputMetaCtrl:false}
+    },
+    DATA_NAV_DOWN : {action_group:'data_nav' ,guid:Game.util.uniqueId() ,ordering:4.2 ,short:'down' ,long :'scroll content down',
+      all: {label:']'     ,inputMatch:']'      ,inputType:'keypress' ,inputMetaShift:false ,inputMetaCtrl:false}
+    },
+    ANSWER_NO : {action_group:'answer' ,guid:Game.util.uniqueId() ,ordering:8.1 ,short:'no' ,long :'answer no to a question',
+      all: {label:'n' ,inputMatch:ROT.VK_N ,inputType:'keydown'  ,inputMetaShift:false  ,inputMetaCtrl:false}
+    },
+    ANSWER_YES : {action_group:'answer' ,guid:Game.util.uniqueId() ,ordering:8.9 ,short:'yes' ,long :'answer yes to a question',
+      all: {label:'y' ,inputMatch:ROT.VK_Y ,inputType:'keydown'  ,inputMetaShift:false  ,inputMetaCtrl:false}
+    },
     PERSISTENCE      : {action_group:'meta'    ,guid:Game.util.uniqueId() ,ordering:2 ,short:'games'    ,long :'save or load or start a new game',
       numpad: {label:'='     ,inputMatch:'='      ,inputType:'keypress' ,inputMetaShift:false ,inputMetaCtrl:false},
       directional: {label:'='     ,inputMatch:'='      ,inputType:'keypress' ,inputMetaShift:false ,inputMetaCtrl:false},
@@ -169,12 +187,6 @@ Game.KeyBinding = {
     },
     PERSISTENCE_NEW  : {action_group:'persist' ,guid:Game.util.uniqueId() ,ordering:2.3 ,short:'new game' ,long :'start a new game',
       persist: {label:'N' ,inputMatch:ROT.VK_N ,inputType:'keydown'  ,inputMetaShift:true  ,inputMetaCtrl:false}
-    },
-    ANSWER_YES : {action_group:'answer' ,guid:Game.util.uniqueId() ,ordering:2.4 ,short:'yes' ,long :'answer yes to a question',
-      all: {label:'y' ,inputMatch:ROT.VK_Y ,inputType:'keydown'  ,inputMetaShift:false  ,inputMetaCtrl:false}
-    },
-    ANSWER_NO : {action_group:'answer' ,guid:Game.util.uniqueId() ,ordering:2.5 ,short:'no' ,long :'answer no to a question',
-      all: {label:'n' ,inputMatch:ROT.VK_N ,inputType:'keydown'  ,inputMetaShift:false  ,inputMetaCtrl:false}
     },
     MOVE_U    : {action_group:'base_movement' ,guid:Game.util.uniqueId() ,ordering:3 ,short:'move' ,long :'move straight up',
       directional:{label:'↑' ,inputMatch:ROT.VK_UP ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false},
@@ -201,12 +213,14 @@ Game.KeyBinding = {
       numpad: {label:'2' ,inputMatch:ROT.VK_NUMPAD2 ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false} ,
       waxd  : {label:'x' ,inputMatch:ROT.VK_X       ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false}
     },
+
     INVENTORY : {action_group:'inventory' ,guid:Game.util.uniqueId() ,ordering:5.0 ,short:'inventory'  ,long :'show items in inventory' ,
       all: {label:'i' ,inputMatch:ROT.VK_I ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false} ,
     },
     PROCESS_SELECTIONS  : {action_group:'inventory' ,guid:Game.util.uniqueId() ,ordering:5.01 ,short:'act on' ,long :'take action with/on selected items'         ,
       LAYER_inventoryDrop: {label:'[Enter]' ,inputMatch:ROT.VK_RETURN ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false},
-      LAYER_inventoryPickup: {label:'[Enter]' ,inputMatch:ROT.VK_RETURN ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false}
+      LAYER_inventoryPickup: {label:'[Enter]' ,inputMatch:ROT.VK_RETURN ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false},
+      LAYER_sellerBuy: {label:'[Enter]' ,inputMatch:ROT.VK_RETURN ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false}
     },
     PICKUP : {action_group:'inventory' ,guid:Game.util.uniqueId() ,ordering:5.1 ,short:'get'  ,long :'get / pickup one or more items in the current space' ,
       all: {label:'g' ,inputMatch:ROT.VK_G ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false} ,
@@ -217,32 +231,21 @@ Game.KeyBinding = {
       waxd  : {label:'D' ,inputMatch:ROT.VK_D ,inputType:'keydown' ,inputMetaShift:true  ,inputMetaCtrl:false},
       LAYER_inventoryListing: {label:'d' ,inputMatch:ROT.VK_D ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false}
     },
-    EAT   : {action_group:'inventory' ,guid:Game.util.uniqueId() ,ordering:5.3 ,short:'eat' ,long :'consume food to reduce hunger'         ,
-      all: {label:'e' ,inputMatch:ROT.VK_E ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false} ,
-      LAYER_inventoryListing: {label:'E' ,inputMatch:ROT.VK_E ,inputType:'keydown' ,inputMetaShift:true  ,inputMetaCtrl:false}
+    EAT   : {action_group:'inventory' ,guid:Game.util.uniqueId() ,ordering:5.5 ,short:'eat' ,long :'consume food to reduce hunger'         ,
+      all: {label:'e' ,inputMatch:ROT.VK_E ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false}
     },
     EXAMINE : {action_group:'inventory' ,guid:Game.util.uniqueId() ,ordering:5.9 ,short:'examine' ,long :'get details about a carried item',
       numpad: {label:'x' ,inputMatch:ROT.VK_X ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false},
       directional: {label:'x' ,inputMatch:ROT.VK_X ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false},
       waxd  : {label:'X' ,inputMatch:ROT.VK_X ,inputType:'keydown' ,inputMetaShift:true  ,inputMetaCtrl:false},
-      LAYER_inventoryListing: {label:'x' ,inputMatch:ROT.VK_X ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false}
+      LAYER_inventoryListing: {label:'x' ,inputMatch:ROT.VK_X ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false},
+      LAYER_sellerListing: {label:'x' ,inputMatch:ROT.VK_X ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false}
     },
-
-    DATA_NAV_UP : {action_group:'data_nav' ,guid:Game.util.uniqueId() ,ordering:4.1 ,short:'up' ,long :'scroll content up',
-      all: {label:'['     ,inputMatch:'['      ,inputType:'keypress' ,inputMetaShift:false ,inputMetaCtrl:false}
+    BUY   : {action_group:'buying' ,guid:Game.util.uniqueId() ,ordering:5.2 ,short:'buy' ,long :'buy one or more items'         ,
+      LAYER_sellerListing: {label:'b' ,inputMatch:ROT.VK_B ,inputType:'keydown' ,inputMetaShift:false  ,inputMetaCtrl:false}
     },
-    DATA_NAV_DOWN : {action_group:'data_nav' ,guid:Game.util.uniqueId() ,ordering:4.2 ,short:'down' ,long :'scroll content down',
-      all: {label:']'     ,inputMatch:']'      ,inputType:'keypress' ,inputMetaShift:false ,inputMetaCtrl:false}
-    },
-
-    HELP : {action_group:'meta' ,guid :Game.util.uniqueId() ,ordering:1 ,short:'help'     ,long:'show which keys do which commands'      ,
+    HELP : {action_group:'meta' ,guid :Game.util.uniqueId() ,ordering:1.6 ,short:'help'     ,long:'show which keys do which commands'      ,
       all: {label:'?'     ,inputMatch:'?'      ,inputType:'keypress' ,inputMetaShift:true ,inputMetaCtrl:false}
-    },
-    CHANGE_BINDINGS : {action_group:'meta' ,guid :Game.util.uniqueId() ,ordering:1 ,short:'controls' ,long:'change which keys do which commands'    ,
-      all: {label:'\\'  ,inputMatch:ROT.VK_BACK_SLASH ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false}
-    },
-    CANCEL          : {action_group:'meta' ,guid :Game.util.uniqueId() ,ordering:1 ,short:'cancel'   ,long:'cancel/close the current action/screen' ,
-      all: {label:'Esc' ,inputMatch:ROT.VK_ESCAPE     ,inputType:'keydown' ,inputMetaShift:false ,inputMetaCtrl:false}
     }
   }
 };

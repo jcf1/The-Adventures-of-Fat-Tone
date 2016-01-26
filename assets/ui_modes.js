@@ -303,7 +303,6 @@ Game.UIMode.gamePlayStore = {
       } else this.getAvatar().raiseSymbolActiveEvent('answeredQ','no answer')
       return;
     } else if (actionBinding.actionKey == 'CANCEL') {
-        this.returnToTown();
         return false;
     }
     var tookTurn = false;
@@ -402,15 +401,17 @@ Game.UIMode.gamePlayStore = {
     this.attr._prevX = this.getAvatar().getX();
     this.attr._prevY = this.getAvatar().getY();
     this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
-
+    var merch = '';
     if (map == 'theRedHeeringa') {
-      var merch = Game.EntityGenerator.create('Brent');
+      merch = Game.EntityGenerator.create('Brent');
       this.getMap().addEntity(merch,{x: 10, y: 2});
+      merch.addInventoryItems([Game.ItemGenerator.create('Keystone'), Game.ItemGenerator.create('Coke-a Nola'), Game.ItemGenerator.create('Lemon-Ice Tea'), Game.ItemGenerator.create('Red Kenny Supreme'), Game.ItemGenerator.create('BrewDog Beer')]);
       this.getMap().addEntity(Game.EntityGenerator.create('Harold'),{x: 3, y: 4});
     }
     else {
-      var merch = Game.EntityGenerator.create('Nola');
+      merch = Game.EntityGenerator.create('Nola');
       this.getMap().addEntity(merch,{x: 5, y: 2});
+      merch.addInventoryItems([Game.ItemGenerator.create('apple'), Game.ItemGenerator.create('Bagel Bite'), Game.ItemGenerator.create('Cup Noodle'), Game.ItemGenerator.create('Curry and Rice')]);
       this.getMap().addEntity(Game.EntityGenerator.create('Alexis'),this.getMap().getRandomWalkablePosition());
     }
     this.setMerchant(merch);
@@ -1214,7 +1215,7 @@ Game.UIMode.LAYER_inventoryEat.doSetup = function () {
 Game.UIMode.LAYER_sellerListing = new Game.UIMode.LAYER_itemListing({
     caption: 'Seller Listing',
     canSelect: false,
-    keyBindingName: 'LAYER_inventoryListing'
+    keyBindingName: 'LAYER_sellerListing'
 });
 Game.UIMode.LAYER_sellerListing.doSetup = function () {
   this.setup({itemIdList: Game.getMerchant().getInventoryItemIds()});
@@ -1242,7 +1243,7 @@ Game.UIMode.LAYER_sellerBuy = new Game.UIMode.LAYER_itemListing({
     caption: 'Buy',
     canSelect: true,
     canSelectMultipleItems: false,
-    keyBindingName: 'LAYER_inventoryDrop',
+    keyBindingName: 'LAYER_sellerBuy',
     processingFunction: function (selectedItemIds) {
       if (selectedItemIds[0]) {
         var foodItem = Game.getMerchant().extractInventoryItems([selectedItemIds[0]])[0];
@@ -1261,7 +1262,7 @@ Game.UIMode.LAYER_sellerBuy.doSetup = function () {
 Game.UIMode.LAYER_sellerExamine = new Game.UIMode.LAYER_itemListing({
     caption: 'Examine',
     canSelect: true,
-    keyBindingName: 'LAYER_inventoryExamine',
+    keyBindingName: 'LAYER_sellerExamine',
     processingFunction: function (selectedItemIds) {
       //console.log('LAYER_inventoryExamine processing on '+selectedItemIds[0]);
       if (selectedItemIds[0]) {

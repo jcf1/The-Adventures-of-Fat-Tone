@@ -75,4 +75,5 @@ Game.Tile.tTile = new Game.Tile({name:'T',chr:'T',transparent:true});
 // Tiles to leave the Main Town
 Game.Tile.toDungeonTile = new Game.Tile({name:'Dungeon',chr:'⭅',fg: '#CD8500',transparent:true});
 Game.Tile.toForrestTile = new Game.Tile({name:'Forrest',chr:'⭆',fg: '#008B45',transparent:true});
-Game.Tile.toCastleTile = new Game.Tile({name:'Castle',chr:'⇪',fg: '#F87531',transparent:true})
+Game.Tile.toCastleTile = new Game.Tile({name:'Castle',chr:'⟰',fg: '#F87531',transparent:true})
+Game.Tile.toTownTile = new Game.Tile({name: 'Town',chr:'⟱',fg: '#F87531',transparent:true})

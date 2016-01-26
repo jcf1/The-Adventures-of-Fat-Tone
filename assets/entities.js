@@ -47,7 +47,8 @@ Game.EntityGenerator.learn({
   description: 'Nola - the owner of this fine establishment',
   chr:'🐫',
   fg:'#f00',
-  mixins: ["WalkerCorporeal"]
+  inventoryCapacity: 50,
+  mixins: ["WalkerCorporeal", "InventoryHolder"]
 });
 
 Game.EntityGenerator.learn({
@@ -63,8 +64,7 @@ Game.EntityGenerator.learn({
   description: 'Harold - the rapper',
   chr:'😃🎸',
   fg:'#f00',
-  inventoryCapacity: 50,
-  mixins: ["WalkerCorporeal", "InventoryHolder"]
+  mixins: ["WalkerCorporeal"]
 });
 
 Game.EntityGenerator.learn({

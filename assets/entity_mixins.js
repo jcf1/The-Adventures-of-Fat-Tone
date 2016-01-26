@@ -17,6 +17,8 @@ Game.EntityMixin.PlayerMessager = {
         else if (nameEvt == 'talk bar' || nameEvt == 'talk shop')
           if (nameEvt == 'talk shop') Game.Message.sendMessage('Hi my name is Nola! Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no')
           else Game.Message.sendMessage('Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
+        else if (nameEvt == 'Town')
+          Game.Message.sendMessage('Do you want to exit the shop? Type \'y\' for yes, \'n\' for no')
         // else Game.Message.sendMessage('You cannot walk into the ' + nameEvt);
         //   Game.renderMessage();
         //   Game.Message.ageMessages();
@@ -142,6 +144,9 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlay.setupMap('castle');
             Game.UIMode.gamePlay.removeAvatar();
           }
+          else if (this.getBumpEvt() == 'Town') {
+            Game.UIMode.gamePlayStore.returnToTown();
+          }
           else if (this.getBumpEvt() == 'The Red Heeringa') {
             Game.UIMode.gamePlayStore.setupStore('theRedHeeringa');
             Game.UIMode.gamePlay.removeAvatar();
@@ -154,14 +159,17 @@ Game.EntityMixin.PlayerActor = {
           }
           else if (this.getBumpEvt() == 'talk bar' || this.getBumpEvt() == 'talk shop') {
             Game.addUIMode('LAYER_sellerListing');
-            Game.UIMode.gamePlayStore.setBumped(false);
           }
+          Game.UIMode.gamePlayStore.setBumped(false);
           Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
           Game.Message.sendMessage('Please answer yes [y] or no [n]');
         } else if (this.getBumpEvt() == 'talk bar' || this.getBumpEvt() == 'talk shop'){
           Game.UIMode.gamePlayStore.setBumped(false);
           Game.Message.sendMessage('You will regret not buying from me!')
+        } else if (this.getBumpEvt() == 'Town'){
+          Game.UIMode.gamePlayStore.setBumped(false);
+          Game.Message.sendMessage('You chose not to exit the store')
         } else {
           Game.UIMode.gamePlay.setBumped(false);
           Game.Message.sendMessage('You chose not to enter the ' +this.getBumpEvt() + '. YOU COWARD!');
@@ -173,7 +181,7 @@ Game.EntityMixin.PlayerActor = {
         if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle' || nameEvt == 'The Red Heeringa' || nameEvt == 'Shop And Stop'){
           Game.UIMode.gamePlay.setBumped(true);
           this.setBumpEvt(nameEvt);
-        } else if (nameEvt == 'talk bar' || nameEvt == 'talk shop') {
+        } else if (nameEvt == 'talk bar' || nameEvt == 'talk shop' || nameEvt == 'Town') {
           Game.UIMode.gamePlayStore.setBumped(true);
           this.setBumpEvt(nameEvt);
         } else if (nameEvt == 'Harold Tile') {
