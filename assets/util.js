@@ -45,6 +45,44 @@ Game.util = {
     return ROT.Color.toHex(col);
   },
 
+  randomNolaFact: function() {
+    switch (this.randomInt(0,5)) {
+      case 0:
+        return 'My love for Nola is more infectious than ebola.';
+      case 1:
+        return 'Nola is the world\'s best compiler.';
+      case 2:
+        return 'Nola is love, Nola is life.';
+      case 3:
+        return 'Got Nola?';
+      case 4:
+        return 'Nola loves strawberry yogurt.';
+      case 5:
+        return 'Nola did all the sound effects in Jurassic World';
+    }
+    return 'error';
+  },
+
+  randomRap: function() {
+    switch (this.randomInt(0,6)) {
+      case 0:
+        return 'The only thing you can rap is my burrito.';
+      case 1:
+        return 'You\'re the snake without the rattle.';
+      case 2:
+        return 'You\'re the boat without the paddle.';
+      case 3:
+        return 'You\'re the duck without the waddle.';
+      case 4:
+        return 'You\'re the horse without the saddle.';
+      case 5:
+        return 'You\'re the ranch without the cattle.';
+      case 6:
+        return 'You\'re weak like seven days.';
+    }
+    return 'error';
+  },
+
   positionsAdjacentTo: function (pos) {
     var adjPos = [];
     for (var dx = -1; dx <= 1; dx++) {

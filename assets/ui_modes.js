@@ -210,21 +210,7 @@ Game.UIMode.gamePlay = {
 
     this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkablePosition());
     this.getMap().addEntity(Game.EntityGenerator.create('Magical Herb'),this.getMap().getRandomWalkablePosition());
-
-    var itemPos = '';
-    for (var ecount = 0; ecount < 0; ecount++) {
-     this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
-     this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
-     this.getMap().addEntity(Game.EntityGenerator.create('angry squirrel'),this.getMap().getRandomWalkablePosition());
-     this.getMap().addEntity(Game.EntityGenerator.create('attack slug'),this.getMap().getRandomWalkablePosition());
-
-     itemPos = this.getMap().getRandomWalkablePosition();
-     this.getMap().addItem(Game.ItemGenerator.create('rock'),itemPos);
-
-     itemPos = this.getMap().getRandomWalkablePosition();
-     this.getMap().addItem(Game.ItemGenerator.create('apple'),itemPos);
-    }
-    //this.getMap().addItem(Game.ItemGenerator.create('rock'),itemPos);
+    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
 
     Game.Message.sendMessage("Kill 3 or more attack slugs to win!");
   },
@@ -410,9 +396,13 @@ Game.UIMode.gamePlayStore = {
     this.attr._prevX = this.getAvatar().getX();
     this.attr._prevY = this.getAvatar().getY();
     this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
-    if (map == 'theRedHeeringa')
-      this.getMap().addEntity(Game.EntityGenerator.create('brent'),{x: 10, y: 2});
-    else this.getMap().addEntity(Game.EntityGenerator.create('Nola'),{x: 5, y: 2});
+    if (map == 'theRedHeeringa'){
+      this.getMap().addEntity(Game.EntityGenerator.create('Brent'),{x: 10, y: 2});
+      this.getMap().addEntity(Game.EntityGenerator.create('Harold'),{x: 3, y: 4});
+    } else {
+      this.getMap().addEntity(Game.EntityGenerator.create('Nola'),{x: 5, y: 2});
+      this.getMap().addEntity(Game.EntityGenerator.create('Alexis'),this.getMap().getRandomWalkablePosition());
+    }
   },
   moveCamera: function (dx,dy) {
     this.setCamera(this.attr._cameraX + dx,this.attr._cameraY + dy);
@@ -472,19 +462,18 @@ Game.UIMode.gamePlayMirror = {
     }
     var tookTurn = false;
     if (actionBinding.actionKey == 'MOVE_U') {
-      tookTurn = this.moveAvatar(0, -1);
+      this.moveAvatar(0, -1);
       this.attr._input++;
     } else if (actionBinding.actionKey == 'MOVE_L') {
-      tookTurn = this.moveAvatar(-1, 0);
+      this.moveAvatar(-1, 0);
       this.attr._input++;
     } else if (actionBinding.actionKey == 'MOVE_WAIT') {
-      tookTurn = true;
       this.attr._input++;
     } else if (actionBinding.actionKey == 'MOVE_R') {
-      tookTurn = this.moveAvatar(1, 0);
+      this.moveAvatar(1, 0);
       this.attr._input++;
     } else if (actionBinding.actionKey == 'MOVE_D') {
-      tookTurn = this.moveAvatar(0, 1);
+      this.moveAvatar(0, 1);
       this.attr._input++;
     } else if (actionBinding.actionKey == 'INVENTORY') {
       Game.addUIMode('LAYER_inventoryListing');
@@ -512,13 +501,13 @@ Game.UIMode.gamePlayMirror = {
       Game.addUIMode('LAYER_textReading');
     }
 
-    this.getAvatar().raiseSymbolActiveEvent('actionDone');
-    if (tookTurn) {
-      //this.getAvatar().raiseSymbolActiveEvent('actionDone');
-      Game.Message.ageMessages();
-      return true;
+    if(this.attr.input >= 400){
+      this.returnToTown()
+      Game.Message.sendMessage('Ran out of inputs');
     }
-    return false;
+    this.getAvatar().raiseSymbolActiveEvent('actionDone');
+    Game.Message.ageMessages();
+
   },
   returnToTown: function() {
     Game.UIMode.gamePlay.setAvatar(Game.UIMode.gamePlay.getAvatar());
@@ -559,7 +548,7 @@ Game.UIMode.gamePlayMirror = {
     this.setAvatar(Game.EntityGenerator.create('mirrorAvatar'));
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToMirror();
-    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
+    this.getMap().addItem(Game.ItemGenerator.create('apple'),this.getMap().getRandomWalkablePosition());
     Game.Message.sendMessage('Try to get to the moss to win!');
     Game.Message.ageMessages();
   },
