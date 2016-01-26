@@ -45,6 +45,7 @@ Game.Tile.heeringaDoorTile = new Game.Tile({name:'The Red Heeringa',chr:'-',fg:'
 Game.Tile.barTile = new Game.Tile({name:'bar counter',chr:'#',fg: '#670A0A'});
 Game.Tile.talkBarTile = new Game.Tile({name:'talk bar',chr:'#',fg: '#670A0A'});
 Game.Tile.barDoorTile = new Game.Tile({name:'Bar Door',chr: '=',fg: '#670A0A', transparent:true});
+Game.Tile.HaroldTile = new Game.Tile({name:'Harold Tile', chr:' '})
 
 Game.Tile.shopDoorTile = new Game.Tile({name:'Shop And Stop',chr:'-',fg:'#cc3300',transparent:true});
 Game.Tile.shopTile = new Game.Tile({name:'shop counter',chr:'#',fg: '#670A0A'});
