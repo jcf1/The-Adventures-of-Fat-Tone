@@ -209,6 +209,7 @@ Game.UIMode.gamePlay = {
     this.setCameraToAvatar();
 
     this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkablePosition());
+    this.getMap().addEntity(Game.EntityGenerator.create('Magical Herb'),this.getMap().getRandomWalkablePosition());
 
     var itemPos = '';
     for (var ecount = 0; ecount < 0; ecount++) {
@@ -235,9 +236,13 @@ Game.UIMode.gamePlay = {
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToAvatar();
 
-    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
+    if (map == 'forrest') {
+      this.getMap().addEntity(Game.EntityGenerator.create('Magical Herb'),this.getMap().getRandomWalkablePosition());
+    } else if(map == 'dungeon') {
+      this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkablePosition());
+    }
 
-    for (var ecount = 0; ecount < 50; ecount++) {
+    for (var ecount = 0; ecount < 0; ecount++) {
       this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkablePosition());

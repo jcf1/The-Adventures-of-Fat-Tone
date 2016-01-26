@@ -77,6 +77,12 @@ Game.EntityGenerator.learn({
 });
 
 Game.EntityGenerator.learn({
+  name: 'Magical Herb',
+  chr:'🍁',
+  mixins: ["WalkerCorporeal"]
+});
+
+Game.EntityGenerator.learn({
   name: 'angry squirrel',
   description: "It is very upset that it can't find its nuts, it will attack if you get in its way",
   chr:String.fromCharCode(163),
