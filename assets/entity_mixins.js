@@ -12,6 +12,8 @@ Game.EntityMixin.PlayerMessager = {
           Game.Message.sendMessage('Do you want to walk into the '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'The Red Heeringa')
           Game.Message.sendMessage('Do you want to walk into '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
+        else if (nameEvt == 'talk bar')
+        Game.Message.sendMessage('Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
         else Game.Message.sendMessage('You cannot walk into the ' + nameEvt);
           Game.renderMessage();
           Game.Message.ageMessages();
@@ -122,10 +124,18 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlayMirror.setupMirror();
             Game.switchUIMode('gamePlayMirror');
           }
-          if (this.getBumpEvt() == 'Forrest') {
+          else if (this.getBumpEvt() == 'Forrest') {
             Game.UIMode.gamePlayForrest.setupForrest(Game.UIMode.gamePlay.getAvatar());
             Game.UIMode.gamePlay.removeAvatar();
             Game.switchUIMode('gamePlayForrest');
+          }
+          else if (this.getBumpEvt() == 'The Red Heeringa') {
+            Game.UIMode.gamePlayHeeringa.setupHeeringa(Game.UIMode.gamePlay.getAvatar());
+            Game.UIMode.gamePlay.removeAvatar();
+            Game.switchUIMode('gamePlayHeeringa');
+          }
+          else if (this.getBumpEvt() == 'talk bar') {
+            
           }
           Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
@@ -140,6 +150,9 @@ Game.EntityMixin.PlayerActor = {
         var nameEvt = evtData.target.getName();
         if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle' || nameEvt == 'The Red Heeringa'){
           Game.UIMode.gamePlay.setBumped(true);
+          this.setBumpEvt(nameEvt);
+        } else if (nameEvt == 'talk bar') {
+          Game.UIMode.gamePlayHeeringa.setBumped(true);
           this.setBumpEvt(nameEvt);
         }
       },

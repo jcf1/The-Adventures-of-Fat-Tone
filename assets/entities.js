@@ -10,7 +10,7 @@ Game.EntityGenerator.learn({
   attackAvoid: 1,
   attackDamage: 2,
   inventoryCapacity: 35,
-  maxFood: 400,
+  maxFood: 800,
   mixins: ["PlayerActor", "PlayerMessager", "WalkerCorporeal", "Sight", "MapMemory", "HitPoints", "Chronicle", "MeleeAttacker", "MeleeDefender","InventoryHolder","FoodConsumer","WalletHolder"]
 });
 
@@ -29,6 +29,14 @@ Game.EntityGenerator.learn({
   fg:'#6b6',
   maxHp: 1,
   mixins: ["HitPoints","MoneyDropper"]
+});
+
+Game.EntityGenerator.learn({
+  name: 'brent',
+  description: 'Brent - the owner of this fine establishment',
+  chr:'B',
+  fg:'#f00',
+  mixins: ["WalkerCorporeal"]
 });
 
 Game.EntityGenerator.learn({

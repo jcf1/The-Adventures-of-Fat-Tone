@@ -39,6 +39,9 @@ Game.Tile.heeringaDoorTile = new Game.Tile({name:'The Red Heeringa',chr:'-',fg:'
 Game.Tile.shopDoorTile = new Game.Tile({name:'Shop And Stop',chr:'-',fg:'#cc3300',transparent:true});
 Game.Tile.invisibleTile = new Game.Tile({name:'invisible wall',chr:' ',transparent:true});
 Game.Tile.lockedDoorTile = new Game.Tile({name:'locked door',chr:'='});
+Game.Tile.barTile = new Game.Tile({name:'bar counter',chr:'#',fg: '#670A0A'});
+Game.Tile.talkBarTile = new Game.Tile({name:'talk bar',chr:'#',fg: '#670A0A'});
+Game.Tile.barDoorTile = new Game.Tile({name:'Bar Door',chr: '=',fg: '#670A0A', transparent:true});
 Game.Tile.mirrorDoorTile = new Game.Tile({name:'Hall of Mirrors',chr: '-', transparent:true});
 Game.Tile.aTile = new Game.Tile({name:'A',chr:'A',transparent:true});
 Game.Tile.dTile = new Game.Tile({name:'D',chr:'D',transparent:true});
