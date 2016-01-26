@@ -126,6 +126,49 @@ Game.MapTileSets = {
       return mapTiles;
     }
   },
+  dungeon: {
+    _width: 300,
+    _height: 200,
+    getMapTiles: function () {
+      var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
+      var generator = new ROT.Map.Digger(this._width,this._height);
+
+        generator.create();
+      //}
+
+      // run again then update map
+      generator.create(function(x,y,v) {
+        if (v === 1) {
+          mapTiles[x][y] = Game.Tile.wallTile;
+        } else {
+          mapTiles[x][y] = Game.Tile.floorTile;
+        }
+      });
+
+      return mapTiles;
+    }
+  },
+  castle: {
+    _width: 150,
+    _height: 250,
+    getMapTiles: function () {
+      var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
+      var generator = new ROT.Map.Rogue(this._width,this._height);
+
+      generator.create();
+
+      // run again then update map
+      generator.create(function(x,y,v) {
+        if (v === 1) {
+          mapTiles[x][y] = Game.Tile.wallTile;
+        } else {
+          mapTiles[x][y] = Game.Tile.floorTile;
+        }
+      });
+
+      return mapTiles;
+    }
+  },
   hallOfMirrors: {
     _width: 40,
     _height: 20,

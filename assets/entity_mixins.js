@@ -124,10 +124,17 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlayMirror.setupMirror();
             Game.switchUIMode('gamePlayMirror');
           }
-          else if (this.getBumpEvt() == 'Forrest') {
-            Game.UIMode.gamePlayForrest.setupForrest(Game.UIMode.gamePlay.getAvatar());
+          if (this.getBumpEvt() == 'Forrest') {
+            Game.UIMode.gamePlay.setupMap('forrest');
             Game.UIMode.gamePlay.removeAvatar();
-            Game.switchUIMode('gamePlayForrest');
+          }
+          if (this.getBumpEvt() == 'Dungeon') {
+            Game.UIMode.gamePlay.setupMap('dungeon');
+            Game.UIMode.gamePlay.removeAvatar();
+          }
+          if (this.getBumpEvt() == 'Castle') {
+            Game.UIMode.gamePlay.setupMap('castle');
+            Game.UIMode.gamePlay.removeAvatar();
           }
           else if (this.getBumpEvt() == 'The Red Heeringa') {
             Game.UIMode.gamePlayHeeringa.setupHeeringa(Game.UIMode.gamePlay.getAvatar());
@@ -135,7 +142,7 @@ Game.EntityMixin.PlayerActor = {
             Game.switchUIMode('gamePlayHeeringa');
           }
           else if (this.getBumpEvt() == 'talk bar') {
-            
+
           }
           Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
@@ -330,7 +337,7 @@ Game.EntityMixin.FoodConsumer = {
     if (this.attr._FoodConsumer_attr.currentFood > this.attr._FoodConsumer_attr.maxFood) {this.attr._FoodConsumer_attr.currentFood = this.attr._FoodConsumer_attr.maxFood;}
   },
   getHungrierBy: function (foodAmt) {
-    this.attr._FoodConsumer_attr.currentFood -= foodAmt;
+    //this.attr._FoodConsumer_attr.currentFood -= foodAmt;
     if (this.attr._FoodConsumer_attr.currentFood < 0) {
       this.raiseSymbolActiveEvent('killed',{killedBy: 'starvation'});
     }
