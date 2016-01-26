@@ -132,11 +132,8 @@ Game.UIMode.gamePlay = {
   },
   renderOnMain: function(display) {
     var seenCells = this.getAvatar().getVisibleCells();
-    this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY,{
-      visibleCells:seenCells,
-      maskedCells:this.getAvatar().getRememberedCoordsForMap()
-    });
-    this.getAvatar().rememberCoords(seenCells);
+    this.getMap().renderAll(display,this.attr._cameraX,this.attr._cameraY);
+    this.setCameraToAvatar();
   },
   renderAvatarInfo: function (display) {
     var av = this.getAvatar();
@@ -197,7 +194,7 @@ Game.UIMode.gamePlay = {
     this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkablePosition());
 
     var itemPos = '';
-    for (var ecount = 0; ecount < 4; ecount++) {
+    for (var ecount = 0; ecount < 0; ecount++) {
      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
      this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
      this.getMap().addEntity(Game.EntityGenerator.create('angry squirrel'),this.getMap().getRandomWalkablePosition());

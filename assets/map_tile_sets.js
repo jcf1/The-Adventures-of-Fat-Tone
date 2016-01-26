@@ -1,46 +1,86 @@
 Game.MapTileSets = {
   main_town: {
-    _width: 50,
-    _height: 50,
+    _width: 60,
+    _height: 35,
     getMapTiles: function () {
       var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.wallTile);
       var generator = new ROT.Map.Arena(this._width,this._height);
       // run again then update map
       generator.create(function(x,y,v) {
         if (v === 0) {
-          if (x == 48 && y == 25 ) mapTiles[x][y] = Game.Tile.toForrestTile;
-          else if (x == 25 && y == 1) mapTiles[x][y] = Game.Tile.toCastleTile;
-          else if (x == 1 && y == 25 ) mapTiles[x][y] = Game.Tile.toDungeonTile;
-          else if (x == 34 && y == 37 ) mapTiles[x][y] = Game.Tile.mirrorDoorTile;
-          else if (x == 23 && y == 37 ) mapTiles[x][y] = Game.Tile.heeringaDoorTile;
-          else if (x == 22 && y == 37 ) mapTiles[x][y] = Game.Tile.heeringaDoorTile;
-          else if (x == 19 && y == 34 ) mapTiles[x][y] = Game.Tile.tTile;
-          else if (x == 20 && y == 34 ) mapTiles[x][y] = Game.Tile.hTile;
-          else if (x == 21 && y == 34 ) mapTiles[x][y] = Game.Tile.eTile;
-          else if (x == 24 && y == 34 ) mapTiles[x][y] = Game.Tile.rTile;
-          else if (x == 25 && y == 34 ) mapTiles[x][y] = Game.Tile.eTile;
-          else if (x == 26 && y == 34 ) mapTiles[x][y] = Game.Tile.dTile;
-          else if (x == 19 && y == 35 ) mapTiles[x][y] = Game.Tile.hTile;
-          else if (x == 20 && y == 35 ) mapTiles[x][y] = Game.Tile.eTile;
-          else if (x == 21 && y == 35 ) mapTiles[x][y] = Game.Tile.eTile;
-          else if (x == 22 && y == 35 ) mapTiles[x][y] = Game.Tile.rTile;
-          else if (x == 23 && y == 35 ) mapTiles[x][y] = Game.Tile.iTile;
-          else if (x == 24 && y == 35 ) mapTiles[x][y] = Game.Tile.nTile;
-          else if (x == 25 && y == 35 ) mapTiles[x][y] = Game.Tile.gTile;
-          else if (x == 26 && y == 35 ) mapTiles[x][y] = Game.Tile.aTile;
-          else if(x == 33 && y == 35 ) mapTiles[x][y] = Game.Tile.hTile;
-          else if(x == 34 && y == 35 ) mapTiles[x][y] = Game.Tile.oTile;
-          else if(x == 35 && y == 35 ) mapTiles[x][y] = Game.Tile.mTile;
-          else if(x>=31 && x <=37){
-            if(y>=34 && y<=37) {
+          // Tiles to leave Town
+          if (y >= 16 && y <= 18) {
+            if (x == 58 && y == 17 ) mapTiles[x][y] = Game.Tile.toForrestTile;
+            else if (x == 1 && y == 17 ) mapTiles[x][y] = Game.Tile.toDungeonTile;
+            else if (x != 1 && x != 58 ) mapTiles[x][y] = Game.Tile.roadTile;
+          }
+          else if (x >= 29 && x <= 31) {
+            if (x == 30 && y == 1) mapTiles[x][y] = Game.Tile.toCastleTile;
+            else if ( y != 1 ) mapTiles[x][y] = Game.Tile.roadTile;
+          }
+          // Unique Tiles for the Shop
+          else if (x == 23 && y == 14 ) mapTiles[x][y] = Game.Tile.shopDoorTile;
+          else if (x == 22 && y == 14 ) mapTiles[x][y] = Game.Tile.shopDoorTile;
+          else if (x == 19 && y == 11 ) mapTiles[x][y] = Game.Tile.sTile;
+          else if (x == 20 && y == 11 ) mapTiles[x][y] = Game.Tile.hTile;
+          else if (x == 21 && y == 11 ) mapTiles[x][y] = Game.Tile.OTile;
+          else if (x == 22 && y == 11 ) mapTiles[x][y] = Game.Tile.pTile;
+          else if (x == 24 && y == 11 ) mapTiles[x][y] = Game.Tile.aTile;
+          else if (x == 25 && y == 11 ) mapTiles[x][y] = Game.Tile.nTile;
+          else if (x == 26 && y == 11 ) mapTiles[x][y] = Game.Tile.dTile;
+          else if (x == 21 && y == 12 ) mapTiles[x][y] = Game.Tile.sTile;
+          else if (x == 22 && y == 12 ) mapTiles[x][y] = Game.Tile.tTile;
+          else if (x == 23 && y == 12 ) mapTiles[x][y] = Game.Tile.OTile;
+          else if (x == 24 && y == 12 ) mapTiles[x][y] = Game.Tile.pTile;
+
+          // Unique Tiles for the Bar
+          else if (x == 23 && y == 24 ) mapTiles[x][y] = Game.Tile.heeringaDoorTile;
+          else if (x == 22 && y == 24 ) mapTiles[x][y] = Game.Tile.heeringaDoorTile;
+          else if (x == 19 && y == 21 ) mapTiles[x][y] = Game.Tile.tTile;
+          else if (x == 20 && y == 21 ) mapTiles[x][y] = Game.Tile.hTile;
+          else if (x == 21 && y == 21 ) mapTiles[x][y] = Game.Tile.eTile;
+          else if (x == 24 && y == 21 ) mapTiles[x][y] = Game.Tile.rTile;
+          else if (x == 25 && y == 21 ) mapTiles[x][y] = Game.Tile.eTile;
+          else if (x == 26 && y == 21 ) mapTiles[x][y] = Game.Tile.dTile;
+          else if (x == 19 && y == 22 ) mapTiles[x][y] = Game.Tile.hTile;
+          else if (x == 20 && y == 22 ) mapTiles[x][y] = Game.Tile.eTile;
+          else if (x == 21 && y == 22 ) mapTiles[x][y] = Game.Tile.eTile;
+          else if (x == 22 && y == 22 ) mapTiles[x][y] = Game.Tile.rTile;
+          else if (x == 23 && y == 22 ) mapTiles[x][y] = Game.Tile.iTile;
+          else if (x == 24 && y == 22 ) mapTiles[x][y] = Game.Tile.nTile;
+          else if (x == 25 && y == 22 ) mapTiles[x][y] = Game.Tile.gTile;
+          else if (x == 26 && y == 22 ) mapTiles[x][y] = Game.Tile.aTile;
+
+          // Unique Tiles for Hall of Mirrors
+          else if (x == 37 && y == 24 ) mapTiles[x][y] = Game.Tile.mirrorDoorTile;
+          else if (x == 34 && y == 21 ) mapTiles[x][y] = Game.Tile.hTile;
+          else if (x == 35 && y == 21 ) mapTiles[x][y] = Game.Tile.aTile;
+          else if (x == 36 && y == 21 ) mapTiles[x][y] = Game.Tile.lTile;
+          else if (x == 37 && y == 21 ) mapTiles[x][y] = Game.Tile.lTile;
+          else if (x == 39 && y == 21 ) mapTiles[x][y] = Game.Tile.OTile;
+          else if (x == 40 && y == 21 ) mapTiles[x][y] = Game.Tile.fTile;
+          else if (x == 34 && y == 22 ) mapTiles[x][y] = Game.Tile.mTile;
+          else if (x == 35 && y == 22 ) mapTiles[x][y] = Game.Tile.iTile;
+          else if (x == 36 && y == 22 ) mapTiles[x][y] = Game.Tile.rTile;
+          else if (x == 37 && y == 22 ) mapTiles[x][y] = Game.Tile.rTile;
+          else if (x == 38 && y == 22 ) mapTiles[x][y] = Game.Tile.OTile;
+          else if (x == 39 && y == 22 ) mapTiles[x][y] = Game.Tile.rTile;
+          else if (x == 40 && y == 22 ) mapTiles[x][y] = Game.Tile.sTile;
+
+
+          else if (x>=18 && x <=27){
+            if(y>=10 && y<=14) {
+              mapTiles[x][y] = Game.Tile.woodTile;
+            } else if(y>=20 && y<=24) {
               mapTiles[x][y] = Game.Tile.woodTile;
             } else if(Game.UIMode.gamePlay.attr._trippy) {
               mapTiles[x][y] = Game.Tile.trippyFloorTile;
             } else {
               mapTiles[x][y] = Game.Tile.floorTile;
             }
-          } else if(x>=18 && x <=27){
-            if(y>=33 && y<=37) {
+          }
+          else if(x>=33 && x <=41){
+            if(y>=20 && y<=24) {
               mapTiles[x][y] = Game.Tile.woodTile;
             } else if(Game.UIMode.gamePlay.attr._trippy) {
               mapTiles[x][y] = Game.Tile.trippyFloorTile;
