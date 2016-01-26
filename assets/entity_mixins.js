@@ -8,12 +8,13 @@ Game.EntityMixin.PlayerMessager = {
     listeners: {
       'walkForbidden': function(evtData) {
         var nameEvt = evtData.target.getName();
-        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle')
+        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle' || nameEvt == 'Shop And Stop')
           Game.Message.sendMessage('Do you want to walk into the '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'The Red Heeringa')
           Game.Message.sendMessage('Do you want to walk into '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
-        else if (nameEvt == 'talk bar')
-        Game.Message.sendMessage('Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
+        else if (nameEvt == 'talk bar' || nameEvt == 'talk shop')
+          if (nameEvt == 'talk shop') Game.Message.sendMessage('Hi my name is Nola! Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no')
+          else Game.Message.sendMessage('Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
         else Game.Message.sendMessage('You cannot walk into the ' + nameEvt);
           Game.renderMessage();
           Game.Message.ageMessages();
@@ -124,31 +125,36 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlayMirror.setupMirror();
             Game.switchUIMode('gamePlayMirror');
           }
-          if (this.getBumpEvt() == 'Forrest') {
+          else if (this.getBumpEvt() == 'Forrest') {
             Game.UIMode.gamePlay.setupMap('forrest');
             Game.UIMode.gamePlay.removeAvatar();
           }
-          if (this.getBumpEvt() == 'Dungeon') {
+          else if (this.getBumpEvt() == 'Dungeon') {
             Game.UIMode.gamePlay.setupMap('dungeon');
             Game.UIMode.gamePlay.removeAvatar();
           }
-          if (this.getBumpEvt() == 'Castle') {
+          else if (this.getBumpEvt() == 'Castle') {
             Game.UIMode.gamePlay.setupMap('castle');
             Game.UIMode.gamePlay.removeAvatar();
           }
-          if (this.getBumpEvt() == 'The Red Heeringa') {
-            Game.UIMode.gamePlayHeeringa.setupHeeringa(Game.UIMode.gamePlay.getAvatar());
+          else if (this.getBumpEvt() == 'The Red Heeringa') {
+            Game.UIMode.gamePlayStore.setupStore('theRedHeeringa');
             Game.UIMode.gamePlay.removeAvatar();
-            Game.switchUIMode('gamePlayHeeringa');
+            Game.switchUIMode('gamePlayStore');
           }
-          if (this.getBumpEvt() == 'talk bar') {
-            Game.UIMode.gamePlayHeeringa.setBumped(false);
-          } else
-            Game.UIMode.gamePlay.setBumped(false);
+          else if (this.getBumpEvt() == 'Shop And Stop') {
+            Game.UIMode.gamePlayStore.setupStore('shopAndStop');
+            Game.UIMode.gamePlay.removeAvatar();
+            Game.switchUIMode('gamePlayStore');
+          }
+          else if (this.getBumpEvt() == 'talk bar' || this.getBumpEvt() == 'talk shop') {
+            Game.UIMode.gamePlayStore.setBumped(false);
+          }
+          Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
           Game.Message.sendMessage('Please answer yes [y] or no [n]');
-        } else if (this.getBumpEvt() == 'talk bar'){
-          Game.UIMode.gamePlayHeeringa.setBumped(false);
+        } else if (this.getBumpEvt() == 'talk bar' || this.getBumpEvt() == 'talk shop'){
+          Game.UIMode.gamePlayStore.setBumped(false);
           Game.Message.sendMessage('You will regret not buying from me!')
         } else {
           Game.UIMode.gamePlay.setBumped(false);
@@ -158,11 +164,11 @@ Game.EntityMixin.PlayerActor = {
       },
       'walkForbidden' : function(evtData) {
         var nameEvt = evtData.target.getName();
-        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle' || nameEvt == 'The Red Heeringa'){
+        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle' || nameEvt == 'The Red Heeringa' || nameEvt == 'Shop And Stop'){
           Game.UIMode.gamePlay.setBumped(true);
           this.setBumpEvt(nameEvt);
-        } else if (nameEvt == 'talk bar') {
-          Game.UIMode.gamePlayHeeringa.setBumped(true);
+        } else if (nameEvt == 'talk bar' || nameEvt == 'talk shop') {
+          Game.UIMode.gamePlayStore.setBumped(true);
           this.setBumpEvt(nameEvt);
         }
       },

@@ -203,5 +203,41 @@ Game.MapTileSets = {
       });
       return mapTiles;
     }
+  },
+  shopAndStop: {
+    _width: 20,
+    _height: 14,
+    getMapTiles: function () {
+      var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
+      var generator = new ROT.Map.Arena(this._width,this._height);
+      generator.create(function(x,y,v) {
+        if (v === 1){
+          mapTiles[x][y] = Game.Tile.wallTile;
+        } else {
+          if (x == 13 && y >= 2 && y <= 6) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (x == 13 && y >= 8 && y <= 12) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (x == 14 && y >= 2 && y <= 6) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (x == 14 && y >= 8 && y <= 12) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (x == 16 && y >= 2 && y <= 6) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (x == 16 && y >= 8 && y <= 12) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (x == 17 && y >= 2 && y <= 6) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (x == 17 && y >= 8 && y <= 12) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (y == 1 && x == 10) mapTiles[x][y] = Game.Tile.shopTile;
+          else if (y == 2 && x == 10) mapTiles[x][y] = Game.Tile.shopTile;
+          else if (y == 5 && x >= 2 && x < 10) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (y == 6 && x >= 2 && x < 10) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (y == 8 && x >= 2 && x < 10) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (y == 9 && x >= 2 && x < 10) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (y == 11 && x >= 2 && x < 10) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (y == 12 && x >= 2 && x < 10) mapTiles[x][y] = Game.Tile.shelfTile;
+          else if (y == 3) {
+            if (x == 5) mapTiles[x][y] = Game.Tile.talkShopTile;
+            else if (x > 10) mapTiles[x][y] = Game.Tile.floorTile;
+            else mapTiles[x][y] = Game.Tile.shopTile;
+          }  else mapTiles[x][y] = Game.Tile.floorTile;
+        }
+      });
+      return mapTiles;
+    }
   }
 };

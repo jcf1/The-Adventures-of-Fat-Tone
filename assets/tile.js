@@ -29,20 +29,30 @@ Game.Tile.prototype.isTransparent = function () {
 
 //-----------------------------------------------------------------------------
 
+// All the various tiles used in the game
 Game.Tile.nullTile = new Game.Tile({name:'nullTile', chr:'#'});
 Game.Tile.floorTile = new Game.Tile({name:'floor',chr:' ',walkable:true,transparent:true});
 Game.Tile.roadTile = new Game.Tile({name:'road',chr:'\u2591',fg: '#FEE8D6',walkable:true,transparent:true});
 Game.Tile.trippyFloorTile = new Game.Tile({name:'trippy floor',chr:'.',walkable:true,transparent:true});
 Game.Tile.wallTile = new Game.Tile({name:'wall',chr:'#'});
+
 Game.Tile.woodTile = new Game.Tile({name:'wood',chr:'#',fg: '#670A0A',transparent:true});
-Game.Tile.heeringaDoorTile = new Game.Tile({name:'The Red Heeringa',chr:'-',fg:'#cc3300',transparent:true});
-Game.Tile.shopDoorTile = new Game.Tile({name:'Shop And Stop',chr:'-',fg:'#cc3300',transparent:true});
 Game.Tile.invisibleTile = new Game.Tile({name:'invisible wall',chr:' ',transparent:true});
 Game.Tile.lockedDoorTile = new Game.Tile({name:'locked door',chr:'='});
+
+Game.Tile.heeringaDoorTile = new Game.Tile({name:'The Red Heeringa',chr:'-',fg:'#cc3300',transparent:true});
 Game.Tile.barTile = new Game.Tile({name:'bar counter',chr:'#',fg: '#670A0A'});
 Game.Tile.talkBarTile = new Game.Tile({name:'talk bar',chr:'#',fg: '#670A0A'});
 Game.Tile.barDoorTile = new Game.Tile({name:'Bar Door',chr: '=',fg: '#670A0A', transparent:true});
+
+Game.Tile.shopDoorTile = new Game.Tile({name:'Shop And Stop',chr:'-',fg:'#cc3300',transparent:true});
+Game.Tile.shopTile = new Game.Tile({name:'shop counter',chr:'#',fg: '#670A0A'});
+Game.Tile.shelfTile = new Game.Tile({name:'shelf',chr:'+',fg: '#670A0A'});
+Game.Tile.talkShopTile = new Game.Tile({name:'talk shop',chr:'#',fg: '#670A0A'});
+
 Game.Tile.mirrorDoorTile = new Game.Tile({name:'Hall of Mirrors',chr: '-', transparent:true});
+
+//Alphabetical Tiles
 Game.Tile.aTile = new Game.Tile({name:'A',chr:'A',transparent:true});
 Game.Tile.dTile = new Game.Tile({name:'D',chr:'D',transparent:true});
 Game.Tile.eTile = new Game.Tile({name:'E',chr:'E',transparent:true});
@@ -59,6 +69,8 @@ Game.Tile.pTile = new Game.Tile({name:'P',chr:'P',transparent:true});
 Game.Tile.rTile = new Game.Tile({name:'R',chr:'R',transparent:true});
 Game.Tile.sTile = new Game.Tile({name:'S',chr:'S',transparent:true});
 Game.Tile.tTile = new Game.Tile({name:'T',chr:'T',transparent:true});
+
+// Tiles to leave the Main Town
 Game.Tile.toDungeonTile = new Game.Tile({name:'Dungeon',chr:'⭅',fg: '#CD8500',transparent:true});
 Game.Tile.toForrestTile = new Game.Tile({name:'Forrest',chr:'⭆',fg: '#008B45',transparent:true});
 Game.Tile.toCastleTile = new Game.Tile({name:'Castle',chr:'⇪',fg: '#F87531',transparent:true})

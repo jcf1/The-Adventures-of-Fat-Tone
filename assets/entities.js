@@ -34,7 +34,15 @@ Game.EntityGenerator.learn({
 Game.EntityGenerator.learn({
   name: 'brent',
   description: 'Brent - the owner of this fine establishment',
-  chr:'B',
+  chr:'😎',
+  fg:'#f00',
+  mixins: ["WalkerCorporeal"]
+});
+
+Game.EntityGenerator.learn({
+  name: 'Nola',
+  description: 'Nola - the owner of this fine establishment',
+  chr:'N',
   fg:'#f00',
   mixins: ["WalkerCorporeal"]
 });

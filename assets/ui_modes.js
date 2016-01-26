@@ -256,7 +256,7 @@ Game.UIMode.gamePlay = {
 //#############################################################################
 //#############################################################################
 
-Game.UIMode.gamePlayHeeringa = {
+Game.UIMode.gamePlayStore = {
   attr: {
     _mapId:'',
     _cameraX: 10,
@@ -267,7 +267,7 @@ Game.UIMode.gamePlayHeeringa = {
     _prevY: 0,
     _bumped: false
   },
-  JSON_KEY: 'UIMode_gamePlayHeeringa',
+  JSON_KEY: 'UIMode_gamePlayStore',
   enter: function() {
     this.getMap().unlockTimingEngine();
     Game.refresh();
@@ -398,14 +398,16 @@ Game.UIMode.gamePlayHeeringa = {
     }
     return false;
   },
-  setupHeeringa: function(ava) {
-    this.setMap(new Game.Map('theRedHeeringa'));
+  setupStore: function(map) {
+    this.setMap(new Game.Map(map));
     this.getMap().initializeTimingEngine();
-    this.setAvatar(ava);
-    this.attr._prevX = ava.getX();
-    this.attr._prevY = ava.getY();
+    this.setAvatar(Game.UIMode.gamePlay.getAvatar());
+    this.attr._prevX = this.getAvatar().getX();
+    this.attr._prevY = this.getAvatar().getY();
     this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
-    this.getMap().addEntity(Game.EntityGenerator.create('brent'),{x: 10, y: 2});
+    if (map == 'theRedHeeringa')
+      this.getMap().addEntity(Game.EntityGenerator.create('brent'),{x: 10, y: 2});
+    else this.getMap().addEntity(Game.EntityGenerator.create('Nola'),{x: 5, y: 2});
   },
   moveCamera: function (dx,dy) {
     this.setCamera(this.attr._cameraX + dx,this.attr._cameraY + dy);
