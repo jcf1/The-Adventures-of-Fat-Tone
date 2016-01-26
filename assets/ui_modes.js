@@ -298,8 +298,17 @@ Game.UIMode.gamePlayHeeringa = {
     var actionBinding = Game.KeyBinding.getInputBinding(eventType, evt);
 
     if (!actionBinding) return false;
-    else if (actionBinding.actionKey == 'CANCEL') { this.returnToTown(); return false;}
-
+    else if (this.hasBumped()) {
+      if (actionBinding.actionKey == 'ANSWER_YES') {
+        this.getAvatar().raiseSymbolActiveEvent('answeredQ','yes');
+      } else if (actionBinding.actionKey == 'ANSWER_NO') {
+        this.getAvatar().raiseSymbolActiveEvent('answeredQ','no');
+      } else this.getAvatar().raiseSymbolActiveEvent('answeredQ','no answer')
+      return;
+    } else if (actionBinding.actionKey == 'CANCEL') {
+        this.returnToTown();
+        return false;
+    }
     var tookTurn = false;
     if (actionBinding.actionKey == 'MOVE_U') {
       tookTurn = this.moveAvatar(0, -1);
@@ -1190,5 +1199,73 @@ Game.UIMode.LAYER_inventoryEat = new Game.UIMode.LAYER_itemListing({
     }
 });
 Game.UIMode.LAYER_inventoryEat.doSetup = function () {
+  this.setup({itemIdList: Game.getAvatar().getInventoryItemIds()});
+};
+
+//-------------------
+
+Game.UIMode.LAYER_sellerListing = new Game.UIMode.LAYER_itemListing({
+    caption: 'Seller Listing',
+    canSelect: false,
+    keyBindingName: 'LAYER_inventoryListing'
+});
+Game.UIMode.LAYER_sellerListing.doSetup = function () {
+  this.setup({itemIdList: Game.getAvatar().getInventoryItemIds()});
+};
+
+Game.UIMode.LAYER_sellerListing.handleInput = function (inputType,inputData) {
+  var actionBinding = Game.KeyBinding.getInputBinding(inputType,inputData);
+
+  if (actionBinding) {
+    if (actionBinding.actionKey == 'EXAMINE') {
+      Game.addUIMode('LAYER_sellerExamine');
+      return false;
+    }
+    if (actionBinding.actionKey == 'DROP') {
+      Game.addUIMode('LAYER_sellerBuy');
+      return false;
+    }
+  }
+  return Game.UIMode.LAYER_itemListing.prototype.handleInput.call(this,inputType,inputData);
+};
+
+//-------------------
+
+Game.UIMode.LAYER_sellerBuy = new Game.UIMode.LAYER_itemListing({
+    caption: 'Buy',
+    canSelect: true,
+    canSelectMultipleItems: false,
+    keyBindingName: 'LAYER_inventoryDrop',
+    processingFunction: function (selectedItemIds) {
+      if (selectedItemIds[0]) {
+        var foodItem = Game.getMerchant().extractInventoryItems([selectedItemIds[0]])[0];
+//        Game.util.cdebug(foodItem);
+        return true;
+      }
+      return false;
+    }
+});
+Game.UIMode.LAYER_sellerBuy.doSetup = function () {
+  this.setup({itemIdList: Game.getMerchant().getInventoryItemIds()});
+};
+
+//-------------------
+
+Game.UIMode.LAYER_sellerExamine = new Game.UIMode.LAYER_itemListing({
+    caption: 'Examine',
+    canSelect: true,
+    keyBindingName: 'LAYER_inventoryExamine',
+    processingFunction: function (selectedItemIds) {
+      //console.log('LAYER_inventoryExamine processing on '+selectedItemIds[0]);
+      if (selectedItemIds[0]) {
+        var d = Game.DATASTORE.ITEM[selectedItemIds[0]].getDetailedDescription();
+        setTimeout(function() { // delay here because of the general refresh on exiting the layer
+           Game.specialMessage(d);
+        }, 2);
+      }
+      return false;
+    }
+});
+Game.UIMode.LAYER_sellerExamine.doSetup = function () {
   this.setup({itemIdList: Game.getAvatar().getInventoryItemIds()});
 };

@@ -136,17 +136,20 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlay.setupMap('castle');
             Game.UIMode.gamePlay.removeAvatar();
           }
-          else if (this.getBumpEvt() == 'The Red Heeringa') {
+          if (this.getBumpEvt() == 'The Red Heeringa') {
             Game.UIMode.gamePlayHeeringa.setupHeeringa(Game.UIMode.gamePlay.getAvatar());
             Game.UIMode.gamePlay.removeAvatar();
             Game.switchUIMode('gamePlayHeeringa');
           }
-          else if (this.getBumpEvt() == 'talk bar') {
-
-          }
-          Game.UIMode.gamePlay.setBumped(false);
+          if (this.getBumpEvt() == 'talk bar') {
+            Game.UIMode.gamePlayHeeringa.setBumped(false);
+          } else
+            Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
           Game.Message.sendMessage('Please answer yes [y] or no [n]');
+        } else if (this.getBumpEvt() == 'talk bar'){
+          Game.UIMode.gamePlayHeeringa.setBumped(false);
+          Game.Message.sendMessage('You will regret not buying from me!')
         } else {
           Game.UIMode.gamePlay.setBumped(false);
           Game.Message.sendMessage('You chose not to enter the ' +this.getBumpEvt() + '. YOU COWARD!');
