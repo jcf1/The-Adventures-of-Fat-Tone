@@ -120,6 +120,7 @@ Game.EntityMixin.PlayerActor = {
         this.getMap().attr._Scheduler.add(this,true,1);
       },
       'answeredQ' : function (ans) {
+        Game.Message.ageMessages();
         if (ans == 'yes') {
           if (this.getBumpEvt() == 'Hall of Mirrors') {
             Game.UIMode.gamePlayMirror.setupMirror();
@@ -148,6 +149,7 @@ Game.EntityMixin.PlayerActor = {
             Game.switchUIMode('gamePlayStore');
           }
           else if (this.getBumpEvt() == 'talk bar' || this.getBumpEvt() == 'talk shop') {
+            Game.addUIMode('LAYER_sellerListing');
             Game.UIMode.gamePlayStore.setBumped(false);
           }
           Game.UIMode.gamePlay.setBumped(false);
@@ -342,9 +344,7 @@ Game.EntityMixin.FoodConsumer = {
     this.attr._FoodConsumer_attr.foodConsumedPer1000Ticks = n;
   },
   eatFood: function (foodItm) {
-    this.attr._FoodConsumer_attr.currentFood += foodItm.getFoodValue();
-    if (this.attr._FoodConsumer_attr.currentFood > this.attr._FoodConsumer_attr.maxFood) {this.attr._FoodConsumer_attr.currentFood = this.attr._FoodConsumer_attr.maxFood;}
-    if (foodItm.isElixir()) {
+    if (foodItm.hasMixin('Elixir')) {
       var boost = foodItm.getElixirBoost();
       if (boost == 'power') {
         this.raiseSymbolActiveEvent('raiseAttackDamage', 1);
@@ -361,6 +361,8 @@ Game.EntityMixin.FoodConsumer = {
         this.raiseSymbolActiveEvent('raiseDamageMitigation', 1);
       }
     }
+    this.attr._FoodConsumer_attr.currentFood += foodItm.getFoodValue();
+    if (this.attr._FoodConsumer_attr.currentFood > this.attr._FoodConsumer_attr.maxFood) {this.attr._FoodConsumer_attr.currentFood = this.attr._FoodConsumer_attr.maxFood;}
   },
   getHungrierBy: function (foodAmt) {
     //this.attr._FoodConsumer_attr.currentFood -= foodAmt;
@@ -580,7 +582,7 @@ Game.EntityMixin.MeleeAttacker = {
       'raiseAttackDamage': function(evtData) {
         this.setAttackDamage(this.getAttackDamage() + evtData);
       },
-      'raiseAttackAccuracy' : function(evtData) {
+      'raiseAttackHit' : function(evtData) {
         this.setAttackHit(this.getAttackHit() + evtData)
       }
     }

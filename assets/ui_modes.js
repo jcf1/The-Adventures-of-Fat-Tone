@@ -213,13 +213,13 @@ Game.UIMode.gamePlay = {
 
     var itemPos = '';
     for (var ecount = 0; ecount < 10; ecount++) {
-      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
+    //  this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
     //  this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
     //  this.getMap().addEntity(Game.EntityGenerator.create('angry squirrel'),this.getMap().getRandomWalkablePosition());
     //  this.getMap().addEntity(Game.EntityGenerator.create('attack slug'),this.getMap().getRandomWalkablePosition());
 
-    //  itemPos = this.getMap().getRandomWalkablePosition();
-    //  this.getMap().addItem(Game.ItemGenerator.create('BrewDog Beer'),itemPos);
+      // itemPos = this.getMap().getRandomWalkablePosition();
+      // this.getMap().addItem(Game.ItemGenerator.create('BrewDog Beer'),itemPos);
 
      //itemPos = this.getMap().getRandomWalkablePosition();
      //this.getMap().addItem(Game.ItemGenerator.create('BrewDog Beer'),itemPos);
@@ -269,6 +269,7 @@ Game.UIMode.gamePlayStore = {
     _cameraX: 10,
     _cameraY: 10,
     _avatarId: '',
+    _merchantId: '',
     _input: 0,
     _prevX: 0,
     _prevY: 0,
@@ -300,6 +301,12 @@ Game.UIMode.gamePlayStore = {
   },
   setAvatar: function (a) {
     this.attr._avatarId = a.getId();
+  },
+  getMerchant: function() {
+    return Game.DATASTORE.ENTITY[this.attr._merchantId];
+  },
+  setMerchant: function(m) {
+    this.attr._merchantId = m.getId();
   },
   handleInput: function(eventType,evt) {
     var actionBinding = Game.KeyBinding.getInputBinding(eventType, evt);
@@ -412,9 +419,15 @@ Game.UIMode.gamePlayStore = {
     this.attr._prevX = this.getAvatar().getX();
     this.attr._prevY = this.getAvatar().getY();
     this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
-    if (map == 'theRedHeeringa')
-      this.getMap().addEntity(Game.EntityGenerator.create('brent'),{x: 10, y: 2});
-    else this.getMap().addEntity(Game.EntityGenerator.create('Nola'),{x: 5, y: 2});
+    if (map == 'theRedHeeringa') {
+      var merch = Game.EntityGenerator.create('brent');
+      this.getMap().addEntity(merch,{x: 10, y: 2});
+    }
+    else {
+      var merch = Game.EntityGenerator.create('Nola');
+      this.getMap().addEntity(merch,{x: 5, y: 2});
+    }
+    this.setMerchant(merch);
   },
   moveCamera: function (dx,dy) {
     this.setCamera(this.attr._cameraX + dx,this.attr._cameraY + dy);
@@ -1219,7 +1232,7 @@ Game.UIMode.LAYER_sellerListing = new Game.UIMode.LAYER_itemListing({
     keyBindingName: 'LAYER_inventoryListing'
 });
 Game.UIMode.LAYER_sellerListing.doSetup = function () {
-  this.setup({itemIdList: Game.getAvatar().getInventoryItemIds()});
+  this.setup({itemIdList: Game.getMerchant().getInventoryItemIds()});
 };
 
 Game.UIMode.LAYER_sellerListing.handleInput = function (inputType,inputData) {

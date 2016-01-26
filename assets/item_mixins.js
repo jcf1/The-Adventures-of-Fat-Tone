@@ -22,9 +22,6 @@ Game.ItemMixin.Food = {
   },
   setFoodValue: function (v) {
     this.attr._Food_attr.foodValue = v;
-  },
-  isElixir: function () {
-    return false;
   }
 };
 
@@ -50,9 +47,6 @@ Game.ItemMixin.Elixir = {
   },
   setElixirBoost: function (v) {
     this.attr._Elixir_attr.elixirBoost = v;
-  },
-  isElixir: function () {
-    return true;
   }
 };
 

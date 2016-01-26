@@ -172,6 +172,9 @@ var Game = {
   getAvatar: function () {
     return Game.UIMode.gamePlay.getAvatar();
   },
+  getMerchant: function() {
+    return Game.UIMode.gamePlayStore.getMerchant();
+  },
   refresh: function() {
     this.renderAll();
   },
