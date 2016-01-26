@@ -223,9 +223,9 @@ Game.UIMode.gamePlay = {
     this.setCameraToAvatar();
 
     if (map == 'forrest') {
-      this.getMap().addEntity(Game.EntityGenerator.create('Magical Herb'),this.getMap().getRandomWalkablePosition());
+      this.getMap().addEntity(Game.EntityGenerator.create('Magical Herb'),this.getMap().getRandomReachablePosition());
     } else if(map == 'dungeon') {
-      this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkablePosition());
+      this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomReachablePosition());
     }
 
     for (var ecount = 0; ecount < 0; ecount++) {

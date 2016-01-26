@@ -8,6 +8,7 @@ Game.Map = function (mapTileSetName, presetId) {
     _mapTileSetName: mapTileSetName,
     _width: this._tiles.length,
     _height: this._tiles[0].length,
+    _reachable: false,
     _entitiesByLocation: {},
     _locationsByEntity: {},
     _itemsByLocation: {},
@@ -205,6 +206,21 @@ Game.Map.prototype.getRandomPosition = function(filter_func) {
 Game.Map.prototype.getRandomWalkablePosition = function() {
   var map = this;
   return this.getRandomPosition(function(t,tX,tY){ return t.isWalkable() && (!map.getEntity(tX,tY)); });
+};
+
+Game.Map.prototype.getRandomReachablePosition = function() {
+  this.attr._reachable = false;
+  var loc;
+  while (!this.attr._reachable){
+    loc = this.getRandomPosition(function(t){ return t.isWalkable(); });
+    var dijkstra = new ROT.Path.Dijkstra(Game.UIMode.gamePlay.getAvatar().getX(), Game.UIMode.gamePlay.getAvatar().getY(), function(x, y){return (Game.UIMode.gamePlay.getMap().getTile(x,y).isWalkable());});
+    dijkstra.compute(loc.x, loc.y, this.returnCallback);
+  }
+  return loc;
+};
+
+Game.Map.prototype.returnCallback = function(x, y){
+  Game.UIMode.gamePlay.getMap().attr._reachable = true;
 };
 
 Game.Map.prototype.rememberCoords = function (toRemember) {

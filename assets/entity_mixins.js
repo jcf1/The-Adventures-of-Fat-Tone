@@ -176,6 +176,7 @@ Game.EntityMixin.PlayerActor = {
           this.setBumpEvt(nameEvt);
         } else if (nameEvt == 'Harold Tile') {
           Game.Message.sendMessage(Game.util.randomRap());
+          Game.Message.ageMessages();
         }
       },
       'actionDone': function(evtData) {
