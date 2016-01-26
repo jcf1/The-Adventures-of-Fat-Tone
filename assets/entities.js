@@ -28,11 +28,13 @@ Game.EntityGenerator.learn({
   chr:'%',
   fg:'#6b6',
   maxHp: 1,
+  minDropAmount: 10,
+  maxDropAmount: 10,
   mixins: ["HitPoints","MoneyDropper"]
 });
 
 Game.EntityGenerator.learn({
-  name: 'brent',
+  name: 'Brent',
   description: 'Brent - the owner of this fine establishment',
   chr:'😎',
   fg:'#f00',
@@ -43,7 +45,23 @@ Game.EntityGenerator.learn({
 Game.EntityGenerator.learn({
   name: 'Nola',
   description: 'Nola - the owner of this fine establishment',
-  chr:'N',
+  chr:'🐫',
+  fg:'#f00',
+  mixins: ["WalkerCorporeal"]
+});
+
+Game.EntityGenerator.learn({
+  name: 'Alexis',
+  description: 'Alexis - a person who is always at the shop',
+  chr:'😪',
+  fg:'#f00',
+  mixins: ["WalkerCorporeal"]
+});
+
+Game.EntityGenerator.learn({
+  name: 'Harold',
+  description: 'Harold - the rapper',
+  chr:'😃🎸',
   fg:'#f00',
   inventoryCapacity: 50,
   mixins: ["WalkerCorporeal", "InventoryHolder"]

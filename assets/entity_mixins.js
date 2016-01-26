@@ -8,17 +8,18 @@ Game.EntityMixin.PlayerMessager = {
     listeners: {
       'walkForbidden': function(evtData) {
         var nameEvt = evtData.target.getName();
-        if(nameEvt == 'Hall of Mirrors' || nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle' || nameEvt == 'Shop And Stop')
+        if(nameEvt == 'Hall of Mirrors')
+          Game.Message.sendMessage('Do you want to walk into the '+ nameEvt +' for 10 Gold? Type \'y\' for yes, \'n\' for no');
+        else if(nameEvt == 'Dungeon' || nameEvt == 'Forrest' || nameEvt == 'Castle' || nameEvt == 'Shop And Stop')
           Game.Message.sendMessage('Do you want to walk into the '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'The Red Heeringa')
           Game.Message.sendMessage('Do you want to walk into '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'talk bar' || nameEvt == 'talk shop')
           if (nameEvt == 'talk shop') Game.Message.sendMessage('Hi my name is Nola! Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no')
           else Game.Message.sendMessage('Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
-        else Game.Message.sendMessage('You cannot walk into the ' + nameEvt);
-          Game.renderMessage();
-          Game.Message.ageMessages();
-
+        // else Game.Message.sendMessage('You cannot walk into the ' + nameEvt);
+        //   Game.renderMessage();
+        //   Game.Message.ageMessages();
       },
       'attackAvoided': function(evtData) {
         Game.Message.sendMessage('you avoided the '+evtData.attacker.getName());
@@ -123,8 +124,11 @@ Game.EntityMixin.PlayerActor = {
         Game.Message.ageMessages();
         if (ans == 'yes') {
           if (this.getBumpEvt() == 'Hall of Mirrors') {
-            Game.UIMode.gamePlayMirror.setupMirror();
-            Game.switchUIMode('gamePlayMirror');
+            if (Game.UIMode.gamePlay.getAvatar().canAfford(10)) {
+              Game.UIMode.gamePlay.getAvatar().raiseSymbolActiveEvent('spendMoney',{amount:10});
+              Game.UIMode.gamePlayMirror.setupMirror();
+              Game.switchUIMode('gamePlayMirror');
+            } else Game.UIMode.gamePlay.getAvatar().raiseSymbolActiveEvent('spendMoney',{amount:10});
           }
           else if (this.getBumpEvt() == 'Forrest') {
             Game.UIMode.gamePlay.setupMap('forrest');
@@ -172,6 +176,9 @@ Game.EntityMixin.PlayerActor = {
         } else if (nameEvt == 'talk bar' || nameEvt == 'talk shop') {
           Game.UIMode.gamePlayStore.setBumped(true);
           this.setBumpEvt(nameEvt);
+        } else if (nameEvt == 'Harold Tile') {
+          Game.Message.sendMessage(Game.util.randomRap());
+          Game.Message.ageMessages();
         }
       },
       'actionDone': function(evtData) {
@@ -185,11 +192,17 @@ Game.EntityMixin.PlayerActor = {
       },
       'bumpEntity': function(evtData) {
         //console.log('MeleeAttacker bumpEntity');
-        if(evtData.recipient.getName() == 'Evan Williams' || evtData.recipient.getName() == 'Magical Herb') {
+        if (evtData.recipient.getName() == 'Evan Williams' || evtData.recipient.getName() == 'Magical Herb') {
           if(Game.UIMode.gamePlay.attr._trippy)
             Game.UIMode.gamePlay.attr._trippy = false;
           else
             Game.UIMode.gamePlay.attr._trippy = true;
+        }
+        if (evtData.recipient.getName() == 'Alexis') {
+          Game.Message.sendMessage(Game.util.randomNolaFact());
+        }
+        if (evtData.recipient.getName() == 'Harold') {
+          Game.Message.sendMessage(Game.util.randomRap());
         }
       },
       'madeKill': function(evtData) {
@@ -263,8 +276,8 @@ Game.EntityMixin.WalletHolder = {
         this.raiseSymbolActiveEvent('pickUpMoney',{amount:evtData.dropAmount});
       },
       'spendMoney': function(evtData) {
-        if(evtData > this._WalletHolder_attr.currentMoney){
-          this.subMoney(evtData.price);
+        if(evtData.amount <= this.attr._WalletHolder_attr.currentMoney){
+          this.subMoney(evtData.amount);
         } else {
           this.raiseSymbolActiveEvent('cantAfford');
         }
@@ -279,6 +292,9 @@ Game.EntityMixin.WalletHolder = {
   },
   getCurrentMoney: function() {
     return this.attr._WalletHolder_attr.currentMoney;
+  },
+  canAfford: function(price) {
+    return price <= this.attr._WalletHolder_attr.currentMoney;
   }
 }
 

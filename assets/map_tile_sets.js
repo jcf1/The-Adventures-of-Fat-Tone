@@ -198,7 +198,10 @@ Game.MapTileSets = {
             if (x == 10) mapTiles[x][y] = Game.Tile.talkBarTile;
             else if (x == 14 || x == 15) mapTiles[x][y] = Game.Tile.barDoorTile;
             else mapTiles[x][y] = Game.Tile.barTile;
-          }  else mapTiles[x][y] = Game.Tile.floorTile;
+          } else if (y == 4) {
+            if(x == 1 || x == 2) mapTiles[x][y] = Game.Tile.HaroldTile;
+            else mapTiles[x][y] = Game.Tile.floorTile;
+          } else mapTiles[x][y] = Game.Tile.floorTile;
         }
       });
       return mapTiles;
