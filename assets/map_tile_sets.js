@@ -101,8 +101,8 @@ Game.MapTileSets = {
     }
   },
   forrest: {
-    _width: 300,
-    _height: 200,
+    _width: 100,
+    _height: 100,
     getMapTiles: function () {
       var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
       var generator = new ROT.Map.Cellular(this._width,this._height);
@@ -119,7 +119,7 @@ Game.MapTileSets = {
         if (v === 1) {
           mapTiles[x][y] = Game.Tile.floorTile;
         } else {
-          mapTiles[x][y] = Game.Tile.wallTile;
+          mapTiles[x][y] = Game.Tile.treeTile;
         }
       });
 
@@ -127,8 +127,8 @@ Game.MapTileSets = {
     }
   },
   dungeon: {
-    _width: 300,
-    _height: 200,
+    _width: 100,
+    _height: 100,
     getMapTiles: function () {
       var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
       var generator = new ROT.Map.Digger(this._width,this._height);

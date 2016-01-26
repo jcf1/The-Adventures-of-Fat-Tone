@@ -35,6 +35,7 @@ Game.Tile.roadTile = new Game.Tile({name:'road',chr:'\u2591',fg: '#FEE8D6',walka
 Game.Tile.trippyFloorTile = new Game.Tile({name:'trippy floor',chr:'.',walkable:true,transparent:true});
 Game.Tile.wallTile = new Game.Tile({name:'wall',chr:'#'});
 Game.Tile.woodTile = new Game.Tile({name:'wood',chr:'#',fg: '#670A0A',transparent:true});
+Game.Tile.treeTile = new Game.Tile({name:'tree',chr:'#',fg:'#266A2E',diggable:true});
 Game.Tile.heeringaDoorTile = new Game.Tile({name:'The Red Heeringa',chr:'-',fg:'#cc3300',transparent:true});
 Game.Tile.shopDoorTile = new Game.Tile({name:'Shop And Stop',chr:'-',fg:'#cc3300',transparent:true});
 Game.Tile.invisibleTile = new Game.Tile({name:'invisible wall',chr:' ',transparent:true});

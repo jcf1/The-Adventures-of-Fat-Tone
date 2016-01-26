@@ -177,7 +177,7 @@ Game.EntityMixin.PlayerActor = {
       },
       'bumpEntity': function(evtData) {
         //console.log('MeleeAttacker bumpEntity');
-        if(evtData.recipient.getName() == 'Evan Williams') {
+        if(evtData.recipient.getName() == 'Evan Williams' || evtData.recipient.getName() == 'Magical Herb') {
           if(Game.UIMode.gamePlay.attr._trippy)
             Game.UIMode.gamePlay.attr._trippy = false;
           else
