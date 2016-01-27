@@ -25,6 +25,31 @@ Game.ItemMixin.Food = {
   }
 };
 
+Game.ItemMixin.Buyable = {
+  META: {
+    mixinName: 'Buyable',
+    mixinGroup: 'Buyable',
+    stateNamespace: '_Buy_attr',
+    stateModel:  {
+      goldValue: 10
+    },
+    init: function (template) {
+      this.attr._Buy_attr.goldValue = template.goldValue || 10;
+    },
+    listeners: {
+      'getStatsForDisplay': function(evtData) {
+        return {'gold value':this.getGoldValue()};
+      }
+    }
+  },
+  getGoldValue: function () {
+    return this.attr._Buy_attr.goldValue;
+  },
+  setGoldValue: function (v) {
+    this.attr._Buy_attr.goldValue = v;
+  }
+};
+
 Game.ItemMixin.Elixir = {
   META: {
     mixinName: 'Elixir',

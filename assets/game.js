@@ -193,5 +193,14 @@ var Game = {
       this._uiModeNameStack.shift();
       curModeName = this.getCurrUIModeName();
     }
-   }
+  },
+  removeUIModeCurLayer: function () {
+    var curModeName = this.getCurrUIModeName();
+    if((curModeName != null) && curModeName.startsWith('LAYER_')) {
+      var curMode = this.getCurrUIMode();
+      curMode.exit();
+      this._uiModeNameStack.shift();
+      curModeName = this.getCurrUIModeName();
+    }
+  }
 };

@@ -99,6 +99,11 @@ Game.EntityMixin.PlayerMessager = {
       'pickUpMoney': function(evtData) {
         Game.Message.sendMessage('You picked up '+evtData.amount+' gold');
         Game.renderMessage();
+      },
+      'aboutToBuy': function(evtData) {
+        Game.Message.clearMessage();
+        Game.Message.sendMessage('Are you sure you want to buy ' + evtData.item.getName() + ' for ' + evtData.value + '. Type \'y\' to buy, \'n\' to not');
+        Game.Message.ageMessages();
       }
     }
   }
