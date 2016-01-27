@@ -21,6 +21,8 @@ Game.UIMode.gameStart = {
     if(evt.charCode !== 0) {
       Game.UIMode.gamePlay.setupNewGame();
       Game.switchUIMode('gamePlay');
+      Game.UIMode.LAYER_textReading.setText(Game.getStoryBeginning());
+      Game.addUIMode('LAYER_textReading');
     }
   },
   renderOnMain: function(display) {
@@ -44,7 +46,8 @@ Game.UIMode.gamePlay = {
     _win: false,
     _bumped: false,
     _prevX: 0,
-    _prevY: 0
+    _prevY: 0,
+    _saidNo: false
   },
   JSON_KEY: 'UIMode_gamePlay',
   enter: function() {
@@ -183,7 +186,7 @@ Game.UIMode.gamePlay = {
     if (moveResp.madeAdjacentMove && moveResp.madeAdjacentMove[0]) {
       this.setCameraToAvatar();
       this.attr._steps++;
-      var trip = Math.floor(Math.random()*1000001);
+      var trip = Math.floor(Math.random()*1000000);
       if(trip === 666) {
         Game.switchUIMode('gameLose');
         Game.Message.sendMessage("You have fallen and can't get up.");
@@ -203,12 +206,24 @@ Game.UIMode.gamePlay = {
     this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
   },
   returnToTown: function() {
-    if(this.attr._drunk && this.attr._trippy){
+    this.getAvatar().setCurHp(21);
+    if(this.attr._drunk && !(this.attr._trippy)) {
+      Game.UIMode.LAYER_textReading.setText(Game.getStoryDrunkNH());
+      Game.addUIMode('LAYER_textReading');
+      this.setMap(new Game.Map('main_town'));
+    } else if (this.attr._trippy && !(this.attr._drunk)) {
+      Game.UIMode.LAYER_textReading.setText(Game.getStoryHighND());
+      Game.addUIMode('LAYER_textReading');
+      this.setMap(new Game.Map('main_town'));
+    }
+    else if(this.attr._drunk && this.attr._trippy){
+      Game.UIMode.LAYER_textReading.setText(Game.getStoryCross());
+      Game.addUIMode('LAYER_textReading');
       this.setMap(new Game.Map('main_town_cas'));
     } else if(this.attr._win) {
+      Game.UIMode.LAYER_textReading.setText(Game.getStoryGoHome(this.attr._saidNo));
+      Game.addUIMode('LAYER_textReading');
       this.setMap(new Game.Map('main_town_bed'));
-    } else {
-      this.setMap(new Game.Map('main_town'));
     }
     this.getMap().initializeTimingEngine();
     this.getMap().addEntity(this.getAvatar(),{x:this.attr._prevX,y:this.attr._prevY});
@@ -224,7 +239,12 @@ Game.UIMode.gamePlay = {
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToAvatar();
 
-    Game.Message.sendMessage("Reach your bedroom and kill Jose to win!");
+    for (var ecount = 0; ecount < 30; ecount++) {
+      this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
+      this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
+    }
+
+    Game.Message.sendMessage("Find Evan Williams!");
   },
   setupMap: function(map) {
     this.setMap(new Game.Map(map));
@@ -235,9 +255,33 @@ Game.UIMode.gamePlay = {
     this.setCameraToAvatar();
 
     if (map == 'forrest') {
+      if (this.attr._drunk) {
+        Game.UIMode.LAYER_textReading.setText(Game.getStoryForrestDK());
+        Game.addUIMode('LAYER_textReading');
+      } else {
+        Game.UIMode.LAYER_textReading.setText(Game.getStoryForrestND());
+        Game.addUIMode('LAYER_textReading');
+      }
       this.getMap().addEntity(Game.EntityGenerator.create('Magical Herb'),this.getMap().getRandomReachablePosition());
+      for (var ecount = 0; ecount < 25; ecount++)
+        this.getMap().addEntity(Game.EntityGenerator.create('angry squirrel'),this.getMap().getRandomWalkablePosition());
     } else if(map == 'dungeon') {
+      if (this.attr._trippy) {
+        Game.UIMode.LAYER_textReading.setText(Game.getStoryDungeonHH());
+        Game.addUIMode('LAYER_textReading');
+      } else {
+        Game.UIMode.LAYER_textReading.setText(Game.getStoryDungeonNH());
+        Game.addUIMode('LAYER_textReading');
+      }
+      for (var ecount = 0; ecount < 25; ecount++)
+        this.getMap().addEntity(Game.EntityGenerator.create('attack slug'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomReachablePosition());
+    } else if (map == 'castle') {
+      Game.UIMode.LAYER_textReading.setText(Game.getStoryCastle());
+      Game.addUIMode('LAYER_textReading');
+      for(var ecount = 0; ecount < 10; ecount++)
+        this.getMap().addEntity(Game.EntityGenerator.create('security'),this.getMap().getRandomReachablePosition());
+      this.getMap().addEntity(Game.EntityGenerator.create('Castle Exit'),{ x:this.getAvatar().getX(),y: this.getAvatar().getY() + 1});
     }
 
     for (var ecount = 0; ecount < 50; ecount++) {
@@ -422,6 +466,8 @@ Game.UIMode.gamePlayStore = {
       merch.addInventoryItems([Game.ItemGenerator.create('apple'), Game.ItemGenerator.create('Bagel Bite'), Game.ItemGenerator.create('Curry and Rice')]);
       this.getMap().addEntity(Game.EntityGenerator.create('Alexis'),this.getMap().getRandomWalkablePosition());
     } else if (map == 'bedRoom') {
+      Game.UIMode.LAYER_textReading.setText(Game.getStoryHome());
+      Game.addUIMode('LAYER_textReading');
       merch = Game.EntityGenerator.create('Jose');
       this.setCameraToHeeringa();
       this.getMap().addEntity(this.getAvatar(),{x: 4, y: 1});
@@ -644,12 +690,7 @@ Game.UIMode.LAYER_textReading = {
     if (this._renderScrollLimit > 0) { this._renderScrollLimit=0; }
   },
   handleInput: function (inputType,inputData) {
-    // console.log(inputType);
-    // console.dir(inputData);
     var actionBinding = Game.KeyBinding.getInputBinding(inputType,inputData);
-    // console.log('action binding is');
-    // console.dir(actionBinding);
-    // console.log('----------');
     if (! actionBinding) {
       return false;
     }

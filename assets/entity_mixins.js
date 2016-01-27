@@ -35,8 +35,11 @@ Game.EntityMixin.PlayerMessager = {
         if (nameEvt == 'Magical Herb') {
           Game.Message.sendMessage('Do you want to consume the '+ nameEvt + '?  You will be returned to town if you do. Type \'y\' for yes, \'n\' for no');
         }
-        if(nameEvt == 'Evan Williams') {
+        else if(nameEvt == 'Evan Williams') {
           Game.Message.sendMessage('Do you want to save '+ nameEvt + ' and celebrate at the bar?  You will be returned to town if you do. Type \'y\' for yes, \'n\' for no');
+        }
+        else if(nameEvt == 'Castle Exit') {
+          Game.Message.sendMessage('Do you want to exit the Castle?  You will be returned to town if you do. Type \'y\' for yes, \'n\' for no');
         }
       },
       'attackAvoided': function(evtData) {
@@ -63,9 +66,9 @@ Game.EntityMixin.PlayerMessager = {
       },
       'killed': function(evtData) {
         if (typeof evtData.killedBy == 'string') {
-          Game.Message.sendMessage('you were killed by '+evtData.killedBy);
+          Game.Message.sendMessage('You have succumbed to '+evtData.killedBy);
         } else {
-          Game.Message.sendMessage('you were killed by the '+evtData.killedBy.getName());
+          Game.Message.sendMessage('You have succumbed to the might of '+evtData.killedBy.getName());
         }
         Game.renderMessage();
         Game.Message.ageMessages();
@@ -194,6 +197,12 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlay.attr._drunk = true;
             Game.UIMode.gamePlay.returnToTown();
           }
+          else if (this.getBumpEvt() == 'Castle Exit') {
+              Game.UIMode.gamePlay.attr._drunk = false;
+              Game.UIMode.gamePlay.attr._trippy = false;
+              Game.UIMode.gamePlay.attr._win = true;
+              Game.UIMode.gamePlay.returnToTown();
+          }
           Game.UIMode.gamePlayStore.setBumped(false);
           Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
@@ -210,6 +219,13 @@ Game.EntityMixin.PlayerActor = {
         } else if (this.getBumpEvt() == 'Town'){
           Game.UIMode.gamePlayStore.setBumped(false);
           Game.Message.sendMessage('You chose not to exit the store')
+        } else if (this.getBumpEvt() == 'Castle Exit') {
+            Game.UIMode.gamePlay.attr._drunk = false;
+            Game.UIMode.gamePlay.attr._trippy = false;
+            Game.UIMode.gamePlay.attr._win = true;
+            Game.UIMode.gamePlay.attr._saidNo = true;
+            Game.UIMode.gamePlay.setBumped(false);
+            Game.UIMode.gamePlay.returnToTown();
         } else {
           Game.UIMode.gamePlay.setBumped(false);
           Game.Message.sendMessage('You chose not to enter the ' +this.getBumpEvt() + '. YOU COWARD!');
@@ -245,19 +261,23 @@ Game.EntityMixin.PlayerActor = {
           Game.UIMode.gamePlay.setBumped(true);
           this.setBumpEvt(nameEvt);
         }
-        if (nameEvt == 'Alexis') {
+        else if (nameEvt == 'Alexis') {
           Game.Message.sendMessage(Game.util.randomNolaFact());
         }
-        if (nameEvt == 'Harold') {
+        else if (nameEvt == 'Harold') {
           Game.Message.sendMessage(Game.util.randomRap());
         }
-        if (nameEvt == 'Evan') {
+        else if (nameEvt == 'Evan') {
           Game.Message.sendMessage('Thanks for saving me.  You don\'t look so good buddy.');
         }
-        if (nameEvt == 'noodles') {
+        else if (nameEvt == 'noodles') {
           Game.Message.sendMessage('You won!');
           Game.UIMode.gamePlay.getAvatar().addInventoryItems([Game.ItemGenerator.create('cup noodle')]);
           Game.UIMode.gamePlayMirror.returnToTown();
+        }
+        else if (nameEvt == 'Castle Exit') {
+          Game.UIMode.gamePlay.setBumped(true);
+          this.setBumpEvt(nameEvt);
         }
       },
       'madeKill': function(evtData) {
@@ -266,7 +286,7 @@ Game.EntityMixin.PlayerActor = {
           var victoryCheckResp = self.raiseSymbolActiveEvent('calcKillsOf',{entityName:'Jose'});
           if (Game.util.compactNumberArray_add(victoryCheckResp.killCount) >= 1) {
             Game.switchUIMode("gameWin");
-            Game.Message.sendMessage('You Killed Jose!  CONGLATURATION!!!');
+            Game.Message.sendMessage('CONGLATURATION!!! You slapped Jose! He finally stopped snoring! Now you can now get some sleep.');
             Game.Message.sendMessage('Created by Team Nola (John Freeman and Jose Rivas)');
           }
         },1);
@@ -394,7 +414,8 @@ Game.EntityMixin.FoodConsumer = {
     },
     listeners: {
       'getHungrier': function(evtData) {
-        this.getHungrierBy(this.attr._FoodConsumer_attr.foodConsumedPer1000Ticks * evtData.duration/1000);
+        if (Game.UIMode.gamePlay.attr._trippy) this.getHungrierBy(this.attr._FoodConsumer_attr.foodConsumedPer1000Ticks * evtData.duration/500);
+        else this.getHungrierBy(this.attr._FoodConsumer_attr.foodConsumedPer1000Ticks * evtData.duration/1000);
       }
     }
   },

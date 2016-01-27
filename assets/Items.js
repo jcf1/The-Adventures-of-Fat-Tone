@@ -8,7 +8,7 @@ Game.ItemGenerator.learn({
   chr:'🍎',
   fg:'#f32',
   foodValue: 100,
-  goldValue: 10,
+  goldValue: 20,
   mixins: ['Food', 'Buyable']
 });
 
@@ -18,7 +18,7 @@ Game.ItemGenerator.learn({
   chr:'🍜',
   fg:'#f32',
   foodValue: 1000,
-  goldValue: 50,
+  goldValue: 100,
   mixins: ['Food', 'Buyable']
 });
 
@@ -28,7 +28,7 @@ Game.ItemGenerator.learn({
   chr:'🍕',
   fg:'#f32',
   foodValue: 200,
-  goldValue: 15,
+  goldValue: 35,
   mixins: ['Food', 'Buyable']
 });
 
@@ -37,8 +37,8 @@ Game.ItemGenerator.learn({
   description: 'Ahhhh, nothing like warm curry to fill ya up!',
   chr:'🍛',
   fg:'#f32',
-  foodValue: 500,
-  goldValue: 30,
+  foodValue: 400,
+  goldValue: 60,
   mixins: ['Food', 'Buyable']
 });
 
@@ -47,8 +47,8 @@ Game.ItemGenerator.learn({
   description: 'Cheap beer... Well better than nothing. (Raises Power)',
   chr:'🍺',
   fg:'#f32',
-  foodValue: 25,
-  goldValue: 25,
+  foodValue: 50,
+  goldValue: 50,
   elixirBoost: 'power',
   mixins: ['Elixir', 'Food', 'Buyable']
 });
@@ -58,9 +58,9 @@ Game.ItemGenerator.learn({
   description: 'I don\'t always drink good beer, but when I do, I drink BrewDog! (Raises All Stats)',
   chr:'🍻',
   fg:'#f32',
-  foodValue: 100,
-  goldValue: 75,
-  elixirBoost: 'all',
+  foodValue: 200,
+  goldValue: 125,
+  elixirBoost: 'Boost All Skills',
   mixins: ['Elixir', 'Food', 'Buyable']
 });
 
@@ -70,7 +70,7 @@ Game.ItemGenerator.learn({
   chr:'🍹',
   fg:'#f32',
   foodValue: 50,
-  goldValue: 25,
+  goldValue: 50,
   elixirBoost: 'accuracy',
   mixins: ['Elixir', 'Food', 'Buyable']
 });
@@ -81,7 +81,7 @@ Game.ItemGenerator.learn({
   chr:'🍹',
   fg:'#f32',
   foodValue: 50,
-  goldValue: 25,
+  goldValue: 50,
   elixirBoost: 'dodging',
   mixins: ['Elixir', 'Food', 'Buyable']
 });
@@ -92,7 +92,7 @@ Game.ItemGenerator.learn({
   chr:'🍹',
   fg:'#f32',
   foodValue: 50,
-  goldValue: 25,
+  goldValue: 50,
   elixirBoost: 'defense',
   mixins: ['Elixir', 'Food', 'Buyable']
 });

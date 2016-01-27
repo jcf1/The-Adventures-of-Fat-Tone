@@ -368,7 +368,7 @@ Game.MapTileSets = {
           mapTiles[x][y] = Game.Tile.floorTile;
         }
       });
-
+      
       return mapTiles;
     }
   },
@@ -449,8 +449,8 @@ Game.MapTileSets = {
     }
   },
   bedRoom: {
-    _width: 8,
-    _height: 6,
+    _width: 15,
+    _height: 10,
     getMapTiles: function () {
       var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
       var generator = new ROT.Map.Arena(this._width,this._height);
