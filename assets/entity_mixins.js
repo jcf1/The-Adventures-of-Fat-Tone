@@ -23,10 +23,12 @@ Game.EntityMixin.PlayerMessager = {
         else if (nameEvt == 'The Red Heeringa')
           Game.Message.sendMessage('Do you want to walk into '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'Bedroom')
-          Game.Message.sendMessage('Do you want to walk into your'+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
+          Game.Message.sendMessage('Do you want to walk into your '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'talk bar' || nameEvt == 'talk shop')
           if (nameEvt == 'talk shop') Game.Message.sendMessage('Hi my name is Nola! Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no')
           else Game.Message.sendMessage('Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
+        else if (nameEvt == 'Town')
+          Game.Message.sendMessage('Do you want to exit the shop? Type \'y\' for yes, \'n\' for no');
       },
       'bumpEntity': function(evtData) {
         var nameEvt = evtData.recipient.getName();
@@ -113,6 +115,11 @@ Game.EntityMixin.PlayerMessager = {
       'pickUpMoney': function(evtData) {
         Game.Message.sendMessage('You picked up '+evtData.amount+' gold');
         Game.renderMessage();
+      },
+      'aboutToBuy': function(evtData) {
+        Game.Message.clearMessage();
+        Game.Message.sendMessage('Are you sure you want to buy ' + evtData.item.getName() + ' for ' + evtData.value + '. Type \'y\' to buy, \'n\' to not');
+        Game.Message.ageMessages();
       }
     }
   }
@@ -137,6 +144,7 @@ Game.EntityMixin.PlayerActor = {
         this.getMap().attr._Scheduler.add(this,true,1);
       },
       'answeredQ' : function (ans) {
+        Game.Message.ageMessages();
         if (ans == 'yes') {
           if (this.getBumpEvt() == 'Hall of Mirrors') {
             if (Game.UIMode.gamePlay.getAvatar().canAfford(10)) {
@@ -157,6 +165,9 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlay.setupMap('castle');
             Game.UIMode.gamePlay.removeAvatar();
           }
+          else if (this.getBumpEvt() == 'Town') {
+            Game.UIMode.gamePlayStore.returnToTown();
+          }
           else if (this.getBumpEvt() == 'The Red Heeringa') {
             Game.UIMode.gamePlayStore.setupStore('theRedHeeringa');
             Game.UIMode.gamePlay.removeAvatar();
@@ -173,7 +184,7 @@ Game.EntityMixin.PlayerActor = {
             Game.switchUIMode('gamePlayStore');
           }
           else if (this.getBumpEvt() == 'talk bar' || this.getBumpEvt() == 'talk shop') {
-            Game.UIMode.gamePlayStore.setBumped(false);
+            Game.addUIMode('LAYER_sellerListing');
           }
           else if (this.getBumpEvt() == 'Magical Herb') {
             Game.UIMode.gamePlay.attr._trippy = true;
@@ -183,6 +194,7 @@ Game.EntityMixin.PlayerActor = {
             Game.UIMode.gamePlay.attr._drunk = true;
             Game.UIMode.gamePlay.returnToTown();
           }
+          Game.UIMode.gamePlayStore.setBumped(false);
           Game.UIMode.gamePlay.setBumped(false);
         } else if (ans == 'no answer') {
           Game.Message.sendMessage('Please answer yes [y] or no [n]');
@@ -195,6 +207,9 @@ Game.EntityMixin.PlayerActor = {
         } else if (this.getBumpEvt() == 'Evan Williams') {
           Game.UIMode.gamePlay.setBumped(false);
           Game.Message.sendMessage('Dude, what are you doing!  He\'s starving!')
+        } else if (this.getBumpEvt() == 'Town'){
+          Game.UIMode.gamePlayStore.setBumped(false);
+          Game.Message.sendMessage('You chose not to exit the store')
         } else {
           Game.UIMode.gamePlay.setBumped(false);
           Game.Message.sendMessage('You chose not to enter the ' +this.getBumpEvt() + '. YOU COWARD!');
@@ -206,7 +221,7 @@ Game.EntityMixin.PlayerActor = {
         if(nameEvt == 'Hall of Mirrors' || (nameEvt == 'Dungeon' && !Game.UIMode.gamePlay.attr._drunk) || (nameEvt == 'Forrest' && !Game.UIMode.gamePlay.attr._trippy) || nameEvt == 'Castle' || nameEvt == 'The Red Heeringa' || nameEvt == 'Shop And Stop' || nameEvt == 'Bedroom'){
           Game.UIMode.gamePlay.setBumped(true);
           this.setBumpEvt(nameEvt);
-        } else if (nameEvt == 'talk bar' || nameEvt == 'talk shop') {
+        } else if (nameEvt == 'talk bar' || nameEvt == 'talk shop' || nameEvt == 'Town') {
           Game.UIMode.gamePlayStore.setBumped(true);
           this.setBumpEvt(nameEvt);
         } else if (nameEvt == 'Harold Tile') {
@@ -402,9 +417,7 @@ Game.EntityMixin.FoodConsumer = {
     this.attr._FoodConsumer_attr.foodConsumedPer1000Ticks = n;
   },
   eatFood: function (foodItm) {
-    this.attr._FoodConsumer_attr.currentFood += foodItm.getFoodValue();
-    if (this.attr._FoodConsumer_attr.currentFood > this.attr._FoodConsumer_attr.maxFood) {this.attr._FoodConsumer_attr.currentFood = this.attr._FoodConsumer_attr.maxFood;}
-    if (foodItm.isElixir()) {
+    if (foodItm.hasMixin('Elixir')) {
       var boost = foodItm.getElixirBoost();
       if (boost == 'power') {
         this.raiseSymbolActiveEvent('raiseAttackDamage', 1);
@@ -421,6 +434,8 @@ Game.EntityMixin.FoodConsumer = {
         this.raiseSymbolActiveEvent('raiseDamageMitigation', 1);
       }
     }
+    this.attr._FoodConsumer_attr.currentFood += foodItm.getFoodValue();
+    if (this.attr._FoodConsumer_attr.currentFood > this.attr._FoodConsumer_attr.maxFood) {this.attr._FoodConsumer_attr.currentFood = this.attr._FoodConsumer_attr.maxFood;}
   },
   getHungrierBy: function (foodAmt) {
     this.attr._FoodConsumer_attr.currentFood -= foodAmt;
@@ -640,7 +655,7 @@ Game.EntityMixin.MeleeAttacker = {
       'raiseAttackDamage': function(evtData) {
         this.setAttackDamage(this.getAttackDamage() + evtData);
       },
-      'raiseAttackAccuracy' : function(evtData) {
+      'raiseAttackHit' : function(evtData) {
         this.setAttackHit(this.getAttackHit() + evtData)
       }
     }

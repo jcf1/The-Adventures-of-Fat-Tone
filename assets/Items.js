@@ -8,34 +8,38 @@ Game.ItemGenerator.learn({
   chr:'🍎',
   fg:'#f32',
   foodValue: 100,
-  mixins: ['Food']
+  goldValue: 10,
+  mixins: ['Food', 'Buyable']
 });
 
 Game.ItemGenerator.learn({
-  name: 'cup noodle',
+  name: 'Cup Noodle',
   description: 'The Food of the Gods!',
   chr:'🍜',
   fg:'#f32',
   foodValue: 1000,
-  mixins: ['Food']
+  goldValue: 50,
+  mixins: ['Food', 'Buyable']
 });
 
 Game.ItemGenerator.learn({
-  name: 'bagel bite',
+  name: 'Bagel Bite',
   description: 'OHH BABY! Decilicious Pizza Bagels!',
   chr:'🍕',
   fg:'#f32',
   foodValue: 200,
-  mixins: ['Food']
+  goldValue: 15,
+  mixins: ['Food', 'Buyable']
 });
 
 Game.ItemGenerator.learn({
-  name: 'curry and rice',
+  name: 'Curry and Rice',
   description: 'Ahhhh, nothing like warm curry to fill ya up!',
   chr:'🍛',
   fg:'#f32',
   foodValue: 500,
-  mixins: ['Food']
+  goldValue: 30,
+  mixins: ['Food', 'Buyable']
 });
 
 Game.ItemGenerator.learn({
@@ -44,8 +48,9 @@ Game.ItemGenerator.learn({
   chr:'🍺',
   fg:'#f32',
   foodValue: 25,
+  goldValue: 25,
   elixirBoost: 'power',
-  mixins: ['Elixir', 'Food']
+  mixins: ['Elixir', 'Food', 'Buyable']
 });
 
 Game.ItemGenerator.learn({
@@ -54,8 +59,9 @@ Game.ItemGenerator.learn({
   chr:'🍻',
   fg:'#f32',
   foodValue: 100,
+  goldValue: 75,
   elixirBoost: 'all',
-  mixins: ['Elixir', 'Food']
+  mixins: ['Elixir', 'Food', 'Buyable']
 });
 
 Game.ItemGenerator.learn({
@@ -64,8 +70,9 @@ Game.ItemGenerator.learn({
   chr:'🍹',
   fg:'#f32',
   foodValue: 50,
+  goldValue: 25,
   elixirBoost: 'accuracy',
-  mixins: ['Elixir', 'Food']
+  mixins: ['Elixir', 'Food', 'Buyable']
 });
 
 Game.ItemGenerator.learn({
@@ -74,8 +81,9 @@ Game.ItemGenerator.learn({
   chr:'🍹',
   fg:'#f32',
   foodValue: 50,
+  goldValue: 25,
   elixirBoost: 'dodging',
-  mixins: ['Elixir', 'Food']
+  mixins: ['Elixir', 'Food', 'Buyable']
 });
 
 Game.ItemGenerator.learn({
@@ -84,6 +92,7 @@ Game.ItemGenerator.learn({
   chr:'🍹',
   fg:'#f32',
   foodValue: 50,
+  goldValue: 25,
   elixirBoost: 'defense',
-  mixins: ['Elixir', 'Food']
+  mixins: ['Elixir', 'Food', 'Buyable']
 });

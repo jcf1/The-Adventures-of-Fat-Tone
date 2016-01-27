@@ -388,14 +388,16 @@ Game.MapTileSets = {
   },
   theRedHeeringa: {
     _width: 20,
-    _height: 13,
+    _height: 14,
     getMapTiles: function () {
       var mapTiles = Game.util.init2DArray(this._width,this._height,Game.Tile.nullTile);
       var generator = new ROT.Map.Arena(this._width,this._height);
       generator.create(function(x,y,v) {
         if (v === 1){
-          mapTiles[x][y] = Game.Tile.wallTile;
+          if (y == 13 && x >= 9 && x <= 11) mapTiles[x][y] = Game.Tile.toTownTile;
+          else mapTiles[x][y] = Game.Tile.wallTile;
         } else {
+
           if (y==3) {
             if (x == 10) mapTiles[x][y] = Game.Tile.talkBarTile;
             else if (x == 14 || x == 15) mapTiles[x][y] = Game.Tile.barDoorTile;
@@ -417,7 +419,8 @@ Game.MapTileSets = {
       var generator = new ROT.Map.Arena(this._width,this._height);
       generator.create(function(x,y,v) {
         if (v === 1){
-          mapTiles[x][y] = Game.Tile.wallTile;
+          if (y == 13 && x >= 10 && x <= 12) mapTiles[x][y] = Game.Tile.toTownTile;
+          else mapTiles[x][y] = Game.Tile.wallTile;
         } else {
           if (x == 13 && y >= 2 && y <= 6) mapTiles[x][y] = Game.Tile.shelfTile;
           else if (x == 13 && y >= 8 && y <= 12) mapTiles[x][y] = Game.Tile.shelfTile;

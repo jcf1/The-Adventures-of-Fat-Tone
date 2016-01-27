@@ -259,6 +259,7 @@ Game.UIMode.gamePlayStore = {
     _cameraX: 10,
     _cameraY: 10,
     _avatarId: '',
+    _merchantId: '',
     _input: 0,
     _prevX: 0,
     _prevY: 0,
@@ -266,6 +267,7 @@ Game.UIMode.gamePlayStore = {
   },
   JSON_KEY: 'UIMode_gamePlayStore',
   enter: function() {
+    Game.Message.clearMessage();
     this.getMap().unlockTimingEngine();
     Game.refresh();
   },
@@ -291,6 +293,12 @@ Game.UIMode.gamePlayStore = {
   setAvatar: function (a) {
     this.attr._avatarId = a.getId();
   },
+  getMerchant: function() {
+    return Game.DATASTORE.ENTITY[this.attr._merchantId];
+  },
+  setMerchant: function(m) {
+    this.attr._merchantId = m.getId();
+  },
   handleInput: function(eventType,evt) {
     var actionBinding = Game.KeyBinding.getInputBinding(eventType, evt);
 
@@ -303,7 +311,6 @@ Game.UIMode.gamePlayStore = {
       } else this.getAvatar().raiseSymbolActiveEvent('answeredQ','no answer')
       return;
     } else if (actionBinding.actionKey == 'CANCEL') {
-        this.returnToTown();
         return false;
     }
     var tookTurn = false;
@@ -399,22 +406,28 @@ Game.UIMode.gamePlayStore = {
     this.setAvatar(Game.UIMode.gamePlay.getAvatar());
     this.attr._prevX = this.getAvatar().getX();
     this.attr._prevY = this.getAvatar().getY();
-    if (map == 'theRedHeeringa'){
-      this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
+    this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
+    var merch = '';
+    if (map == 'theRedHeeringa') {
+      merch = Game.EntityGenerator.create('Brent');
+      this.getMap().addEntity(merch,{x: 10, y: 2});
+      merch.addInventoryItems([Game.ItemGenerator.create('Keystone'), Game.ItemGenerator.create('Coke-a Nola'), Game.ItemGenerator.create('Lemon-Ice Tea'), Game.ItemGenerator.create('Red Kenny Supreme'), Game.ItemGenerator.create('BrewDog Beer')]);
+      this.getMap().addEntity(Game.EntityGenerator.create('Harold'),{x: 3, y: 4});
       if(Game.UIMode.gamePlay.attr._drunk){
         this.getMap().addEntity(Game.EntityGenerator.create('Evan'),{x: 17, y: 6});
       }
-      this.getMap().addEntity(Game.EntityGenerator.create('Brent'),{x: 10, y: 2});
-      this.getMap().addEntity(Game.EntityGenerator.create('Harold'),{x: 3, y: 4});
     } else if (map == 'shopAndStop') {
-      this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
-      this.getMap().addEntity(Game.EntityGenerator.create('Nola'),{x: 5, y: 2});
+      merch = Game.EntityGenerator.create('Nola');
+      this.getMap().addEntity(merch,{x: 5, y: 2});
+      merch.addInventoryItems([Game.ItemGenerator.create('apple'), Game.ItemGenerator.create('Bagel Bite'), Game.ItemGenerator.create('Curry and Rice')]);
       this.getMap().addEntity(Game.EntityGenerator.create('Alexis'),this.getMap().getRandomWalkablePosition());
     } else if (map == 'bedRoom') {
+      merch = Game.EntityGenerator.create('Jose');
       this.setCameraToHeeringa();
       this.getMap().addEntity(this.getAvatar(),{x: 4, y: 1});
-      this.getMap().addEntity(Game.EntityGenerator.create('Jose'),{x: 3, y: 4});
+      this.getMap().addEntity(merch,{x: 3, y: 4});
     }
+    this.setMerchant(merch);
   },
   moveCamera: function (dx,dy) {
     this.setCamera(this.attr._cameraX + dx,this.attr._cameraY + dy);
@@ -669,7 +682,8 @@ Game.UIMode.LAYER_textReading = {
 
 Game.UIMode.LAYER_itemListing = function(template) {
   template = template ? template : {};
-
+  this._willBuy = template.willBuy || false;
+  this._currentItem = template.currentItem || null;
   this._caption = template.caption || 'Items';
   this._processingFunction = template.processingFunction;
   this._filterListedItemsOnFunction = template.filterListedItemsOn || function(itemId) {
@@ -712,6 +726,7 @@ Game.UIMode.LAYER_itemListing.prototype.exit = function () {
   setTimeout(function(){
      Game.refresh();
   }, 1);
+  Game.Message.clearMessage();
 };
 Game.UIMode.LAYER_itemListing.prototype.setup = function(setupParams) {
   setupParams = setupParams ? setupParams : {};
@@ -843,7 +858,7 @@ Game.UIMode.LAYER_itemListing.prototype.executeProcessingFunction = function() {
       selectedItemIds.push(this._itemIdList[selectionIndex]);
     }
   }
-  Game.removeUIModeAllLayers();
+
   // Call the processing function and end the player's turn if it returns true.
   if (this._processingFunction(selectedItemIds)) {
     Game.getAvatar().raiseSymbolActiveEvent('actionDone');
@@ -914,7 +929,7 @@ Game.UIMode.LAYER_itemListing.prototype.handleInput = function (inputType,inputD
 //-------------------
 
 Game.UIMode.LAYER_inventoryListing = new Game.UIMode.LAYER_itemListing({
-    caption: 'Inventory',
+    caption: 'Tony\'s Items',
     canSelect: false,
     keyBindingName: 'LAYER_inventoryListing'
 });
@@ -954,6 +969,7 @@ Game.UIMode.LAYER_inventoryDrop = new Game.UIMode.LAYER_itemListing({
         return false;
       }
       var dropResult = Game.getAvatar().dropItems(selectedItemIds);
+            Game.removeUIModeAllLayers();
       return dropResult.numItemsDropped > 0;
     }
 });
@@ -970,6 +986,7 @@ Game.UIMode.LAYER_inventoryPickup = new Game.UIMode.LAYER_itemListing({
     keyBindingName: 'LAYER_inventoryPickup',
     processingFunction: function (selectedItemIds) {
       var pickupResult = Game.getAvatar().pickupItems(selectedItemIds);
+            Game.removeUIModeAllLayers();
       return pickupResult.numItemsPickedUp > 0;
     }
 });
@@ -986,11 +1003,12 @@ Game.UIMode.LAYER_inventoryExamine = new Game.UIMode.LAYER_itemListing({
     processingFunction: function (selectedItemIds) {
       //console.log('LAYER_inventoryExamine processing on '+selectedItemIds[0]);
       if (selectedItemIds[0]) {
-        var d = Game.DATASTORE.ITEM[selectedItemIds[0]].getDetailedDescription();
+        var d = Game.DATASTORE.ITEM[selectedItemIds[0]].getDetailedDescription() + + ".\nType [b] to buy an item or [x] to examine another item. Press [esc] to quit shopping.";
         setTimeout(function() { // delay here because of the general refresh on exiting the layer
            Game.specialMessage(d);
         }, 2);
       }
+      Game.removeUIModeCurLayer();
       return false;
     }
 });
@@ -1012,8 +1030,10 @@ Game.UIMode.LAYER_inventoryEat = new Game.UIMode.LAYER_itemListing({
         var foodItem = Game.getAvatar().extractInventoryItems([selectedItemIds[0]])[0];
 //        Game.util.cdebug(foodItem);
         Game.getAvatar().eatFood(foodItem);
+        Game.removeUIModeAllLayers();
         return true;
       }
+      Game.removeUIModeAllLayers();
       return false;
     }
 });
@@ -1024,12 +1044,14 @@ Game.UIMode.LAYER_inventoryEat.doSetup = function () {
 //-------------------
 
 Game.UIMode.LAYER_sellerListing = new Game.UIMode.LAYER_itemListing({
-    caption: 'Seller Listing',
+    caption: 'Main Menu:',
     canSelect: false,
-    keyBindingName: 'LAYER_inventoryListing'
+    keyBindingName: 'LAYER_sellerListing'
 });
 Game.UIMode.LAYER_sellerListing.doSetup = function () {
-  this.setup({itemIdList: Game.getAvatar().getInventoryItemIds()});
+  Game.Message.clearMessage();
+  Game.Message.sendMessage('Type [b] to buy an item or [x] to examine an item. Press [esc] to quit shopping.');
+  this.setup({itemIdList: Game.getMerchant().getInventoryItemIds()});
 };
 
 Game.UIMode.LAYER_sellerListing.handleInput = function (inputType,inputData) {
@@ -1040,7 +1062,7 @@ Game.UIMode.LAYER_sellerListing.handleInput = function (inputType,inputData) {
       Game.addUIMode('LAYER_sellerExamine');
       return false;
     }
-    if (actionBinding.actionKey == 'DROP') {
+    if (actionBinding.actionKey == 'BUY') {
       Game.addUIMode('LAYER_sellerBuy');
       return false;
     }
@@ -1054,10 +1076,19 @@ Game.UIMode.LAYER_sellerBuy = new Game.UIMode.LAYER_itemListing({
     caption: 'Buy',
     canSelect: true,
     canSelectMultipleItems: false,
-    keyBindingName: 'LAYER_inventoryDrop',
+    keyBindingName: 'LAYER_sellerBuy',
     processingFunction: function (selectedItemIds) {
       if (selectedItemIds[0]) {
-        var foodItem = Game.getMerchant().extractInventoryItems([selectedItemIds[0]])[0];
+        var itemToBuy = Game.DATASTORE.ITEM[selectedItemIds[0]];
+        var itemValue = itemToBuy.getGoldValue();
+        var avatar = Game.UIMode.gamePlayStore.getAvatar();
+        if (avatar.canAfford(itemValue)) {
+          avatar.raiseSymbolActiveEvent('aboutToBuy', {item: itemToBuy, value: itemValue});
+          this._currentItem = itemToBuy;
+          this._willBuy = true;
+          //avatar.addInventoryItems([itemToBuy]);
+          //Game.getMerchant().extractInventoryItems([selectedItemIds[0]])[0];
+        } else avatar.raiseSymbolActiveEvent('cantAfford');
 //        Game.util.cdebug(foodItem);
         return true;
       }
@@ -1065,7 +1096,30 @@ Game.UIMode.LAYER_sellerBuy = new Game.UIMode.LAYER_itemListing({
     }
 });
 Game.UIMode.LAYER_sellerBuy.doSetup = function () {
+  Game.Message.sendMessage('Type the letter of the item you want to buy. Type [esc] to return to main menu.');
   this.setup({itemIdList: Game.getMerchant().getInventoryItemIds()});
+};
+Game.UIMode.LAYER_sellerBuy.handleInput = function (inputType,inputData) {
+  var actionBinding = Game.KeyBinding.getInputBinding(inputType,inputData);
+  var avatar = Game.UIMode.gamePlayStore.getAvatar();
+  if (actionBinding) {
+    if (this._willBuy) {
+      if (actionBinding.actionKey == 'ANSWER_YES') {
+        avatar.addInventoryItems([this._currentItem]);
+        avatar.raiseSymbolActiveEvent('spendMoney',{amount: this._currentItem.getGoldValue()});
+        Game.removeUIModeCurLayer();
+        Game.Message.sendMessage('You bought a ' + this._currentItem.getName() + ' for ' + this._currentItem.getGoldValue() +' gold. You have ' + avatar.getCurrentMoney() + ' gold left. \n Type [b] to buy another item or [x] to examine an item. Press [esc] to quit shopping.');
+        this._currentItem = null;
+        this._willBuy = false;
+      } else if (actionBinding.actionKey == 'ANSWER_NO') {
+        this._currentItem == null;
+        this._willBuy = false;
+        Game.removeUIModeCurLayer();
+      } else Game.Message.sendMessage('Please type [y] for yes or [n] for no.')
+      return;
+    }
+  }
+  return Game.UIMode.LAYER_itemListing.prototype.handleInput.call(this,inputType,inputData);
 };
 
 //-------------------
@@ -1073,18 +1127,21 @@ Game.UIMode.LAYER_sellerBuy.doSetup = function () {
 Game.UIMode.LAYER_sellerExamine = new Game.UIMode.LAYER_itemListing({
     caption: 'Examine',
     canSelect: true,
-    keyBindingName: 'LAYER_inventoryExamine',
+    keyBindingName: 'LAYER_sellerExamine',
     processingFunction: function (selectedItemIds) {
       //console.log('LAYER_inventoryExamine processing on '+selectedItemIds[0]);
       if (selectedItemIds[0]) {
-        var d = Game.DATASTORE.ITEM[selectedItemIds[0]].getDetailedDescription();
+        var d = Game.DATASTORE.ITEM[selectedItemIds[0]].getDetailedDescription() + ".\nType [b] to buy an item or [x] to examine another item. Press [esc] to quit shopping.";
         setTimeout(function() { // delay here because of the general refresh on exiting the layer
            Game.specialMessage(d);
         }, 2);
       }
+      Game.removeUIModeCurLayer();
       return false;
     }
 });
 Game.UIMode.LAYER_sellerExamine.doSetup = function () {
-  this.setup({itemIdList: Game.getAvatar().getInventoryItemIds()});
+  Game.Message.sendMessage('Type the letter of the item you want to examine.')
+  Game.Message.ageMessages();
+  this.setup({itemIdList: Game.getMerchant().getInventoryItemIds()});
 };

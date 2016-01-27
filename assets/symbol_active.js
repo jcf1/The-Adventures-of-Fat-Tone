@@ -108,13 +108,13 @@ Game.SymbolActive.prototype.getDetailedDescription = function () {
   for (var det in descrDetails) {
     if (descrDetails.hasOwnProperty(det)) {
       if (detailsText) {
-        detailsText += ';';
+        detailsText += '; ';
       }
       detailsText += det+': '+descrDetails[det];
     }
   }
   if (detailsText) {
-    descr += "\n"+detailsText;
+    descr += "\n\t"+detailsText;
   }
   return descr;
 };
