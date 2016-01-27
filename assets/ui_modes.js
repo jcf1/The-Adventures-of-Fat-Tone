@@ -19,12 +19,13 @@ Game.UIMode.gameStart = {
   },
   handleInput: function(eventType,evt) {
     if(evt.charCode !== 0) {
-      Game.switchUIMode('gamePersistence');
+      Game.UIMode.gamePlay.setupNewGame();
+      Game.switchUIMode('gamePlay');
     }
   },
   renderOnMain: function(display) {
-    display.drawText(1,1,Game.UIMode.DEFAULT_COLOR_STR+"You are about to begin The Life of Fat Tone");
-    display.drawText(1,3,Game.UIMode.DEFAULT_COLOR_STR+"press any key to continue");
+    display.drawText(18,11,Game.UIMode.DEFAULT_COLOR_STR+"You are about to begin The Life of Fat Tone!");
+    display.drawText(27,13,Game.UIMode.DEFAULT_COLOR_STR+"Press any key to continue.");
   }
 };
 
@@ -38,7 +39,9 @@ Game.UIMode.gamePlay = {
     _cameraX: 100,
     _cameraY: 100,
     _steps: 0,
-    _trippy:false,
+    _trippy: false,
+    _drunk: false,
+    _win: false,
     _bumped: false,
     _prevX: 0,
     _prevY: 0
@@ -122,8 +125,6 @@ Game.UIMode.gamePlay = {
       Game.addUIMode('LAYER_inventoryExamine');
     } else if (actionBinding.actionKey == 'CHANGE_BINDINGS') {
       Game.KeyBinding.swapToNextKeyBinding();
-    } else if (actionBinding.actionKey == 'PERSISTENCE') {
-      Game.switchUIMode('gamePersistence');
     } else if (actionBinding.actionKey == 'HELP') {
       // console.log('TODO: set up help stuff for gameplay');
       Game.UIMode.LAYER_textReading.setText(Game.KeyBinding.getBindingHelpText());
@@ -138,13 +139,22 @@ Game.UIMode.gamePlay = {
     return false;
   },
   renderOnMain: function(display) {
-    // var seenCells = this.getAvatar().getVisibleCells();
-    // this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY,{
-    //   visibleCells:seenCells,
-    //   maskedCells:this.getAvatar().getRememberedCoordsForMap()
-    // });
-    // this.getAvatar().rememberCoords(seenCells);
-    this.getMap().renderAll(display,this.attr._cameraX,this.attr._cameraY);
+    if (this.attr._drunk) {
+      var seenCells = this.getAvatar().getVisibleCells();
+      this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY,{
+        visibleCells:seenCells,
+        maskedCells: null
+      });
+    } else if (this.getMap().getTileSetName().indexOf('town') > -1){
+      this.getMap().renderAll(display,this.attr._cameraX,this.attr._cameraY);
+    } else {
+      var seenCells = this.getAvatar().getVisibleCells();
+      this.getMap().renderOn(display,this.attr._cameraX,this.attr._cameraY,{
+        visibleCells:seenCells,
+        maskedCells:this.getAvatar().getRememberedCoordsForMap()
+      });
+      this.getAvatar().rememberCoords(seenCells);
+    }
   },
   renderAvatarInfo: function (display) {
     var av = this.getAvatar();
@@ -174,9 +184,9 @@ Game.UIMode.gamePlay = {
       this.setCameraToAvatar();
       this.attr._steps++;
       var trip = Math.floor(Math.random()*1000001);
-      if(trip === 666666) {
-        Game.Message.sendMessage("You have fallen and can't get up.");
+      if(trip === 666) {
         Game.switchUIMode('gameLose');
+        Game.Message.sendMessage("You have fallen and can't get up.");
       }
       return true;
     }
@@ -193,7 +203,13 @@ Game.UIMode.gamePlay = {
     this.setCamera(this.getAvatar().getX(),this.getAvatar().getY());
   },
   returnToTown: function() {
-    this.setMap(new Game.Map('main_town'));
+    if(this.attr._drunk && this.attr._trippy){
+      this.setMap(new Game.Map('main_town_cas'));
+    } else if(this.attr._win) {
+      this.setMap(new Game.Map('main_town_bed'));
+    } else {
+      this.setMap(new Game.Map('main_town'));
+    }
     this.getMap().initializeTimingEngine();
     this.getMap().addEntity(this.getAvatar(),{x:this.attr._prevX,y:this.attr._prevY});
     this.setCameraToAvatar();
@@ -208,11 +224,7 @@ Game.UIMode.gamePlay = {
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToAvatar();
 
-    this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomWalkablePosition());
-    this.getMap().addEntity(Game.EntityGenerator.create('Magical Herb'),this.getMap().getRandomWalkablePosition());
-    this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
-
-    Game.Message.sendMessage("Kill 3 or more attack slugs to win!");
+    Game.Message.sendMessage("Reach your bedroom and kill Jose to win!");
   },
   setupMap: function(map) {
     this.setMap(new Game.Map(map));
@@ -228,19 +240,13 @@ Game.UIMode.gamePlay = {
       this.getMap().addEntity(Game.EntityGenerator.create('Evan Williams'),this.getMap().getRandomReachablePosition());
     }
 
-    for (var ecount = 0; ecount < 0; ecount++) {
+    for (var ecount = 0; ecount < 50; ecount++) {
       this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('dog'),this.getMap().getRandomWalkablePosition());
     }
 
     Game.renderMain();
-  },
-  toJSON: function() {
-    return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
-  },
-  fromJSON: function (json) {
-    Game.UIMode.gamePersistence.BASE_fromJSON.call(this,json);
   }
 };
 
@@ -334,8 +340,6 @@ Game.UIMode.gamePlayStore = {
       Game.addUIMode('LAYER_inventoryExamine');
     } else if (actionBinding.actionKey == 'CHANGE_BINDINGS') {
       Game.KeyBinding.swapToNextKeyBinding();
-    } else if (actionBinding.actionKey == 'PERSISTENCE') {
-      Game.Message.sendMesage('You cannot save while in the Mirror World.');
     } else if (actionBinding.actionKey == 'HELP') {
       // console.log('TODO: set up help stuff for gameplay');
       Game.UIMode.LAYER_textReading.setText(Game.KeyBinding.getBindingHelpText());
@@ -395,13 +399,21 @@ Game.UIMode.gamePlayStore = {
     this.setAvatar(Game.UIMode.gamePlay.getAvatar());
     this.attr._prevX = this.getAvatar().getX();
     this.attr._prevY = this.getAvatar().getY();
-    this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
     if (map == 'theRedHeeringa'){
+      this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
+      if(Game.UIMode.gamePlay.attr._drunk){
+        this.getMap().addEntity(Game.EntityGenerator.create('Evan'),{x: 17, y: 6});
+      }
       this.getMap().addEntity(Game.EntityGenerator.create('Brent'),{x: 10, y: 2});
       this.getMap().addEntity(Game.EntityGenerator.create('Harold'),{x: 3, y: 4});
-    } else {
+    } else if (map == 'shopAndStop') {
+      this.getMap().addEntity(this.getAvatar(),{x: 10, y: 11});
       this.getMap().addEntity(Game.EntityGenerator.create('Nola'),{x: 5, y: 2});
       this.getMap().addEntity(Game.EntityGenerator.create('Alexis'),this.getMap().getRandomWalkablePosition());
+    } else if (map == 'bedRoom') {
+      this.setCameraToHeeringa();
+      this.getMap().addEntity(this.getAvatar(),{x: 4, y: 1});
+      this.getMap().addEntity(Game.EntityGenerator.create('Jose'),{x: 3, y: 4});
     }
   },
   moveCamera: function (dx,dy) {
@@ -411,14 +423,8 @@ Game.UIMode.gamePlayStore = {
     this.attr._cameraX = Math.min(Math.max(0,sx),this.getMap().getWidth());
     this.attr._cameraY = Math.min(Math.max(0,sy),this.getMap().getHeight());
   },
-  setCameraToHeeringa: function (sx,sy) {
+  setCameraToHeeringa: function () {
     this.setCamera(this.getMap().getWidth()/2,this.getMap().getHeight()/2);
-  },
-  toJSON: function() {
-    return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
-  },
-  fromJSON: function (json) {
-    Game.UIMode.gamePersistence.BASE_fromJSON.call(this,json);
   }
 };
 
@@ -493,15 +499,13 @@ Game.UIMode.gamePlayMirror = {
       Game.addUIMode('LAYER_inventoryExamine');
     } else if (actionBinding.actionKey == 'CHANGE_BINDINGS') {
       Game.KeyBinding.swapToNextKeyBinding();
-    } else if (actionBinding.actionKey == 'PERSISTENCE') {
-      Game.Message.sendMessage('You cannot save or load within the Hall of Mirrors');
     } else if (actionBinding.actionKey == 'HELP') {
       // console.log('TODO: set up help stuff for gameplay');
       Game.UIMode.LAYER_textReading.setText(Game.KeyBinding.getBindingHelpText());
       Game.addUIMode('LAYER_textReading');
     }
 
-    if(this.attr.input >= 400){
+    if(this.attr._input >= 400){
       this.returnToTown()
       Game.Message.sendMessage('Ran out of inputs');
     }
@@ -548,15 +552,9 @@ Game.UIMode.gamePlayMirror = {
     this.setAvatar(Game.EntityGenerator.create('mirrorAvatar'));
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToMirror();
-    this.getMap().addItem(Game.ItemGenerator.create('apple'),this.getMap().getRandomWalkablePosition());
-    Game.Message.sendMessage('Try to get to the moss to win!');
+    this.getMap().addEntity(Game.EntityGenerator.create('noodles'),this.getMap().getRandomWalkablePosition());
+    Game.Message.sendMessage('Try to pick up the cup noodle!');
     Game.Message.ageMessages();
-  },
-  toJSON: function() {
-    return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
-  },
-  fromJSON: function (json) {
-    Game.UIMode.gamePersistence.BASE_fromJSON.call(this,json);
   }
 };
 
@@ -572,7 +570,7 @@ Game.UIMode.gameLose = {
   exit: function() {},
   handleInput: function(eventType,evt) {
     if (eventType == 'keypress' && evt.keyCode == 61) {
-      Game.switchUIMode('gamePersistence');
+      Game.switchUIMode('gameStart');
     }
   },
   renderOnMain: function(display) {
@@ -594,185 +592,12 @@ Game.UIMode.gameWin = {
   },
   handleInput: function(eventType,evt) {
     if (eventType == 'keypress' && evt.keyCode == 61) {
-      Game.switchUIMode('gamePersistence');
+      Game.switchUIMode('gameStart');
     }
   },
   renderOnMain: function(display) {
     Game.Message.sendMessage("Press '=' To Start A New Game");
     display.drawText(4,4,Game.UIMode.DEFAULT_COLOR_STR+"OHHHHH BABY! You win!");
-  }
-};
-
-//#############################################################################
-//#############################################################################
-
-Game.UIMode.gamePersistence = {
-  RANDOM_SEED_KEY: 'gameRandomSeed',
-  _storedKeyBinding: '',
-  enter: function() {
-    this._storedKeyBinding = Game.KeyBinding.getKeyBinding();
-    Game.KeyBinding.setKeyBinding('persist');
-    Game.refresh();
-  },
-  exit: function() {
-    Game.KeyBinding.setKeyBinding(this._storedKeyBinding);
-    console.log("Game.UIMode.gamePersistence exit");
-    Game.refresh();
-  },
-  handleInput: function(eventType,evt) {
-    var actionBinding = Game.KeyBinding.getInputBinding(eventType,evt);
-    if (! actionBinding) {
-      return false;
-    }
-
-    if (actionBinding.actionKey == 'PERSISTENCE_SAVE') {
-      if (!Game.UIMode.gamePlay.getMap()) {
-        Game.Message.sendMessage('You have no game to save!');
-      } else
-        this.saveGame(Game.UIMode.gamePlay.getMap());
-    } else if (actionBinding.actionKey == 'PERSISTENCE_LOAD') {
-      this.loadGame();
-    } else if (actionBinding.actionKey == 'PERSISTENCE_NEW') {
-      this.newGame();
-    } else if (actionBinding.actionKey == 'CANCEL') {
-      if (Object.keys(Game.DATASTORE.MAP).length < 1) {
-        this.newGame();
-      } else {
-        Game.switchUIMode('gamePlay');
-      }
-    } else if (actionBinding.actionKey == 'HELP') {
-      // console.log('TODO: set up help stuff for gamepersistence');
-      Game.UIMode.LAYER_textReading.setText(Game.KeyBinding.getBindingHelpText());
-      Game.addUIMode('LAYER_textReading');
-    }
-    return false;
-  },
-  saveGame: function(gameMap) {
-    if (this.localStorageAvailable()) {
-      Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
-      Game.DATASTORE.MESSAGES = Game.Message.attr;
-
-      Game.DATASTORE.KEY_BINDING_SET = this.storedKeyBinding; // NOTE: not getting the key binding directly because it's set to 'persist when this ui mode is entered - the 'real' key binding is saved in _storedKeyBinding
-
-      Game.DATASTORE.SCHEDULE = {};
-      // NOTE: offsetting times by 1 so later restore can just drop them in and go
-      Game.DATASTORE.SCHEDULE[gameMap.getScheduler()._current.getId()] = 1;
-      for (var i = 0; i < gameMap.getScheduler()._queue._eventTimes.length; i++) {
-        Game.DATASTORE.SCHEDULE[gameMap.getScheduler()._queue._events[i].getId()] = gameMap.getScheduler()._queue._eventTimes[i] + 1;
-      }
-      Game.DATASTORE.SCHEDULE_TIME = gameMap.getScheduler()._queue.getTime() - 1; // offset by 1 so that when the engine is started after restore the queue state will match that as when it was saved
-
-      window.localStorage.setItem(Game._persistenceNamespace, JSON.stringify(Game.DATASTORE));
-      Game.Message.sendMessage('game saved');
-      Game.switchUIMode('gamePlay');
-    }
-  },
-  loadGame: function() {
-    if (this.localStorageAvailable()) {
-      var json_state_data =  window.localStorage.getItem(Game._persistenceNamespace);
-      var state_data = JSON.parse(json_state_data);
-      this._resetGameDataStructures();
-
-      Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
-
-      var loadedMap = null;
-      for (var mapId in state_data.MAP) {
-        if (state_data.MAP.hasOwnProperty(mapId)) {
-          var mapAttr = JSON.parse(state_data.MAP[mapId]);
-          Game.DATASTORE.MAP[mapId] = new Game.Map(mapAttr._mapTileSetName, mapId);
-          Game.DATASTORE.MAP[mapId].fromJSON(state_data.MAP[mapId]);
-          loadedMap = Game.DATASTORE.MAP[mapId];
-          loadedMap.initializeTimingEngine();
-        }
-      }
-
-      if (!loadedMap) {
-        Game.Message.sendMessage('You have no game to load');
-        return;
-      }
-
-      ROT.RNG.getUniform(); // once the map is regenerated cycle the RNG so we're getting new data for entity generation
-
-      for (var entityId in state_data.ENTITY) {
-        if (state_data.ENTITY.hasOwnProperty(entityId)) {
-          var entAttr = JSON.parse(state_data.ENTITY[entityId]);
-          var newE = Game.EntityGenerator.create(entAttr._generator_template_key,entAttr._id);
-          Game.DATASTORE.ENTITY[entityId] = newE;
-          Game.DATASTORE.ENTITY[entityId].fromJSON(state_data.ENTITY[entityId]);
-        }
-      }
-
-      // items
-      for (var itemId in state_data.ITEM) {
-        if (state_data.ITEM.hasOwnProperty(itemId)) {
-          var itemAttr = JSON.parse(state_data.ITEM[itemId]);
-          var newI = Game.ItemGenerator.create(itemAttr._generator_template_key,itemAttr._id);
-          Game.DATASTORE.ITEM[itemId] = newI;
-          Game.DATASTORE.ITEM[itemId].fromJSON(state_data.ITEM[itemId]);
-        }
-      }
-
-      Game.UIMode.gamePlay.attr = state_data.GAME_PLAY;
-      Game.Message.attr = state_data.MESSAGES;
-      this._storedKeyBinding = state_data.KEY_BINDING_SET; // NOTE: not setting the key binding directly because it's set to _storedKeyBinding when this ui mode is exited
-
-      // schedule
-      for (var schedItemId in state_data.SCHEDULE) {
-        if (state_data.SCHEDULE.hasOwnProperty(schedItemId)) {
-          // check here to determine which data store thing will be added to the scheduler (and the actual addition may vary - e.g. not everyting will be a repeatable thing)
-          if (Game.DATASTORE.ENTITY.hasOwnProperty(schedItemId)) {
-            loadedMap.getScheduler().add(Game.DATASTORE.ENTITY[schedItemId],true,state_data.SCHEDULE[schedItemId]);
-          }
-        }
-      }
-      loadedMap.getScheduler()._queue._time = state_data.SCHEDULE_TIME;
-
-      Game.Message.sendMessage('game loaded');
-      Game.switchUIMode('gamePlay');
-      Game.KeyBinding.informPlayer();
-    }
-  },
-  newGame: function() {
-    this._resetGameDataStructures();
-    Game.setRandomSeed(5 + Math.floor(Game.TRANSIENT_RNG.getUniform()*100000));
-    Game.UIMode.gamePlay.setupNewGame();
-    Game.Message.sendMessage('new game started');
-    Game.switchUIMode('gamePlay');
-  },
-  _resetGameDataStructures: function () {
-    Game.DATASTORE = {};
-    Game.DATASTORE.MAP = {};
-    Game.DATASTORE.ENTITY = {};
-    Game.DATASTORE.ITEM = {};
-  },
-  renderOnMain: function(display) {
-    display.drawText(3,3,Game.UIMode.DEFAULT_COLOR_STR+"press S to save the current game, L to load the saved game, or N start a new one",70);
-  },
-  localStorageAvailable: function() {
-    try {
-      var x = '__storage_test__';
-      window.localStorage.setItem(x,x);
-      window.localStorage.removeItem(x);
-      return true;
-    }
-    catch(e) {
-      Game.Message.sendMessage('Sorry No Local Data Storage is Available For This Browser!');
-      return false;
-    }
-  },
-  BASE_toJSON: function(state_hash_name) {
-    var state = this.attr;
-    if (state_hash_name) {
-      state = this[state_hash_name];
-    }
-    return JSON.stringify(state);
-  },
-  BASE_fromJSON: function (json,state_hash_name) {
-    var using_state_hash = 'attr';
-    if (state_hash_name) {
-      using_state_hash = state_hash_name;
-    }
-    this[using_state_hash] = JSON.parse(json);
   }
 };
 
@@ -790,8 +615,6 @@ Game.UIMode.LAYER_textReading = {
     Game.KeyBinding.setKeyBinding('LAYER_textReading');
     Game.refresh();
     Game.specialMessage("[Esc] to exit, [ and ] for scrolling");
-
-    //console.log('game persistence');
   },
   exit: function () {
     Game.KeyBinding.setKeyBinding(this._storedKeyBinding);

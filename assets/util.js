@@ -54,7 +54,7 @@ Game.util = {
       case 2:
         return 'Nola is love, Nola is life.';
       case 3:
-        return 'Got Nola?';
+        return 'Got Nola?  You wish.';
       case 4:
         return 'Nola loves strawberry yogurt.';
       case 5:

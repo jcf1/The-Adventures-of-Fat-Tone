@@ -6,7 +6,7 @@ Game.EntityGenerator.learn({
   chr:'@',
   fg:'#dda',
   sightRadius: 6,
-  maxHp: 1000,
+  maxHp: 21,
   attackAvoid: 1,
   attackDamage: 2,
   inventoryCapacity: 35,
@@ -20,6 +20,12 @@ Game.EntityGenerator.learn({
   chr:'@',
   fg:'#dda',
   mixins: ["PlayerActor", "PlayerMessager", "WalkerCorporeal", "Chronicle", "MeleeAttacker"]
+});
+
+Game.EntityGenerator.learn({
+  name: 'noodles',
+  chr:'🍜',
+  mixins: ["WalkerCorporeal"]
 });
 
 Game.EntityGenerator.learn({
@@ -66,6 +72,14 @@ Game.EntityGenerator.learn({
 });
 
 Game.EntityGenerator.learn({
+  name: 'Evan',
+  description: 'Evan Williams after you saved him.',
+  chr:'E',
+  fg:'#f00',
+  mixins: ["WalkerCorporeal"]
+});
+
+Game.EntityGenerator.learn({
   name: 'newt',
   description: 'It is small, wriggly, and moist',
   chr:'~',
@@ -98,6 +112,17 @@ Game.EntityGenerator.learn({
   name: 'Magical Herb',
   chr:'🍁',
   mixins: ["WalkerCorporeal"]
+});
+
+Game.EntityGenerator.learn({
+  name: 'Jose',
+  description: 'A large ground-covering patch of soft, fuzzy plantlife',
+  chr:'😴📱',
+  fg:'#6b6',
+  maxHp: 1,
+  minDropAmount: 69,
+  maxDropAmount: 69,
+  mixins: ["HitPoints","MoneyDropper"]
 });
 
 Game.EntityGenerator.learn({
