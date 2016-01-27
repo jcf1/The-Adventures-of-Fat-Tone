@@ -973,6 +973,7 @@ Game.UIMode.LAYER_inventoryListing = new Game.UIMode.LAYER_itemListing({
 });
 Game.UIMode.LAYER_inventoryListing.doSetup = function () {
   this.setup({itemIdList: Game.getAvatar().getInventoryItemIds()});
+  Game.Message.sendMessage('Press [e] to eat an item, [d] to drop an item, or [x] to examine an item.');
 };
 
 Game.UIMode.LAYER_inventoryListing.handleInput = function (inputType,inputData) {
