@@ -94,10 +94,7 @@ Game.UIMode.gamePlay = {
       } else this.getAvatar().raiseSymbolActiveEvent('answeredQ','no answer')
       return;
     } else if (actionBinding.actionKey == 'CANCEL') {
-      if(this.getMap().getTileSetName() != 'main_town') {
-        this.returnToTown();
-        return false;
-      }
+      return false;
     }
     var tookTurn = false;
     if (actionBinding.actionKey == 'MOVE_U') {
@@ -281,7 +278,7 @@ Game.UIMode.gamePlay = {
       Game.addUIMode('LAYER_textReading');
       for(var ecount = 0; ecount < 10; ecount++)
         this.getMap().addEntity(Game.EntityGenerator.create('security'),this.getMap().getRandomReachablePosition());
-      this.getMap().addEntity(Game.EntityGenerator.create('Castle Exit'),{ x:this.getAvatar().getX(),y: this.getAvatar().getY() + 1});
+      this.getMap().addEntity(Game.EntityGenerator.create('Castle Exit'),this.getMap().getRandomReachablePosition());
     }
 
     for (var ecount = 0; ecount < 50; ecount++) {
