@@ -272,7 +272,7 @@ Game.EntityMixin.PlayerActor = {
         }
         else if (nameEvt == 'noodles') {
           Game.Message.sendMessage('You won!');
-          Game.UIMode.gamePlay.getAvatar().addInventoryItems([Game.ItemGenerator.create('cup noodle')]);
+          Game.UIMode.gamePlay.getAvatar().addInventoryItems([Game.ItemGenerator.create('Cup Noodle')]);
           Game.UIMode.gamePlayMirror.returnToTown();
         }
         else if (nameEvt == 'Castle Exit') {
