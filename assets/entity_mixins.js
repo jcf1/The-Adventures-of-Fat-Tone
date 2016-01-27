@@ -448,7 +448,7 @@ Game.EntityMixin.FoodConsumer = {
         this.raiseSymbolActiveEvent('raiseAttackAvoid', 1);
       } else if (boost == 'toughness') {
         this.raiseSymbolActiveEvent('raiseDamageMitigation', 1);
-      } else if (boost == 'all') {
+      } else {
         this.raiseSymbolActiveEvent('raiseAttackDamage', 1)
         this.raiseSymbolActiveEvent('raiseAttackHit', 1);
         this.raiseSymbolActiveEvent('raiseAttackAvoid', 1);
