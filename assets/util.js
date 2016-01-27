@@ -58,7 +58,7 @@ Game.util = {
       case 4:
         return 'Nola loves strawberry yogurt.';
       case 5:
-        return 'Nola did all the sound effects in Jurassic World';
+        return 'Nola tamed all the raptors in Jurassic World';
     }
     return 'error';
   },

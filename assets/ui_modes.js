@@ -236,7 +236,7 @@ Game.UIMode.gamePlay = {
     this.getMap().addEntity(this.getAvatar(),this.getMap().getRandomWalkablePosition());
     this.setCameraToAvatar();
 
-    for (var ecount = 0; ecount < 30; ecount++) {
+    for (var ecount = 0; ecount < 10; ecount++) {
       this.getMap().addEntity(Game.EntityGenerator.create('moss'),this.getMap().getRandomWalkablePosition());
       this.getMap().addEntity(Game.EntityGenerator.create('newt'),this.getMap().getRandomWalkablePosition());
     }
