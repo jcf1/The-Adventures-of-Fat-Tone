@@ -46,7 +46,7 @@ Game.util = {
   },
 
   randomNolaFact: function() {
-    switch (this.randomInt(0,5)) {
+    switch (this.randomInt(0,8)) {
       case 0:
         return 'My love for Nola is more infectious than ebola.';
       case 1:
@@ -58,7 +58,15 @@ Game.util = {
       case 4:
         return 'Nola loves strawberry yogurt.';
       case 5:
-        return 'Nola did all the sound effects in Jurassic World';
+        return 'Nola tamed all the raptors in Jurassic World';
+      case 6:
+        return 'Nola\'s got the chalk!';
+      case 7:
+        return 'Nola created the universe.';
+      case 8:
+        return 'Coffee makes Nola anxious.';
+      case 9:
+        return 'If everyone listened to Nola, the world would be a better place.'
     }
     return 'error';
   },

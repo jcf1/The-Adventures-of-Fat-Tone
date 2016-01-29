@@ -104,8 +104,8 @@ Game.EntityGenerator.learn({
   attackAvoid: 3,
   sightRadius: 3,
   damageMitigation: 1,
-  minDropAmount: 25,
-  maxDropAmount: 35,
+  minDropAmount: 15,
+  maxDropAmount: 25,
   mixins: ["HitPoints", "ChaserActor", "WalkerCorporeal", "MeleeAttacker","MeleeDefender","MoneyDropper","Sight"]
 });
 
@@ -119,8 +119,8 @@ Game.EntityGenerator.learn({
   attackAvoid: 1,
   chaserActionDuration: 1200,
   attackActionDuration: 3000,
-  minDropAmount: 20,
-  maxDropAmount: 30,
+  minDropAmount: 10,
+  maxDropAmount: 18,
   mixins: ["HitPoints","ChaserActor","WalkerCorporeal","MeleeAttacker", "Sight","MoneyDropper"]
 });
 
@@ -135,8 +135,8 @@ Game.EntityGenerator.learn({
   attackAvoid: 1,
   chaserActionDuration: 1200,
   attackActionDuration: 3000,
-  minDropAmount: 25,
-  maxDropAmount: 35,
+  minDropAmount: 15,
+  maxDropAmount: 20,
   mixins: ["HitPoints", "Sight", "ChaserActor", "WalkerCorporeal", "MeleeAttacker","MoneyDropper", "MeleeDefender"]
 });
 

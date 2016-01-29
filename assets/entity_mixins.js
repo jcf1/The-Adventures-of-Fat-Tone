@@ -26,7 +26,7 @@ Game.EntityMixin.PlayerMessager = {
           Game.Message.sendMessage('Do you want to walk into your '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'talk bar' || nameEvt == 'talk shop')
           if (nameEvt == 'talk shop') Game.Message.sendMessage('Hi my name is Nola! Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no')
-          else Game.Message.sendMessage('Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
+          else Game.Message.sendMessage('I\'m a resonable guy.  Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'Town')
           Game.Message.sendMessage('Do you want to exit the shop? Type \'y\' for yes, \'n\' for no');
       },
@@ -272,7 +272,7 @@ Game.EntityMixin.PlayerActor = {
         }
         else if (nameEvt == 'noodles') {
           Game.Message.sendMessage('You won!');
-          Game.UIMode.gamePlay.getAvatar().addInventoryItems([Game.ItemGenerator.create('cup noodle')]);
+          Game.UIMode.gamePlay.getAvatar().addInventoryItems([Game.ItemGenerator.create('Cup Noodle')]);
           Game.UIMode.gamePlayMirror.returnToTown();
         }
         else if (nameEvt == 'Castle Exit') {
@@ -448,7 +448,7 @@ Game.EntityMixin.FoodConsumer = {
         this.raiseSymbolActiveEvent('raiseAttackAvoid', 1);
       } else if (boost == 'toughness') {
         this.raiseSymbolActiveEvent('raiseDamageMitigation', 1);
-      } else if (boost == 'all') {
+      } else {
         this.raiseSymbolActiveEvent('raiseAttackDamage', 1)
         this.raiseSymbolActiveEvent('raiseAttackHit', 1);
         this.raiseSymbolActiveEvent('raiseAttackAvoid', 1);
