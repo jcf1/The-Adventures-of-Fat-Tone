@@ -1,0 +1,12 @@
+Title - The Adventures of Fat Tone
+
+Description -
+You take control of Anthoney, a lonely wanderer, as he goes through life and tries not to die.  He has one goal in life, to find his long lost companion, Evan Williams, and his favorite plant, magical herb.
+You win the game if you can progress through 21 "levels".  You loose if you run out of health or die to a random event as Anthoney does not have the best of luck.
+Typical rogue-like game where you move around in 4 directions, turn-based, kill things by running into them, currency and loot system, randomly spawned dungeons, and logic minigames and puzzles.
+
+Inspirations -
+Adom
+Our friend, Anthoney Tsou
+Theseus and the Minotaur Logic Game (Minigame)
+Harry Potter Quidditch (Minigame)
