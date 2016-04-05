@@ -26,7 +26,7 @@ Game.EntityMixin.PlayerMessager = {
           Game.Message.sendMessage('Do you want to walk into your '+ nameEvt +'? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'talk bar' || nameEvt == 'talk shop')
           if (nameEvt == 'talk shop') Game.Message.sendMessage('Hi my name is Nola! Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no')
-          else Game.Message.sendMessage('I\'m a resonable guy.  Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
+          else Game.Message.sendMessage('I\'m a resonable guy with reasonable prices.  Do you want to see what is for sale? Type \'y\' for yes, \'n\' for no');
         else if (nameEvt == 'Town')
           Game.Message.sendMessage('Do you want to exit the shop? Type \'y\' for yes, \'n\' for no');
       },
